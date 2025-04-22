@@ -10,7 +10,7 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-
+    var appCoordinator: AppCoordinator?
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
@@ -20,12 +20,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
-        let viewController = ViewController()
+        self.appCoordinator = AppCoordinator()
         
-        window = UIWindow(frame: UIScreen.main.bounds)  // 현재 스크린의 사이즈의 윈도우 가져오기
-        window?.rootViewController = viewController     // 처음 보여줄 뷰컨트롤러 연결하기
-        window?.makeKeyAndVisible()                     // 화면 보이게 하기
+        window = UIWindow(frame: UIScreen.main.bounds)                      // 현재 스크린의 사이즈의 윈도우 가져오기
+        window?.rootViewController = appCoordinator?.navigationController   // 처음 보여줄 뷰컨트롤러 연결하기
+        window?.makeKeyAndVisible()                                         // 화면 보이게 하기
         window?.windowScene = windowScene
+        
+        self.appCoordinator?.start()
+                
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
