@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 
+/// 마이페이지 뷰
 class MyPageViewController: UIViewController {
     private let testLabel: UILabel = {
         let label = UILabel()

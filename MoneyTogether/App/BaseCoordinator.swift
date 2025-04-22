@@ -15,6 +15,7 @@ protocol Coordinator: AnyObject {
     func start()
 }
 
+/// 네비게이션 타입 기본 코디네이터
 class BaseNavCoordinator: Coordinator {
     var navigationController: UINavigationController
     var parent: Coordinator?
@@ -36,6 +37,7 @@ class BaseNavCoordinator: Coordinator {
     }
 }
 
+/// 탭바 타입 기본 코디네이터
 class BaseTabBarCoordinator: Coordinator {
     var tabBarController: UITabBarController
     var children: [Coordinator] = []

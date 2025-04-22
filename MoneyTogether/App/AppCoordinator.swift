@@ -9,6 +9,7 @@ import Foundation
 import UIKit
 
 
+/// 앱 루트 네비게이션을 관리하는 코디네이터
 class AppCoordinator: BaseNavCoordinator {
     
     var mainTabBarCoordinator: MainTabBarCoordinator?

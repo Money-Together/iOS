@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 
+/// 마이페이지 코드네이터
 class MyPageCoordinator: BaseNavCoordinator {
     
     override func start() {

@@ -8,11 +8,12 @@
 import Foundation
 import UIKit
 
+// MARK: Main TabBarItem Type
 /// 메인 탭에 포함되는 탭 타입
 enum MainTabBarItemType: String, CaseIterable {
     case walletHome, myPage
     
-    // Int형에 맞춰 초기화
+    /// Int형에 맞춰 초기화
     init?(index: Int) {
         switch index {
         case 0: self = .walletHome
@@ -55,8 +56,9 @@ enum MainTabBarItemType: String, CaseIterable {
 
 }
 
+// MARK: Main Tab Coordinator
+/// 메인 탭뷰 코디네이터
 class MainTabBarCoordinator: BaseTabBarCoordinator {
-    
     
     override func start() {
         let tabs = MainTabBarItemType.allCases
@@ -80,6 +82,10 @@ class MainTabBarCoordinator: BaseTabBarCoordinator {
         self.configureTabBarController(with: tabNavigationControllers)
         
     }
+}
+
+// MARK: setup to start
+extension MainTabBarCoordinator {
     
     /// 탭바컨트롤러 기본 세팅 (view controllers, selected index, style)
     private func configureTabBarController(with tabNavigationControllers: [UINavigationController]) {

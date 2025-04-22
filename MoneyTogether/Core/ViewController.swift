@@ -9,11 +9,6 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    //    override func viewDidLoad() {
-    //        super.viewDidLoad()
-    //        // Do any additional setup after loading the view.
-    //    }
-    
     private let testLabel: UILabel = {
         let label = UILabel()
         label.text = "초기세팅 테스트 입니다."

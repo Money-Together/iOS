@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 
+/// 지갑 홈 뷰
 class WalletHomeViewController: UIViewController {
     private let testLabel: UILabel = {
         let label = UILabel()
