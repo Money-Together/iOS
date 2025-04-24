@@ -93,7 +93,9 @@
 				3E49295D2DAE4DB900C3C2BB /* MoneyTogetherUITests */,
 				3E49293B2DAE4DB600C3C2BB /* Products */,
 			);
+			indentWidth = 4;
 			sourceTree = "<group>";
+			tabWidth = 4;
 		};
 		3E49293B2DAE4DB600C3C2BB /* Products */ = {
 			isa = PBXGroup;
