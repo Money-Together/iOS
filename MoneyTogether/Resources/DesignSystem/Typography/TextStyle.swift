@@ -14,7 +14,7 @@ import SwiftUI
 enum MoneyTogetherTextStyle {
     case h1, h2, h3, h4, h5, h6, b1, b2, detail1, detail2
     
-    private var size: CGFloat {
+    private var baseSize: CGFloat {
         switch self {
         case .h1:       return 36
         case .h2:       return 32
@@ -36,16 +36,54 @@ enum MoneyTogetherTextStyle {
         }
     }
     
+    /// 커스텀 텍스트스타일에 대응하는 UIFont Text Style
+    /// dynamic type 적용을 위한 text style 매칭
+    private var uiTextStyleForDynamic: UIFont.TextStyle {
+        switch self {
+        case .h1:       return .largeTitle
+        case .h2:       return .title1
+        case .h3:       return .title1
+        case .h4:       return .title2
+        case .h5:       return .title3
+        case .h6:       return .title3
+        case .b1:       return .headline
+        case .b2:       return .body
+        case .detail1:  return .caption1
+        case .detail2:  return .caption1
+        }
+    }
+    
+    /// 커스텀 텍스트스타일에 대응하는 Font Text Style
+    /// dynamic type 적용을 위한 text style 매칭
+    private var textStyleForDynamic: Font.TextStyle {
+        switch self {
+        case .h1:       return .largeTitle
+        case .h2:       return .title
+        case .h3:       return .title
+        case .h4:       return .title2
+        case .h5:       return .title3
+        case .h6:       return .title3
+        case .b1:       return .headline
+        case .b2:       return .body
+        case .detail1:  return .caption
+        case .detail2:  return .caption
+        }
+    }
+
     
     // SwiftUI 스타일
     var swiftUIFont: Font {
-        Font.custom(self.weight.fontName, size: self.size)
+        Font.custom(self.weight.fontName, size: self.baseSize, relativeTo: self.textStyleForDynamic)
     }
     
     // uikit 스타일
     var uikitFont: UIFont {
-        UIFont(name: self.weight.fontName, size: self.size)
-        ?? UIFont.systemFont(ofSize: self.size, weight: self.weight.systemUIWeight)
+        let baseFont = UIFont(name: self.weight.fontName, size: self.baseSize)
+                        ?? UIFont.systemFont(ofSize: self.baseSize, weight: self.weight.systemUIWeight)
+        
+        let scaledFont = UIFontMetrics(forTextStyle: self.uiTextStyleForDynamic).scaledFont(for: baseFont)
+        
+        return scaledFont
     }
 }
 
@@ -57,7 +95,7 @@ class UIFontTestViewController: UIViewController {
         let label = UILabel()
         label.text = "text style 테스트 입니다."
         label.textColor = .black
-        label.font = .moneyTogetherFont(style: .b1)
+        label.font = .moneyTogetherFont(style: .h6)
         label.clipsToBounds = true
         return label
     }()
@@ -99,8 +137,8 @@ struct FontTestView: View {
 
 @available(iOS 17, *)
 #Preview {
-     return UIFontTestViewController()
-//    FontTestView()
+//     return UIFontTestViewController()
+    FontTestView()
 }
 
 #endif
