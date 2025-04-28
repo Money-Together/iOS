@@ -12,6 +12,7 @@ import UIKit
 class MyPageCoordinator: BaseNavCoordinator {
     
     override func start() {
-        self.navigationController.viewControllers = [MyPageViewController()]
+        let viewModel = MyPageViewModel()
+        self.navigationController.viewControllers = [MyPageViewController(viewModel: viewModel)]
     }
 }
