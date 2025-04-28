@@ -27,6 +27,7 @@ struct MoneyTogetherColor {
     
     let grayScale = GrayScale()
     let system = System()
+    let background = Color("background")
     let label = Label()
     let line = Line()
     
@@ -69,6 +70,7 @@ struct MoneyTogetherUIColor {
     
     let grayScale = UIGrayScale()
     let system = UISystem()
+    let background = UIColor(named: "background")
     let label = UILabel()
     let line = UILine()
     
