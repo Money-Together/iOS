@@ -10,9 +10,36 @@ import UIKit
 
 /// 마이페이지 코드네이터
 class MyPageCoordinator: BaseNavCoordinator {
+    var rootCoordinator: Coordinator?
+    
+    let viewModel = MyPageViewModel()
+    
+    init(navigationController: UINavigationController,
+         parentCoordinator: Coordinator? = nil,
+         rootCoordinaotr: Coordinator? = nil) {
+        super.init(navigationController: navigationController, parentCoordinator: parentCoordinator)
+        rootCoordinator = rootCoordinaotr
+    }
     
     override func start() {
-        let viewModel = MyPageViewModel()
+        setVMClosures()
         self.navigationController.viewControllers = [MyPageViewController(viewModel: viewModel)]
     }
 }
+
+extension MyPageCoordinator {
+    func setVMClosures() {
+        guard let root = self.rootCoordinator as? AppCoordinator else {
+            return
+        }
+        
+        viewModel.profileEditBtnTapped = {
+            root.showProfileEditView(viewModel: self.viewModel)
+        }
+        
+        viewModel.onCancelProfileEdit = {
+            root.backFromProfileEdit()
+        }
+    }
+}
+

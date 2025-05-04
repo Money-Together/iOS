@@ -143,7 +143,7 @@ extension MainTabBarCoordinator {
             self.children.append(walletHomeCoordinator)
             
         case .myPage:
-            let myPageCoordinator = MyPageCoordinator(navigationController: tabNavigationController, parentCoordinator: self)
+            let myPageCoordinator = MyPageCoordinator(navigationController: tabNavigationController, parentCoordinator: self, rootCoordinaotr: self.parent)
             myPageCoordinator.start()
             self.children.append(myPageCoordinator)
         }

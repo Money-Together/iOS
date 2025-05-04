@@ -23,3 +23,16 @@ class AppCoordinator: BaseNavCoordinator {
     }
 }
 
+extension AppCoordinator {
+    /// 루트 네비게이션에서 프로필 편집 페이지 띄우기
+    /// - Parameter viewModel: 프로필 편집 VC에서 필요한 뷰모델
+    func showProfileEditView(viewModel: MyPageViewModel) {
+        self.navigationController.pushViewController(EditProfileViewController(viewModel: viewModel), animated: true)
+    }
+    
+    /// 루트 네비게이션에서 push 된 프로필 편집 뷰에서 뒤로가기 실행
+    /// 단순 pop 처리
+    func backFromProfileEdit() {
+        self.navigationController.popViewController(animated: true)
+    }
+}

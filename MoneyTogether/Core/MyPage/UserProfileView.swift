@@ -88,6 +88,7 @@ class UserProfileView: UIView {
             nicknameLabel,
             emailLabel
         ])
+        
         labelVstack.translatesAutoresizingMaskIntoConstraints = false
         labelVstack.axis = .vertical
         labelVstack.distribution = .equalCentering

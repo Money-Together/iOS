@@ -43,6 +43,9 @@ class MyPageViewController: UIViewController {
     /// Sub Views, UI Components 세팅
     private func setUI() {
         userProfileView.updateUI(newData: self.viewModel.profile)
+        userProfileView.addGestureRecognizer(
+            UITapGestureRecognizer(target: self, action: #selector(handleProfileTap))
+        )
         view.addSubview(userProfileView)
         
         view.backgroundColor = UIColor.moneyTogether.background
@@ -66,6 +69,15 @@ class MyPageViewController: UIViewController {
     }
 }
 
+// MARK: Action
+extension MyPageViewController {
+    @objc func handleProfileTap(_ sender: UITapGestureRecognizer) {
+        if sender.state == .ended {
+            print(#fileID, #function, #line, "프로필 탭")
+            self.viewModel.handleProfileEditBtnTap()
+        }
+    }
+}
 /*
  
 import SwiftUI

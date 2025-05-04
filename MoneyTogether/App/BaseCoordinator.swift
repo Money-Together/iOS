@@ -16,6 +16,7 @@ protocol Coordinator: AnyObject {
 }
 
 /// 네비게이션 타입 기본 코디네이터
+/// 네비게이션바 hidden 이 default
 class BaseNavCoordinator: Coordinator {
     var navigationController: UINavigationController
     var parent: Coordinator?
@@ -23,12 +24,14 @@ class BaseNavCoordinator: Coordinator {
     
     init(parentCoordinator: Coordinator? = nil) {
         self.navigationController = UINavigationController()
+        self.navigationController.isNavigationBarHidden = true
         self.parent = parentCoordinator
     }
     
     init(navigationController: UINavigationController,
          parentCoordinator: Coordinator? = nil) {
         self.navigationController = navigationController
+        self.navigationController.isNavigationBarHidden = true
         self.parent = parentCoordinator
     }
     
