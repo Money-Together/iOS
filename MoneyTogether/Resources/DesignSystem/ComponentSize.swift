@@ -9,5 +9,7 @@ import Foundation
 
 struct ComponentSize {
     static let navigationBarHeight: CGFloat = 56
-    static let iconBtnSize: CGFloat = 40
+    
+    static let iconBtnSize: CGFloat         = 40
+    static let ctaBtnHeight: CGFloat        = 48
 }

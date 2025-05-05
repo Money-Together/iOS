@@ -25,11 +25,16 @@ extension UIColor {
 // MARK: SwiftUI Color
 struct MoneyTogetherColor {
     
+    let brand = Brand()
     let grayScale = GrayScale()
     let system = System()
     let background = Color("background")
     let label = Label()
     let line = Line()
+    
+    struct Brand {
+        let primary     = Color("brand_primary")
+    }
     
     struct GrayScale {
         let baseGray100  = Color("gray100")
@@ -68,11 +73,16 @@ struct MoneyTogetherColor {
 // MARK: UIKit Color
 struct MoneyTogetherUIColor {
     
+    let brand = UIBrand()
     let grayScale = UIGrayScale()
     let system = UISystem()
     let background = UIColor(named: "background")
     let label = UILabel()
     let line = UILine()
+    
+    struct UIBrand {
+        let primary     = UIColor(named: "brand_primary")
+    }
     
     struct UIGrayScale {
         let baseGray100 = UIColor(named: "gray100")
