@@ -100,7 +100,7 @@ class UserProfileView: UIView {
         self.addSubview(labelVstack)
         
         NSLayoutConstraint.activate([
-            self.widthAnchor.constraint(equalToConstant: UIScreen().bounds.width - (Layout.side * 2)),
+            self.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width - (Layout.side * 2)),
             self.heightAnchor.constraint(greaterThanOrEqualTo: imageView.heightAnchor, multiplier: 1),
             
             imageView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
