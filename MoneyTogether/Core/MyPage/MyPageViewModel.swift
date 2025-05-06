@@ -20,11 +20,10 @@ final class MyPageViewModel {
     /// 데이터 업데이트 시 ViewController에게 알림
     var onProfileUpdated: (() -> Void)?
     
+    
     // MARK: Closures For Event Handling
     
     var profileEditBtnTapped: (() -> Void)?
-    
-    var onCancelProfileEdit: (() -> Void)?
 
     
     // MARK: Fetch Functions
@@ -47,7 +46,7 @@ extension MyPageViewModel {
         self.profileEditBtnTapped?()
     }
     
-    func cancelProfileEdit() {
-        self.onCancelProfileEdit?()
-    }
+    
+    
+    
 }

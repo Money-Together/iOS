@@ -33,11 +33,13 @@ extension MyPageCoordinator {
             return
         }
         
+        let editProfileVM = EditProfileViewModel(orgData: self.viewModel.profile)
+        
         viewModel.profileEditBtnTapped = {
-            root.showProfileEditView(viewModel: self.viewModel)
+            root.showProfileEditView(viewModel: editProfileVM)
         }
         
-        viewModel.onCancelProfileEdit = {
+        editProfileVM.onFinishFlow = {
             root.backFromProfileEdit()
         }
     }

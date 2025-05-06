@@ -28,7 +28,7 @@ class CTAUIButton: UIButton {
          buttonHeight: CGFloat = ComponentSize.ctaBtnHeight,
          buttonWidth: CGFloat? = nil,
          cornerRadius: CGFloat = Radius.small,
-         action: (() -> Void)?) {
+         action: (() -> Void)? = nil) {
         
         self.title = labelText
         self.style = buttonStyle
@@ -61,7 +61,11 @@ class CTAUIButton: UIButton {
         self.setTitle(title, for: .normal)
         self.titleLabel?.font = .moneyTogetherFont(style: .h6)
         
-        
+        self.configureStyle()
+       
+    }
+    
+    private func configureStyle() {
         switch (style, activeState) {
         case (.solid, .active):
             configureActiveSolidStyle()
@@ -74,6 +78,14 @@ class CTAUIButton: UIButton {
             self.isEnabled = false
             configureInactiveGhostStyle()
         }
+    }
+    
+    func setButtonEnabled(_ isEnabled: Bool) {
+        self.isEnabled = isEnabled
+        self.activeState = isEnabled ? .active : .inactive
+        self.configureStyle()
+        
+        print(#fileID, #function, #line, "\(activeState), \(style)")
     }
 }
 

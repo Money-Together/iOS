@@ -26,7 +26,7 @@ class AppCoordinator: BaseNavCoordinator {
 extension AppCoordinator {
     /// 루트 네비게이션에서 프로필 편집 페이지 띄우기
     /// - Parameter viewModel: 프로필 편집 VC에서 필요한 뷰모델
-    func showProfileEditView(viewModel: MyPageViewModel) {
+    func showProfileEditView(viewModel: EditProfileViewModel) {
         self.navigationController.pushViewController(EditProfileViewController(viewModel: viewModel), animated: true)
     }
     
