@@ -33,7 +33,7 @@ class UserProfileView: UIView {
     
     /// 프로필 이미지 뷰
     private let imageView: UIView  = {
-        let profileImage = UIHostingController(rootView: ProfileImageView(size: ProfileImgSize.large))
+        let profileImage = UIHostingController(rootView: ProfileImageView(size: ProfileImgSize.large, imageUrl: nil))
         let imageView = profileImage.view!
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.widthAnchor.constraint(equalToConstant: ProfileImgSize.large).isActive = true

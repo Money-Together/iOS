@@ -8,26 +8,19 @@
 import Foundation
 import SwiftUI
 
-//struct ComponentSize {
-//    enum ProfileImage: CGFloat {
-//        case s = 32
-//        case m = 40
-//        case l = 64
+
+//class ProfileImageData: ObservableObject {
+//    @Published var imageUrl: String?
+//
+//    init(imageUrl: String?) {
+//        self.imageUrl = imageUrl
 //    }
 //}
 
-/// 프로필 이미지 사이즈
-struct ProfileImgSize {
-    static let small : CGFloat = 32
-    static let medium : CGFloat = 40
-    static let large : CGFloat = 64
-}
-
-
 /// 프로필 이미지 뷰
 struct ProfileImageView: View {
-    let size: CGFloat
-    let imageUrl: String?
+    var size: CGFloat
+    var imageUrl: String?
     
     init(size: CGFloat, imageUrl: String? = nil) {
         self.size = size
@@ -46,9 +39,10 @@ struct ProfileImageView: View {
     
     /// 설정된 이미지 없을 경우 기본 이미지
     var defaultProfileImage: some View {
-        Circle()
+        Image("default_profile_image")
+            .resizable()
+            .aspectRatio(contentMode: .fill)
             .frame(width: size, height: size)
-            .foregroundColor(Color.moneyTogether.system.red)
     }
     
     /// url로 이미지 비동기 처리
@@ -71,4 +65,8 @@ struct ProfileImageView: View {
             }
         }
     }
+}
+
+#Preview {
+    ProfileImageView(size: 96, imageUrl: nil)
 }

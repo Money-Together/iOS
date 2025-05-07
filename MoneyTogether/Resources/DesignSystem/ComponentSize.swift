@@ -12,4 +12,14 @@ struct ComponentSize {
     
     static let iconBtnSize: CGFloat         = 40
     static let ctaBtnHeight: CGFloat        = 48
+    
+    static let profileImgSize = ProfileImgSize()
+}
+
+/// 프로필 이미지 사이즈
+struct ProfileImgSize {
+    static let small: CGFloat   = 32
+    static let medium: CGFloat  = 40
+    static let large: CGFloat   = 64
+    static let xLarge: CGFloat  = 96
 }

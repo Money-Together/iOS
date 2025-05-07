@@ -17,7 +17,7 @@ struct UserProfile {
     static func createDummyData() -> Self {
         return UserProfile(nickname: "test용최대10자",
                            email: "testEmail@gmail.com",
-                           imageUrl: nil)
+                           imageUrl: "https://i.pravatar.cc")
     }
 }
 
