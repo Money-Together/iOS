@@ -54,7 +54,7 @@ class CustomIconButton: UIView {
          backgroundColor: UIColor? = .clear,
          size: CGFloat = 40,
          cornerRadius: CGFloat = Radius.small,
-         action: (() -> Void)?) {
+         action: (() -> Void)? = nil) {
         
         self.btnSize = size
         self.btnAction = action
@@ -107,6 +107,10 @@ class CustomIconButton: UIView {
         
         self.translatesAutoresizingMaskIntoConstraints = false
     }
+    
+    func setAction(_ action: (() -> Void)?) {
+        self.btnAction = action
+    }
 }
 
 
@@ -116,6 +120,6 @@ extension CustomIconButton {
     
     /// 버큰 클릭 이벤트 처리
     private func handleButtonTap() {
-        self.btnAction?()
+        self.btnAction?() ?? { fatalError("Custom Icon Button action should be implemented") }()
     }
 }

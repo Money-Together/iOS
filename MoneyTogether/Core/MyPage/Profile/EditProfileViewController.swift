@@ -14,23 +14,20 @@ class EditProfileViewController: UIViewController {
     
     var viewModel: EditProfileViewModel
     
+    private let profileImgSize = ProfileImgSize.xLarge
+    
     // MARK: Sub Views
     
     private var navigationBar = CustomNavigationBar(title: "프로필 편집", backBtnMode: .push)
     
-    private let profileImgSize = ProfileImgSize.xLarge
-    private var profileImgHostingVC: UIHostingController<ProfileImageView>!
-    private lazy var profileImgEditBtn = CustomIconButton(
+    private var imageView: UIView!
+    
+    private var profileImgEditBtn = CustomIconButton(
         iconImage: UIImage(systemName: "camera"),
         iconColor: .moneyTogether.grayScale.baseGray0,
         backgroundColor: .moneyTogether.grayScale.baseGray40,
         size: 40,
-        cornerRadius: 20,
-        action: {
-            print(#fileID, #function, #line, "profile image edit btn tapped")
-            self.showProfileImageActionSheet()
-        }
-    )
+        cornerRadius: 20)
     
     private let nicknameSectionTitle = UILabel.make(
         text: "닉네임",
@@ -65,6 +62,7 @@ class EditProfileViewController: UIViewController {
         self.hideKeyboardWhenTappedAround()
         
         setUI()
+        setActions()
         setLayout()
         setBindings()
     }
@@ -78,18 +76,27 @@ extension EditProfileViewController {
     private func setUI() {
         view.backgroundColor = UIColor.moneyTogether.background
         
+        // profile image
+        let rootView = ProfileImageView(size: profileImgSize, imageUrl: viewModel.orgData.imageUrl)
+        let profileImgHostingVC = UIHostingController(rootView: rootView)
+        self.imageView = profileImgHostingVC.view!.disableAutoresizingMask()
+        
+        // nickname field
+        self.nicknameTextField.text = viewModel.orgData.nickname
+        self.nicknameTextField.delegate = self
+    }
+    
+    /// sub views, ui components에서 필요한 액션 세팅하는 함수
+    private func setActions() {
         // navigation bar
         self.navigationBar.backAction = {
             self.viewModel.cancelProfileEdit()
         }
         
-        // profile image
-        let rootView = ProfileImageView(size: profileImgSize, imageUrl: viewModel.orgData.imageUrl)
-        self.profileImgHostingVC = UIHostingController(rootView: rootView)
-        
-        // nickname field
-        self.nicknameTextField.text = viewModel.orgData.nickname
-        self.nicknameTextField.delegate = self
+        // profile image edit button
+        self.profileImgEditBtn.setAction({
+            self.showProfileImageActionSheet()
+        })
         
         // complete buton
         self.completeButton.action = {
@@ -100,8 +107,6 @@ extension EditProfileViewController {
     /// sub views를 추가하고, 레이아웃을 설정하는 함수
     private func setLayout() {
         
-        let imageView = profileImgHostingVC.view!.disableAutoresizingMask()
-
         view.addSubview(navigationBar)
         view.addSubview(imageView)
         view.addSubview(profileImgEditBtn)
@@ -115,7 +120,6 @@ extension EditProfileViewController {
             navigationBar.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
             navigationBar.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor),
 
-            
             imageView.widthAnchor.constraint(equalToConstant: profileImgSize),
             imageView.heightAnchor.constraint(equalToConstant: profileImgSize),
             imageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
@@ -151,16 +155,16 @@ extension EditProfileViewController {
         viewModel.isErrorAlertVisible.bind { isVisible in
             guard isVisible else { return }
             
-            self.showErrorAlert(title: "프로필 수정에 실패했어요",
-                                message: "입력한 내용과 네트워크를 확인해주세요.")
+            self.showErrorAlert(title: "프로필 수정에 실패했어요", message: "입력한 내용과 네트워크를 확인해주세요.")
         }
     }
 }
 
-// MARK: Event Handler
+
+// MARK: Error Alert
 extension EditProfileViewController {
     /// 프로필 수정 시 에러 발생했을 경우, 에러 Alert 띄우기
-    func showErrorAlert(title: String = "프로필 수정에 실패했어요", message: String = "입력한 내용과 네트워크를 확인해주세요.") {
+    private func showErrorAlert(title: String = "프로필 수정에 실패했어요", message: String = "입력한 내용과 네트워크를 확인해주세요.") {
         
         let alert = UIAlertController(title: title,
                                       message: message,
@@ -172,6 +176,11 @@ extension EditProfileViewController {
         
         self.present(alert, animated: true, completion: nil)
     }
+}
+
+
+// MARK: Update Profile Image
+extension EditProfileViewController: PHPickerViewControllerDelegate {
     
     /// 프로필 이미지 수정 버튼 클릭 시, action sheet 띄우기
     func showProfileImageActionSheet() {
@@ -182,7 +191,8 @@ extension EditProfileViewController {
         })
         
         let defaultImage = UIAlertAction(title: "기본 이미지로 변경", style: .default, handler: { _ in
-            self.updateProfileImage(with: nil)
+            self.viewModel.profileImageUpdateState = .resetToDefault
+            self.updateProfileImageToDefault()
         })
         
         let cancel = UIAlertAction(title: "취소", style: .cancel, handler: nil)
@@ -193,12 +203,9 @@ extension EditProfileViewController {
         
         self.present(actionSheet, animated: true, completion: nil)
     }
-}
-
-// MARK: Profile Image
-extension EditProfileViewController: PHPickerViewControllerDelegate {
-#warning("show photo picker view 미완성")
-    func showPhotoPickerView() {
+    
+    /// 포토 피커 띄우기
+    private func showPhotoPickerView() {
         var config = PHPickerConfiguration(photoLibrary: .shared())
         let filter = PHPickerFilter.any(of: [.images, .livePhotos, .depthEffectPhotos, .screenshots])
 
@@ -212,32 +219,65 @@ extension EditProfileViewController: PHPickerViewControllerDelegate {
         self.present(picker, animated: true)
     }
     
-#warning("picker did finish 미완성")
     /// 포토 피커에서 이미지 선택 완료 시 호출
-    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-        print(#fileID, #function, #line, "")
-        dismiss(animated: true)
-
-        guard !results.isEmpty else {
+    final func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        guard let imageResult = results.first else {
             return
         }
+        
+        imageResult.itemProvider.loadObject(ofClass: UIImage.self) { (selectedImage, error) in
+            guard let uiImage = selectedImage as? UIImage,
+                  let imageData = uiImage.jpegData(compressionQuality: 0.8) else {
+                if let error = error {
+                    print(#fileID, #function, #line, error.localizedDescription)
+                }
+                return
+            }
+            
+            
+            DispatchQueue.main.async {
+                self.viewModel.profileImageUpdateState = .updated(imageData)
+                self.updateProfileImage(fromAlbum: uiImage)
+            }
+        }
+        
+        dismiss(animated: true)
     }
     
-    /// 프로필 이미지 업데이트
-    func updateProfileImage(with newURL: String?) {
-        // 기존 hosting view 삭제
-        profileImgHostingVC.view.removeFromSuperview()
+    /// 프로필 이미지 기본 이미지로 업데이트
+    private func updateProfileImageToDefault() {
+        // 기존 image view 삭제
+        imageView.removeFromSuperview()
 
         // 새로운 ProfileImageView 생성
-        let rootView = ProfileImageView(size: ProfileImgSize.xLarge, imageUrl: newURL)
-        self.profileImgHostingVC = UIHostingController(rootView: rootView)
+        let rootView = ProfileImageView(size: ProfileImgSize.xLarge, imageUrl: nil)
+        let profileImgHostingVC = UIHostingController(rootView: rootView)
+        self.imageView = profileImgHostingVC.view.disableAutoresizingMask()
+        
+        // 레이아웃 재설정
+        self.setLayout()
+    }
+    
+    /// 프로필 이미지 앨범에서 선택한 이미지로 업데이트
+    private func updateProfileImage(fromAlbum image: UIImage?) {
+        // 기존 image view 삭제
+        imageView.removeFromSuperview()
+
+        // 새로운 ProfileImageView 생성
+        let uiImageView = UIImageView(image: image).disableAutoresizingMask()
+        uiImageView.layer.masksToBounds = false
+        uiImageView.layer.cornerRadius = self.profileImgSize / 2
+        uiImageView.clipsToBounds = true
+        
+        self.imageView = uiImageView
         
         // 레이아웃 재설정
         self.setLayout()
     }
 }
 
-// MARK: Text Field Event Handler
+
+// MARK: Text Field
 extension EditProfileViewController: UITextFieldDelegate {
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let currentText = textField.text ?? ""

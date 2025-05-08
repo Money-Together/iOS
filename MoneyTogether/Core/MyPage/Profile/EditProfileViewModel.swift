@@ -7,6 +7,12 @@
 
 import Foundation
 
+enum ProfileImageUpdateState: Equatable {
+    case unchanged
+    case resetToDefault
+    case updated(Data)
+}
+
 /// 유저 프로필 수정 뷰모델
 class EditProfileViewModel {
     
@@ -20,7 +26,15 @@ class EditProfileViewModel {
     /// 에러 alert 표시 여부
     private(set) var isErrorAlertVisible: Binder<Bool> = Binder(false)
     
-    /// 닉네입 변경 여부
+    /// 프로필 이미지 변경 여부
+    var profileImageUpdateState: ProfileImageUpdateState = .unchanged {
+        didSet {
+            // 프로필 이미지 상태 변경 시, 완료 버튼 활성화 여부 검사
+            canCompleteProfileEdit()
+        }
+    }
+    
+    /// 닉네임 변경 여부
     lazy var isNicknameUpdated: (String) -> Bool = { [unowned self] newValue in
         return self.orgData.nickname != newValue
     }
@@ -75,7 +89,7 @@ extension EditProfileViewModel {
     }
     
     func canCompleteProfileEdit() {
-        isCompleteBtnEnable.value = isNicknameValid
+        return isCompleteBtnEnable.value = isNicknameValid || profileImageUpdateState != .unchanged
     }
     
 }
