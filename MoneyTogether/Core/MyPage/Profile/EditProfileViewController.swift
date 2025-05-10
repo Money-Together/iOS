@@ -276,6 +276,7 @@ extension EditProfileViewController: PHPickerViewControllerDelegate {
 
         // 새로운 ProfileImageView 생성
         let uiImageView = UIImageView(image: image).disableAutoresizingMask()
+        uiImageView.contentMode = .scaleAspectFill
         uiImageView.layer.masksToBounds = false
         uiImageView.layer.cornerRadius = self.profileImgSize / 2
         uiImageView.clipsToBounds = true
