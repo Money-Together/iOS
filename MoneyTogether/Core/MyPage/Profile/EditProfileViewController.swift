@@ -206,42 +206,53 @@ extension EditProfileViewController: PHPickerViewControllerDelegate {
     
     /// 포토 피커 띄우기
     private func showPhotoPickerView() {
-        var config = PHPickerConfiguration(photoLibrary: .shared())
-        let filter = PHPickerFilter.any(of: [.images, .livePhotos, .depthEffectPhotos, .screenshots])
-
-        config.filter = filter
-        config.preferredAssetRepresentationMode = .current
-        config.selection = .ordered
-        config.selectionLimit = 1
-
-        let picker = PHPickerViewController(configuration: config)
-        picker.delegate = self
-        self.present(picker, animated: true)
+        Task {
+            if await PhotoManager.canAccessPhotoLibrary(from: self) {
+                
+                let picker = PhotoManager.createPhotoPickerView()
+                picker.delegate = self
+                self.present(picker, animated: true)
+                
+            } else {
+                PhotoManager.handlePhotoLibraryPermissionDenied(from: self)
+            }
+        }
     }
     
-    /// 포토 피커에서 이미지 선택 완료 시 호출
+    /// 포토 피커에서 이미지 선택 종료 시 호출
     final func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        
+        dismiss(animated: true)
+        
+        // 선택된 이미지가 없는 경우
         guard let imageResult = results.first else {
             return
         }
         
-        imageResult.itemProvider.loadObject(ofClass: UIImage.self) { (selectedImage, error) in
-            guard let uiImage = selectedImage as? UIImage,
-                  let imageData = uiImage.jpegData(compressionQuality: 0.8) else {
-                if let error = error {
-                    print(#fileID, #function, #line, error.localizedDescription)
-                }
-                return
-            }
-            
-            
-            DispatchQueue.main.async {
-                self.viewModel.profileImageUpdateState = .updated(imageData)
-                self.updateProfileImage(fromAlbum: uiImage)
-            }
-        }
+        let provider = imageResult.itemProvider
         
-        dismiss(animated: true)
+        if provider.canLoadObject(ofClass: UIImage.self) {
+            provider.loadObject(ofClass: UIImage.self) { object, error in
+                
+                guard let uiImage = object as? UIImage,
+                      let imageData = uiImage.jpegData(compressionQuality: 0.8) else {
+                    if let error = error {
+                        print(#fileID, #function, #line, "🔴 ERROR: \(error.localizedDescription)")
+                    }
+                    print(#fileID, #function, #line, "🔴 ERROR")
+                    return
+                }
+                
+                // 선택한 이미지를 정상적으로 로드했을 경우, 프로필 이미지 업데이트
+                DispatchQueue.main.async {
+                    self.viewModel.profileImageUpdateState = .updated(imageData)
+                    self.updateProfileImage(fromAlbum: uiImage)
+                }
+                    
+            }
+        } else {
+            print(#fileID, #function, #line, "🔴 ERROR: cannot load image object")
+        }
     }
     
     /// 프로필 이미지 기본 이미지로 업데이트
