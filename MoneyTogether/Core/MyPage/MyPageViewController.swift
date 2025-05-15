@@ -14,7 +14,12 @@ class MyPageViewController: UIViewController {
     
     var viewModel: MyPageViewModel
     
-    let userProfileView = UserProfileView()
+    
+    // MARK: Sub Views
+    
+    var userProfileView = UserProfileView()
+    
+    var userAssetTotalAmountView = UserAssetTotalAmountView()
     
     
     // MARK: Init & Setup
@@ -31,6 +36,7 @@ class MyPageViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         bindViewModel()
         viewModel.fetchUserProfile()
+        viewModel.fetchUserAssetsTotalAmounts()
     }
     
     override func viewDidLoad() {
@@ -46,17 +52,53 @@ class MyPageViewController: UIViewController {
         userProfileView.addGestureRecognizer(
             UITapGestureRecognizer(target: self, action: #selector(handleProfileTap))
         )
-        view.addSubview(userProfileView)
+        
+        userAssetTotalAmountView.updateUI(newData: self.viewModel.userAssetTotalAmounts)
+        userAssetTotalAmountView.backgroundColor = .moneyTogether.grayScale.baseGray20
+        userAssetTotalAmountView.layer.cornerRadius = Radius.large
         
         view.backgroundColor = UIColor.moneyTogether.background
     }
     
     /// components로 레이아웃 구성
     private func setLayout() {
+        
+        let pageTitle = UILabel.make(
+            text: "My Profile",
+            textColor: .moneyTogether.label.normal,
+            font: .moneyTogetherFont(style: .h2),
+            numberOfLines: 1
+        )
+        
+        let assetSectionTitle = UILabel.make(
+            text: "내 자산",
+            textColor: .moneyTogether.label.normal,
+            font: .moneyTogetherFont(style: .h4),
+            numberOfLines: 1
+        )
+        
+        view.addSubview(pageTitle)
+        view.addSubview(userProfileView)
+        view.addSubview(assetSectionTitle)
+        view.addSubview(userAssetTotalAmountView)
+        
         NSLayoutConstraint.activate([
+            pageTitle.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
+            pageTitle.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Layout.side),
+            pageTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            
             userProfileView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             userProfileView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Layout.side),
-            userProfileView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 50)
+            userProfileView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 100),
+            
+            assetSectionTitle.topAnchor.constraint(equalTo: userProfileView.bottomAnchor, constant: 48),
+            assetSectionTitle.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Layout.side),
+            assetSectionTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            
+            userAssetTotalAmountView.topAnchor.constraint(equalTo: assetSectionTitle.bottomAnchor, constant: 12),
+            userAssetTotalAmountView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Layout.side),
+            userAssetTotalAmountView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+            
         ])
     }
     
@@ -65,6 +107,11 @@ class MyPageViewController: UIViewController {
         viewModel.onProfileUpdated = { [weak self] in
             guard let self = self else { return }
             self.userProfileView.updateUI(newData: self.viewModel.profile)
+        }
+        
+        viewModel.onUserAssetTotalAmountsUpdated = { [weak self] in
+            guard let self = self else { return }
+            self.userAssetTotalAmountView.updateUI(newData: self.viewModel.userAssetTotalAmounts)
         }
     }
 }

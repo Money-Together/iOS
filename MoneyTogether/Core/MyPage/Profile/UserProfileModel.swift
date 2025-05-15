@@ -1,5 +1,5 @@
 //
-//  UserProfile.swift
+//  UserProfileModel.swift
 //  MoneyTogether
 //
 //  Created by Heeoh Son on 4/28/25.
