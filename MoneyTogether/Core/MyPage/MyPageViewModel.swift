@@ -65,6 +65,22 @@ final class MyPageViewModel {
         // UI 업데이트
         self.onUserAssetTotalAmountsUpdated?()
     }
+    
+    func fetchUserAssetList() {
+        // api 호출
+        let dummyData: [UserAsset] = Array(1...10).map { num in
+            var asset = UserAsset.createDummyData()
+            asset.title = "자산 \(num)"
+            return asset
+            
+        }
+            
+        // 데이터 업데이트
+        self.userAssets = dummyData
+        
+        // UI 업데이트
+        self.onUserAssetsUpdated?()
+    }
 }
 
 extension MyPageViewModel {

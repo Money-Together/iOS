@@ -17,9 +17,15 @@ class MyPageViewController: UIViewController {
     
     // MARK: Sub Views
     
+    var scrollView = UIScrollView().disableAutoresizingMask()
+    
+    var scrollContentsView = UIView().disableAutoresizingMask()
+    
     var userProfileView = UserProfileView()
     
     var userAssetTotalAmountView = UserAssetTotalAmountView()
+    
+    var userAssetListView = UserAssetListView()
     
     
     // MARK: Init & Setup
@@ -33,10 +39,11 @@ class MyPageViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
-    override func viewDidAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         bindViewModel()
         viewModel.fetchUserProfile()
         viewModel.fetchUserAssetsTotalAmounts()
+        viewModel.fetchUserAssetList()
     }
     
     override func viewDidLoad() {
@@ -48,6 +55,7 @@ class MyPageViewController: UIViewController {
     
     /// Sub Views, UI Components 세팅
     private func setUI() {
+        
         userProfileView.updateUI(newData: self.viewModel.profile)
         userProfileView.addGestureRecognizer(
             UITapGestureRecognizer(target: self, action: #selector(handleProfileTap))
@@ -56,6 +64,10 @@ class MyPageViewController: UIViewController {
         userAssetTotalAmountView.updateUI(newData: self.viewModel.userAssetTotalAmounts)
         userAssetTotalAmountView.backgroundColor = .moneyTogether.grayScale.baseGray20
         userAssetTotalAmountView.layer.cornerRadius = Radius.large
+        
+        userAssetListView.updateUI(newData: self.viewModel.userAssets)
+        userAssetListView.backgroundColor = .moneyTogether.grayScale.baseGray20
+        userAssetListView.layer.cornerRadius = Radius.large
         
         view.backgroundColor = UIColor.moneyTogether.background
     }
@@ -77,27 +89,47 @@ class MyPageViewController: UIViewController {
             numberOfLines: 1
         )
         
-        view.addSubview(pageTitle)
-        view.addSubview(userProfileView)
-        view.addSubview(assetSectionTitle)
-        view.addSubview(userAssetTotalAmountView)
+        view.addSubview(scrollView)
+        scrollView.addSubview(scrollContentsView)
+        scrollContentsView.addSubview(pageTitle)
+        scrollContentsView.addSubview(userProfileView)
+        scrollContentsView.addSubview(assetSectionTitle)
+        scrollContentsView.addSubview(userAssetTotalAmountView)
+        scrollContentsView.addSubview(userAssetListView)
         
         NSLayoutConstraint.activate([
-            pageTitle.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
-            pageTitle.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Layout.side),
-            pageTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             
-            userProfileView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            userProfileView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Layout.side),
-            userProfileView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 100),
+            scrollContentsView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+            scrollContentsView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+            scrollContentsView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            scrollContentsView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            scrollContentsView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
+            
+            pageTitle.topAnchor.constraint(equalTo: scrollContentsView.topAnchor, constant: 48),
+            pageTitle.leadingAnchor.constraint(equalTo: scrollContentsView.leadingAnchor, constant: Layout.side),
+            pageTitle.centerXAnchor.constraint(equalTo: scrollContentsView.centerXAnchor),
+            
+            userProfileView.centerXAnchor.constraint(equalTo: scrollContentsView.centerXAnchor),
+            userProfileView.leadingAnchor.constraint(equalTo: scrollContentsView.leadingAnchor, constant: Layout.side),
+            userProfileView.topAnchor.constraint(equalTo: pageTitle.bottomAnchor, constant: 48),
             
             assetSectionTitle.topAnchor.constraint(equalTo: userProfileView.bottomAnchor, constant: 48),
-            assetSectionTitle.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Layout.side),
-            assetSectionTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            assetSectionTitle.leadingAnchor.constraint(equalTo: scrollContentsView.leadingAnchor, constant: Layout.side),
+            assetSectionTitle.centerXAnchor.constraint(equalTo: scrollContentsView.centerXAnchor),
             
             userAssetTotalAmountView.topAnchor.constraint(equalTo: assetSectionTitle.bottomAnchor, constant: 12),
-            userAssetTotalAmountView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Layout.side),
-            userAssetTotalAmountView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+            userAssetTotalAmountView.leadingAnchor.constraint(equalTo: scrollContentsView.leadingAnchor, constant: Layout.side),
+            userAssetTotalAmountView.centerXAnchor.constraint(equalTo: scrollContentsView.centerXAnchor),
+            
+            userAssetListView.topAnchor.constraint(equalTo: userAssetTotalAmountView.bottomAnchor, constant: 16),
+            userAssetListView.leadingAnchor.constraint(equalTo: scrollContentsView.leadingAnchor, constant: Layout.side),
+            userAssetListView.centerXAnchor.constraint(equalTo: scrollContentsView.centerXAnchor),
+            
+            userAssetListView.bottomAnchor.constraint(equalTo: scrollContentsView.bottomAnchor, constant: -56),
             
         ])
     }
@@ -113,6 +145,11 @@ class MyPageViewController: UIViewController {
             guard let self = self else { return }
             self.userAssetTotalAmountView.updateUI(newData: self.viewModel.userAssetTotalAmounts)
         }
+        
+        viewModel.onUserAssetsUpdated = { [weak self] in
+            guard let self = self else { return }
+            self.userAssetListView.updateUI(newData: self.viewModel.userAssets)
+        }
     }
 }
 
@@ -125,45 +162,7 @@ extension MyPageViewController {
         }
     }
 }
-/*
- 
-import SwiftUI
- 
-struct MyPageView: View {
-    var spacing: CGFloat = 32
-    var body: some View {
-        ScrollView {
-            VStack(spacing: 0) {
-//                UserProfileView()
-//                    .padding(.bottom, spacing)
-                
-                HStack {
-                    Text("내 자산")
-                        .moneyTogetherFont(style: .h4)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    Rectangle()
-                        .frame(width: 40, height: 40)
-                }.padding(.bottom, 12)
-                
-                VStack {
 
-                }
-                .frame(maxWidth: .infinity, minHeight: 100)
-                .background(Color.moneyTogether.grayScale.baseGray20)
-                .padding(.bottom, spacing)
-                
-                VStack {
-                }
-                .frame(maxWidth: .infinity, minHeight: 500)
-                .background(Color.moneyTogether.grayScale.baseGray20)
-                
-            }
-            .padding(.horizontal, Layout.side)
-            .padding(.vertical, 50)
-        }
-    }
-}
-*/
 
 #if DEBUG
 

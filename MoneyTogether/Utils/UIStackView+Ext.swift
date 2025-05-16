@@ -62,4 +62,12 @@ extension UIStackView {
                                 spacing: spacing,
                                 subViews: subViews)
     }
+    
+    /// 스택 하위 뷰 제거
+    func clear() {
+        self.arrangedSubviews.forEach {
+            removeArrangedSubview($0)
+            $0.removeFromSuperview()
+        }
+    }
 }

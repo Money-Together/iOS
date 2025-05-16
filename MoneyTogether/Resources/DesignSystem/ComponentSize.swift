@@ -7,13 +7,22 @@
 
 import Foundation
 
+/// 컴포넌트 사이즈
 struct ComponentSize {
+    /// 네비게이션 바 높이
     static let navigationBarHeight: CGFloat = 56
     
+    /// 아이콘 버튼 사이즈 (width, height 동일)
     static let iconBtnSize: CGFloat         = 40
+    
+    /// CTA 버튼 높이
     static let ctaBtnHeight: CGFloat        = 48
     
+    /// 프로필 이미지 사이즈 (width, height 동일)
     static let profileImgSize = ProfileImgSize()
+    
+    /// list cell 뷰에 앞부분에 있는 이미지 사이즈 (width, height 동일)
+    static let leadingImgSize: CGFloat      = 32
 }
 
 /// 프로필 이미지 사이즈
