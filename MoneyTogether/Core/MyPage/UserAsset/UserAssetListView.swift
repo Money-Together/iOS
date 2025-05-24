@@ -9,8 +9,19 @@ import Foundation
 import UIKit
 import SwiftUI
 
+protocol UserAssetListViewDelegate: AnyObject {
+    func assetListView(_ listView: UserAssetListView, didTapAsset id: UUID)
+}
+
+
 /// 유저 자산 리스트
 class UserAssetListView: UIView {
+    
+    var assetViews: [UUID: UIView] = [:]
+    
+    weak var delegate: UserAssetListViewDelegate?
+    
+//    var onAssetCellTapped: ((UUID) -> Void)?
 
     // MARK: UI Components
     
@@ -30,7 +41,6 @@ class UserAssetListView: UIView {
         super.init(frame: .zero)
         self.setUI()
         self.setLayout()
-        self.setAction()
     }
     
     /// sub views, ui components 세팅하는 함수
@@ -60,22 +70,13 @@ class UserAssetListView: UIView {
         ])
     }
     
-    /// sub views, ui components에서 필요한 액션 세팅하는 함수
-    private func setAction() {
-        
-    }
-}
-
-
-// MARK: update UI
-extension UserAssetListView {
-    
     /// 변경된 데이터로 ui 업데이트
     /// - Parameter newData: 변경된 데이터
     func updateUI(newData: [UserAsset]) {
         
         // 기존 ui 삭제
         stackView.clear()
+        assetViews = [:]
         
         // 유저 자산이 없을 경우
         guard !newData.isEmpty else {
@@ -91,13 +92,46 @@ extension UserAssetListView {
         
         // ui 업데이트
         newData.forEach { asset in
-            let cell = UserAssetCellView(userAsset: asset)
-            
-            let hostingVC = UIHostingController(rootView: cell)
-            let cellView = hostingVC.view.disableAutoresizingMask()
-            cellView.backgroundColor = .clear
-            
-            self.stackView.addArrangedSubview(cellView)
+            self.addAseetRow(asset: asset)
         }
     }
 }
+
+
+// MARK: Asset Row CRUD
+extension UserAssetListView {
+    
+    private func makeAssetRow(asset: UserAsset) -> UIView {
+        let cell = UserAssetCellView(userAsset: asset, tapHandler: { assetId in
+            self.delegate?.assetListView(self, didTapAsset: assetId)
+        })
+        
+        let hostingVC = UIHostingController(rootView: cell)
+        let cellView = hostingVC.view.disableAutoresizingMask()
+        cellView.backgroundColor = .clear
+        
+        return cellView
+    }
+    
+    func addAseetRow(asset: UserAsset) {
+        let cellView = makeAssetRow(asset: asset)
+        self.assetViews[asset.id] = cellView
+        self.stackView.addArrangedSubview(cellView)
+    }
+    
+    func removeAssetView(assetId: UUID) {
+        guard let view = self.assetViews[assetId] else {
+            return
+        }
+        
+        UIView.animate(withDuration: 0.3, animations: {
+            view.alpha = 0
+            view.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+            self.stackView.layoutIfNeeded()
+        }, completion: { _ in
+            self.stackView.removeArrangedSubview(view)
+            view.removeFromSuperview()
+        })
+    }
+}
+

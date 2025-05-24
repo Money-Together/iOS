@@ -8,7 +8,6 @@
 import Foundation
 import UIKit
 
-
 /// 마이페이지 뷰
 class MyPageViewController: UIViewController {
     
@@ -17,15 +16,18 @@ class MyPageViewController: UIViewController {
     
     // MARK: Sub Views
     
-    var scrollView = UIScrollView().disableAutoresizingMask()
+    private var scrollView = UIScrollView().disableAutoresizingMask()
     
-    var scrollContentsView = UIView().disableAutoresizingMask()
+    private var scrollContentsView = UIView().disableAutoresizingMask()
     
-    var userProfileView = UserProfileView()
+    private var userProfileView = UserProfileView()
     
-    var userAssetTotalAmountView = UserAssetTotalAmountView()
+    private var userAssetAddBtn = CustomIconButton(iconImage: UIImage(systemName: "plus"))
     
-    var userAssetListView = UserAssetListView()
+    private var userAssetTotalAmountView = UserAssetTotalAmountView()
+    
+    private var userAssetListView = UserAssetListView()
+//    UITableView(frame: .zero, style: .insetGrouped)
     
     
     // MARK: Init & Setup
@@ -55,21 +57,29 @@ class MyPageViewController: UIViewController {
     
     /// Sub Views, UI Components 세팅
     private func setUI() {
+        view.backgroundColor = UIColor.moneyTogether.background
         
+        // 유저 프로필
         userProfileView.updateUI(newData: self.viewModel.profile)
         userProfileView.addGestureRecognizer(
             UITapGestureRecognizer(target: self, action: #selector(handleProfileTap))
         )
         
+        // 유저 자산 추가 버튼
+        userAssetAddBtn.setAction({
+            self.viewModel.handleUserAssetAddBtnTap()
+        })
+        
+        // 유저 자산 통화별 총 금액
         userAssetTotalAmountView.updateUI(newData: self.viewModel.userAssetTotalAmounts)
         userAssetTotalAmountView.backgroundColor = .moneyTogether.grayScale.baseGray20
         userAssetTotalAmountView.layer.cornerRadius = Radius.large
         
-        userAssetListView.updateUI(newData: self.viewModel.userAssets)
+        // 유저 자산 리스트
+//        self.setUserAssetTableView()
+        userAssetListView.delegate = self
         userAssetListView.backgroundColor = .moneyTogether.grayScale.baseGray20
         userAssetListView.layer.cornerRadius = Radius.large
-        
-        view.backgroundColor = UIColor.moneyTogether.background
     }
     
     /// components로 레이아웃 구성
@@ -82,26 +92,57 @@ class MyPageViewController: UIViewController {
             numberOfLines: 1
         )
         
-        let assetSectionTitle = UILabel.make(
-            text: "내 자산",
-            textColor: .moneyTogether.label.normal,
-            font: .moneyTogetherFont(style: .h4),
-            numberOfLines: 1
-        )
+        let assetSummaryView: UIView = {
+            
+            let assetSectionTitle = UILabel.make(
+                text: "내 자산",
+                textColor: .moneyTogether.label.normal,
+                font: .moneyTogetherFont(style: .h4),
+                numberOfLines: 1
+            )
+            
+            let view = UIView().disableAutoresizingMask()
+            
+            view.addSubview(assetSectionTitle)
+            view.addSubview(userAssetAddBtn)
+            view.addSubview(userAssetTotalAmountView)
+            
+            NSLayoutConstraint.activate([
+                assetSectionTitle.topAnchor.constraint(equalTo: view.topAnchor),
+                assetSectionTitle.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                assetSectionTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                
+                userAssetAddBtn.centerYAnchor.constraint(equalTo: assetSectionTitle.centerYAnchor),
+                userAssetAddBtn.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                
+                userAssetTotalAmountView.topAnchor.constraint(equalTo: assetSectionTitle.bottomAnchor, constant: 12),
+                userAssetTotalAmountView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                userAssetTotalAmountView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                userAssetTotalAmountView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            ])
+            
+            return view
+        }()
         
-        view.addSubview(scrollView)
+        let stackView = UIStackView.makeVStack(
+            distribution: .fill,
+            alignment: .fill,
+            spacing: 48,
+            subViews: [
+                pageTitle, userProfileView, assetSummaryView, userAssetListView
+            ])
+//        stackView.backgroundColor = .gray40
+        
+        self.view.addSubview(scrollView)
         scrollView.addSubview(scrollContentsView)
-        scrollContentsView.addSubview(pageTitle)
-        scrollContentsView.addSubview(userProfileView)
-        scrollContentsView.addSubview(assetSectionTitle)
-        scrollContentsView.addSubview(userAssetTotalAmountView)
-        scrollContentsView.addSubview(userAssetListView)
+        scrollContentsView.addSubview(stackView)
+        
         
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.topAnchor.constraint(equalTo: self.view.layoutMarginsGuide.topAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
             
             scrollContentsView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
             scrollContentsView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
@@ -109,29 +150,12 @@ class MyPageViewController: UIViewController {
             scrollContentsView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
             scrollContentsView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
             
-            pageTitle.topAnchor.constraint(equalTo: scrollContentsView.topAnchor, constant: 48),
-            pageTitle.leadingAnchor.constraint(equalTo: scrollContentsView.leadingAnchor, constant: Layout.side),
-            pageTitle.centerXAnchor.constraint(equalTo: scrollContentsView.centerXAnchor),
-            
-            userProfileView.centerXAnchor.constraint(equalTo: scrollContentsView.centerXAnchor),
-            userProfileView.leadingAnchor.constraint(equalTo: scrollContentsView.leadingAnchor, constant: Layout.side),
-            userProfileView.topAnchor.constraint(equalTo: pageTitle.bottomAnchor, constant: 48),
-            
-            assetSectionTitle.topAnchor.constraint(equalTo: userProfileView.bottomAnchor, constant: 48),
-            assetSectionTitle.leadingAnchor.constraint(equalTo: scrollContentsView.leadingAnchor, constant: Layout.side),
-            assetSectionTitle.centerXAnchor.constraint(equalTo: scrollContentsView.centerXAnchor),
-            
-            userAssetTotalAmountView.topAnchor.constraint(equalTo: assetSectionTitle.bottomAnchor, constant: 12),
-            userAssetTotalAmountView.leadingAnchor.constraint(equalTo: scrollContentsView.leadingAnchor, constant: Layout.side),
-            userAssetTotalAmountView.centerXAnchor.constraint(equalTo: scrollContentsView.centerXAnchor),
-            
-            userAssetListView.topAnchor.constraint(equalTo: userAssetTotalAmountView.bottomAnchor, constant: 16),
-            userAssetListView.leadingAnchor.constraint(equalTo: scrollContentsView.leadingAnchor, constant: Layout.side),
-            userAssetListView.centerXAnchor.constraint(equalTo: scrollContentsView.centerXAnchor),
-            
-            userAssetListView.bottomAnchor.constraint(equalTo: scrollContentsView.bottomAnchor, constant: -56),
-            
+            stackView.topAnchor.constraint(equalTo: scrollContentsView.topAnchor, constant: 48),
+            stackView.bottomAnchor.constraint(equalTo: scrollContentsView.bottomAnchor, constant: -48),
+            stackView.leadingAnchor.constraint(equalTo: scrollContentsView.leadingAnchor, constant: Layout.side),
+            stackView.centerXAnchor.constraint(equalTo: scrollContentsView.centerXAnchor)
         ])
+        
     }
     
     /// 바인딩 처리
@@ -150,6 +174,12 @@ class MyPageViewController: UIViewController {
             guard let self = self else { return }
             self.userAssetListView.updateUI(newData: self.viewModel.userAssets)
         }
+        
+//        viewModel.onDeleteAsset = { [weak self] indexPath in
+//            guard let self = self else { return }
+//            let asset = self.viewModel.getUserAsset(at: indexPath.row)
+//            self.userAssetListView.removeAssetView(assetId: asset.id)
+//        }
     }
 }
 
@@ -161,6 +191,55 @@ extension MyPageViewController {
             self.viewModel.handleProfileEditBtnTap()
         }
     }
+}
+
+extension MyPageViewController: UserAssetListViewDelegate {
+    func assetListView(_ listView: UserAssetListView, didTapAsset id: UUID) {
+        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        
+        let editAction = UIAlertAction(title: "수정", style: .default, handler: { _ in
+            self.viewModel.handleUserAssetEditBtnTap(for: id)
+        })
+        
+        let deleteAction = UIAlertAction(title: "삭제", style: .destructive, handler: { _ in
+            self.showAssetDeleteConfirmationAlert(for: id)
+        })
+        
+        let cancel = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+        
+        [editAction, deleteAction, cancel].forEach { action in
+            actionSheet.addAction(action)
+        }
+        
+        self.present(actionSheet, animated: true, completion: nil)
+    }
+    
+    private func showAssetDeleteConfirmationAlert(for id: UUID) {
+        let alert = UIAlertController(
+            title: "정말 삭제할까요?",
+            message: "삭제된 자산은 복구할 수 없습니다.",
+            preferredStyle: .alert
+        )
+
+        let deleteAction = UIAlertAction(title: "삭제", style: .destructive, handler: { _ in
+            self.viewModel.deleteUserAsset(for: id)
+            // success
+            self.userAssetListView.removeAssetView(assetId: id)
+            
+            // fail
+//             self.showErrorAlert(title: "자산 삭제를 실패하였습니다.")
+        })
+        
+        let cancel = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+
+        [deleteAction, cancel].forEach { action in
+            alert.addAction(action)
+        }
+        
+        present(alert, animated: true)
+    }
+    
+    
 }
 
 

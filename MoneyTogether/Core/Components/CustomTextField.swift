@@ -39,8 +39,16 @@ class CustomTextField: UITextField {
         self.layer.borderColor = UIColor.moneyTogether.label.normal?.cgColor
         self.borderStyle = .roundedRect
         
-        self.clearButtonMode = .whileEditing
-        self.autocapitalizationType = .none
+        self.clearButtonMode = .whileEditing    // 입력내용 전체 삭제 버튼 활성화 여부
+        self.clearsOnBeginEditing = false       // 편집 시작 시 기존 내용 삭제 기능 활성화 여부
+        
+        self.autocapitalizationType = .none     // 자동 대문자 활성화 여부
+        self.autocorrectionType = .no           // 자동 수정 활성화 여부
+        self.spellCheckingType = .no            // 맞춤법 검사 활성화 여부
+        
+        self.returnKeyType = .done              // 엔터 키 입력 시 처리
+        
+        self.keyboardType = UIKeyboardType.default  // 키보드 타입
         
     }
 }

@@ -56,7 +56,6 @@ struct UserAssetTotalAmountCellView: View {
                 .lineLimit(1)
                 .layoutPriority(1)
         }
-        .frame(width: .infinity)
     }
 }
 

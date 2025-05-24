@@ -10,13 +10,13 @@ import UIKit
 
 /// UIKit 에서 사용할 CTA Button
 class CTAUIButton: UIButton {
-    var title: String
-    var style: ButtonStyleType
-    var activeState: ButtonState
-    var action: () -> Void
-    var cornerRadius: CGFloat
-    var buttonHeight: CGFloat
-    var buttonWidth: CGFloat?
+    private var title: String
+    private var style: ButtonStyleType
+    private var activeState: ButtonState
+    private var action: (() -> Void)?
+    private var cornerRadius: CGFloat
+    private var buttonHeight: CGFloat
+    private var buttonWidth: CGFloat?
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -33,7 +33,7 @@ class CTAUIButton: UIButton {
         self.title = labelText
         self.style = buttonStyle
         self.activeState = activeState
-        self.action = action ?? { fatalError("CTA button action should be implemented") }
+        self.action = action
         self.buttonWidth = buttonWidth
         self.buttonHeight = buttonHeight
         self.cornerRadius = cornerRadius
@@ -43,10 +43,14 @@ class CTAUIButton: UIButton {
         self.setUI()
         
         self.addAction(UIAction(handler: { _ in 
-            self.action()
+            self.action?() ?? { print(#fileID, #function, #line, "CTA button action should be implemented")}()
         }), for: .touchUpInside)
         
         self.translatesAutoresizingMaskIntoConstraints = false
+    }
+    
+    func setAction(_ action: (() -> Void)?) {
+        self.action = action
     }
     
     

@@ -8,11 +8,17 @@
 import Foundation
 
 /// 통화 타입
-enum CurrencyType {
+enum CurrencyType: CaseIterable {
     case krw
     case usd
     case eur
     case jpy
+    
+    /// 통화 타이틀로 사용되는 이름
+    /// 통화 코드와 기호로 구성됨 ex. KRW(₩), USD($)
+    var displayName: String {
+        return "\(self.code)(\(self.symbol))"
+    }
     
     /// ISO 4217 Currency Code
     /// 국제 표준화 기구(ISO)에서 정의한 통화 식별 코드야.
@@ -56,6 +62,22 @@ enum CurrencyType {
         case .eur: return "유럽"
         case .jpy: return "일본"
         
+        }
+    }
+    
+    
+    /// 해당 통화를 사용하는 나라 locale
+    /// 금액 입력 시 NumberFormatter 설정을 위함
+    var locale: Locale {
+        switch self {
+        case .krw:
+            return Locale(identifier: "ko_KR")
+        case .usd:
+            return Locale(identifier: "en_US")
+        case .eur:
+            return Locale(identifier: "fr_FR")
+        case .jpy:
+            return Locale(identifier: "ja_JP")
         }
     }
     

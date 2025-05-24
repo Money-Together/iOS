@@ -72,7 +72,7 @@ extension EditProfileViewModel {
     }
     
     func completeProfileEdit(nickname: String) {
-        print(#fileID, #function, #line, "complete with {\(nickname)}")
+        print(#fileID, #function, #line, "complete with {\(nickname), }")
         
         guard isCompleteBtnEnable.value else {
             return
@@ -89,7 +89,7 @@ extension EditProfileViewModel {
     }
     
     func canCompleteProfileEdit() {
-        return isCompleteBtnEnable.value = isNicknameValid || profileImageUpdateState != .unchanged
+        isCompleteBtnEnable.value = isNicknameValid || profileImageUpdateState != .unchanged
     }
     
 }

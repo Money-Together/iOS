@@ -42,9 +42,11 @@ class EditProfileViewController: UIViewController {
         numberOfLines: 1
     )
     
-    private var completeButton = CTAUIButton(activeState: .inactive,
-                                     buttonStyle: .solid,
-                                     labelText: "완료")
+    private var completeButton = CTAUIButton(
+        activeState: .inactive,
+        buttonStyle: .solid,
+        labelText: "완료"
+    )
  
     // MARK: Init & ViewDidLoad
     required init?(coder: NSCoder) {
@@ -99,9 +101,9 @@ extension EditProfileViewController {
         })
         
         // complete buton
-        self.completeButton.action = {
+        self.completeButton.setAction({
             self.viewModel.completeProfileEdit(nickname: self.nicknameTextField.text ?? "")
-        }
+        })
     }
     
     /// sub views를 추가하고, 레이아웃을 설정하는 함수
@@ -157,24 +159,6 @@ extension EditProfileViewController {
             
             self.showErrorAlert(title: "프로필 수정에 실패했어요", message: "입력한 내용과 네트워크를 확인해주세요.")
         }
-    }
-}
-
-
-// MARK: Error Alert
-extension EditProfileViewController {
-    /// 프로필 수정 시 에러 발생했을 경우, 에러 Alert 띄우기
-    private func showErrorAlert(title: String = "프로필 수정에 실패했어요", message: String = "입력한 내용과 네트워크를 확인해주세요.") {
-        
-        let alert = UIAlertController(title: title,
-                                      message: message,
-                                      preferredStyle: .alert)
-        
-        alert.addAction(
-            UIAlertAction(title: "확인", style: .default, handler: nil)
-        )
-        
-        self.present(alert, animated: true, completion: nil)
     }
 }
 

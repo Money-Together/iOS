@@ -16,7 +16,7 @@ final class MyPageViewModel {
     
     var userAssetTotalAmounts: [CurrencyType : String] = [:]
     var userAssets: [UserAsset] = []
-
+    
     
     // MARK: Closures For Binding
     // binding 용 클로져
@@ -31,13 +31,20 @@ final class MyPageViewModel {
     /// 유저 자산 리스트 바인딩 용 클로져
     var onUserAssetsUpdated: (() -> Void)?
     
+    // var onDeleteAsset: ((IndexPath) -> Void)?
+    
     
     // MARK: Closures For Event Handling
     
     var profileEditBtnTapped: (() -> Void)?
-
     
-    // MARK: Fetch Functions
+    var userAssetAddBtnTapped: (() -> Void)?
+    
+    var userAssetEditBtnTapped: ((UserAsset) -> Void)?
+}
+ 
+// MARK: Fetch Functions
+extension MyPageViewModel {
     
     /// 서버에서 유저 프로필 정보 가져오는 함수
     func fetchUserProfile() {
@@ -83,12 +90,49 @@ final class MyPageViewModel {
     }
 }
 
+// MARK: Edit User Profile
 extension MyPageViewModel {
     func handleProfileEditBtnTap() {
         self.profileEditBtnTapped?()
     }
+}
+
+// MARK: User Asset List
+extension MyPageViewModel {
+    func getCountOfUserAssetList() -> Int {
+        return userAssets.count
+    }
     
+    func getUserAsset(at index: Int) -> UserAsset? {
+        return userAssets[index]
+    }
+}
+
+// MARK: A User Asset
+extension MyPageViewModel {
+    func handleUserAssetAddBtnTap() {
+        self.userAssetAddBtnTapped?()
+    }
     
+    func handleUserAssetEditBtnTap(for id: UUID) {
+        guard let index = self.userAssets.firstIndex(where: { $0.id == id }) else { return }
+        
+        let tappedAsset = self.userAssets[index]
+        self.userAssetEditBtnTapped?(tappedAsset)
+        
+        print(#fileID, #function, #line, "asset edit \(tappedAsset)")
+    }
     
-    
+    func deleteUserAsset(for id: UUID) { // async throws
+        guard let index = self.userAssets.firstIndex(where: { $0.id == id }) else { return }
+        let asset: UserAsset = userAssets[index]
+        // let serverId = asset.serverId
+        
+        // api
+        
+        // success
+        self.userAssets.remove(at: index)
+    }
+        
+
 }

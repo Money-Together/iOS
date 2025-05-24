@@ -42,6 +42,24 @@ extension MyPageCoordinator {
         editProfileVM.onFinishFlow = {
             root.backFromProfileEdit()
         }
+        
+        
+        let editUserAssetVM = EditUserAssetViewModel()
+        
+        viewModel.userAssetAddBtnTapped = {
+            root.showUserAssetEditView(viewModel: editUserAssetVM)
+        }
+        
+        viewModel.userAssetEditBtnTapped = { asset in
+            print(#fileID, #function, #line, "\(asset)")
+            editUserAssetVM.setOrgData(with: asset)
+            root.showUserAssetEditView(viewModel: editUserAssetVM)
+        }
+        
+        editUserAssetVM.onFinishFlow = {
+            root.backFromProfileEdit()
+        }
+        
     }
 }
 

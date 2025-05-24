@@ -58,6 +58,9 @@ extension UserAssetTotalAmountView {
     /// 변경된 데이터로 ui 업데이트
     /// - Parameter newData: 변경된 데이터
     func updateUI(newData: [CurrencyType : String]) {
+        
+        self.stackView.clear()
+        
         newData.forEach { amount in
             let cell = UserAssetTotalAmountCellView(currencyType: amount.key, amount: amount.value)
             
