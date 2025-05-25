@@ -179,7 +179,7 @@ extension CurrencyTypePickerViewController: UITableViewDataSource, UITableViewDe
 import SwiftUI
 
 #Preview {
-    CurrencyTypePickerViewController(viewModel: EditUserAssetViewModel(orgData: UserAsset.createDummyData()))
+    CurrencyTypePickerViewController(viewModel: EditUserAssetViewModel(mode: .create))
 }
 
 #endif

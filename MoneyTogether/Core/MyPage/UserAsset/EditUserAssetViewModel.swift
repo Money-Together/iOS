@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// 데이터 편집 상태
 enum InputEditState<T: Equatable>: Equatable {
     case empty
     case unchanged
@@ -21,7 +22,24 @@ enum InputEditState<T: Equatable>: Equatable {
     }
 }
 
+/// 편집 모드
+/// - 생성, 수정
+enum EditingMode<T> {
+    case create
+    case update(orgData: T)
+    
+    var orgData: T? {
+        if case let .update(orgData) = self {
+            return orgData
+        }
+        
+        return nil
+    }
+}
+
 final class EditUserAssetViewModel {
+
+    private var mode: EditingMode<UserAsset>
     
     /// 기존 데이터
     /// 변경 여부 확인을 위함
@@ -64,32 +82,38 @@ final class EditUserAssetViewModel {
     
     /// 화면 전환(이전페이지로)을 위한 클로져
     /// 수정 취소/완료 시에 호출
-    var onFinishFlow: (() -> Void)?
+    /// 수정 완료 시에는 수정된 데이터를 보냄
+    var onFinishFlow: ((UserAsset?) -> Void)?
     
     
     // MARK: Init
     
-    init(orgData: UserAsset? = nil) {
-//        self.orgData = orgData
-        
-        // 새로운 자산을 생성하는 경우
-        guard let orgData = orgData else {
-            // 통화 타입은 항상 값이 존재
-            // 새로운 자산을 생성하는 경우에도 기본 통화가 자동 선택되어 있음
-            self.assetCurrencyTypeState = .updated(newValue: self.currencyType.value)
-            
-            // 필수 데이터 상태값 초기화
-            self.assetNameEditState = .invalid
-            self.assetAmountEditState = .invalid
-            
-            // 선택 테이터 상태값 초기화
-            self.assetBioEditState = .updated(newValue: "")
-            
-            return
+    init(mode: EditingMode<UserAsset> = .create) {
+        self.mode = mode
+
+        switch self.mode {
+        case .create:
+            self.initData()
+        case .update(let orgData):
+            self.initData(with: orgData)
         }
     }
     
-    func setOrgData(with orgData: UserAsset) {
+    func initData() {
+        // 통화 타입은 항상 값이 존재
+        // 새로운 자산을 생성하는 경우에도 기본 통화가 자동 선택되어 있음
+        self.assetCurrencyTypeState = .updated(newValue: self.currencyType.value)
+        
+        // 필수 데이터 상태값 초기화
+        self.assetNameEditState = .invalid
+        self.assetAmountEditState = .invalid
+        
+        // 선택 테이터 상태값 초기화
+        self.assetBioEditState = .updated(newValue: "")
+    }
+    
+    
+    func initData(with orgData: UserAsset) {
         self.orgData.value = orgData
         
         // orgData가 존재 = 자산을 수정하는 경우
@@ -103,14 +127,18 @@ final class EditUserAssetViewModel {
 
 extension EditUserAssetViewModel {
     func cancelUserAssetEdit() {
-        self.onFinishFlow?()
+        self.onFinishFlow?(nil)
     }
     
     func completeUserAssetEdit() {
-        let name = self.assetNameEditState.newValue ?? "no value"
-        let amount = self.assetAmountEditState.newValue ?? "no value"
+        guard let name = self.assetNameEditState.newValue,
+              let amount = self.assetAmountEditState.newValue else {
+            return
+        }
         let currencyType = self.currencyType.value
-        let bio = self.assetBioEditState.newValue ?? "no value"
+        let bio = self.assetBioEditState.newValue ?? ""
+        
+        let updatedAsset = UserAsset(title: name, bio: bio, amount: amount, currencyType: currencyType)
         
         print(#fileID, #function, #line, "complete with {\(name), \(amount), \(currencyType.displayName), \(bio)}")
         
@@ -121,7 +149,7 @@ extension EditUserAssetViewModel {
         // api
         
         // if success
-        self.onFinishFlow?()
+        self.onFinishFlow?(updatedAsset)
         
         // if fail
         // self.isErrorAlertVisible.value = true

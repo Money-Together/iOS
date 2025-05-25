@@ -51,7 +51,7 @@ class CurrencyAmountInputView: UIView {
         amountTextField = CustomTextField(placeholder: "금액을 입력하세요.")
         amountTextField.keyboardType = .decimalPad
         amountTextField.delegate = self
-        self.updateAmountText(amountString: amountString)
+        self.updateAmountText(with: amountString)
         
         // 통화 선택 버튼 내부 라벨 세팅
         pickedCurrencyLabel = UILabel.make(
@@ -132,17 +132,24 @@ class CurrencyAmountInputView: UIView {
         currencyPickerBtn.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(handleCurrencyTypePickerBtnTap)))
     }
     
+    /// 통화 선택 뷰 클릭 시 핸들러
     @objc func handleCurrencyTypePickerBtnTap(_ target: UITapGestureRecognizer) {
         print(#fileID, #function, #line, "pick curreny type")
         self.showCurrencyPickerAction?()
     }
     
+    /// 선택된 통화 라벨 업데이트
+    /// - Parameter currencyType: 선택된 통화 타입
     func updatePickedCurrencyLabel(currencyType: CurrencyType) {
         self.pickedCurrencyLabel.text = currencyType.displayName
     }
     
-    func updateAmountText(amountString: String) {
+    /// 금액 텍스트필드 입력값을 decimal 스타일로 업데이트
+    /// - Parameter input: 금액 텍스트필드 입력값
+    func updateAmountText(with input: String) {
         // 입력값 선택된 통화에 맞는 decimal 스타일로 변환
+        
+        let amountString = input.replacingOccurrences(of: ",", with: "")
         
         guard let number = Decimal(string: amountString) else {
             return
@@ -206,6 +213,7 @@ extension CurrencyAmountInputView: UITextFieldDelegate {
            return false
         }
         
+        // 입력 가능한 문자 = 숫자, 소수점
         var validCharacters = CharacterSet.decimalDigits
         validCharacters.insert(".")
         
@@ -214,11 +222,12 @@ extension CurrencyAmountInputView: UITextFieldDelegate {
     
     func textFieldDidChangeSelection(_ textField: UITextField) {
         guard textField == self.amountTextField,
-              let amountString = textField.text?.replacingOccurrences(of: ",", with: "") else {
+              let amountString = textField.text else {
             return
         }
         
-        self.updateAmountText(amountString: amountString)
+        // 입력값 변경 시마다 decimal 스타일로 업데이트
+        self.updateAmountText(with: amountString)
     }
     
 }

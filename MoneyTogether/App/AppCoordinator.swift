@@ -41,4 +41,10 @@ extension AppCoordinator {
     func backFromProfileEdit() {
         self.navigationController.popViewController(animated: true)
     }
+    
+    /// 루트 네비게이션에서 push 된 유저 자산 편집 뷰에서 뒤로가기 실행
+    /// 단순 pop 처리
+    func backFromUserAssetEdit() {
+        self.navigationController.popViewController(animated: true)
+    }
 }

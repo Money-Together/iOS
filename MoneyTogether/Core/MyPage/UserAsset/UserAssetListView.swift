@@ -92,7 +92,7 @@ class UserAssetListView: UIView {
         
         // ui 업데이트
         newData.forEach { asset in
-            self.addAseetRow(asset: asset)
+            self.addAssetRow(asset: asset)
         }
     }
 }
@@ -113,10 +113,23 @@ extension UserAssetListView {
         return cellView
     }
     
-    func addAseetRow(asset: UserAsset) {
+    func addAssetRow(asset: UserAsset) {
         let cellView = makeAssetRow(asset: asset)
         self.assetViews[asset.id] = cellView
         self.stackView.addArrangedSubview(cellView)
+    }
+    
+    func updateAssetRow(assetId: UUID, newData: UserAsset) {
+        guard let orgCellView = assetViews[assetId],
+              let index = stackView.arrangedSubviews.firstIndex(where: { $0 == orgCellView }) else { return }
+        
+        let newCellView = makeAssetRow(asset: newData)
+        
+        stackView.removeArrangedSubview(orgCellView)
+        orgCellView.removeFromSuperview()
+        
+        assetViews[assetId] = newCellView
+        stackView.insertArrangedSubview(newCellView, at: index)
     }
     
     func removeAssetView(assetId: UUID) {

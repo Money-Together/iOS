@@ -45,6 +45,11 @@ class EditUserAssetViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setBindings()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -52,7 +57,6 @@ class EditUserAssetViewController: UIViewController {
         
         setUI()
         setLayout()
-        setBindings()
     }
 }
 
@@ -70,8 +74,6 @@ extension EditUserAssetViewController {
         
         // Asset amount input view
         assetAmountInputView = CurrencyAmountInputView(
-            defaultCurrencyType: self.viewModel.currencyType.value,
-            defaultAmountString: self.viewModel.orgData.value?.amount ?? "",
             showCurrencyPickerAction: {
                 let pickerViewController = CurrencyTypePickerViewController(viewModel: self.viewModel)
                 pickerViewController.sheetPresentationController?.detents = [.medium()]
@@ -79,6 +81,7 @@ extension EditUserAssetViewController {
                 self.present(pickerViewController, animated: true)
             }
         )
+        self.setUIWithData(with: self.viewModel.orgData.value)
         
         // TextFields
         self.assetNameTextField.delegate = self
@@ -137,25 +140,21 @@ extension EditUserAssetViewController {
         ])
     }
     
+    /// 받아온 데이터로 뷰 세팅
+    private func setUIWithData(with data: UserAsset?) {
+        self.assetNameTextField.text = data?.title ?? ""
+        self.assetBioTextField.text = data?.bio ?? ""
+        self.assetAmountInputView.updatePickedCurrencyLabel(currencyType: self.viewModel.currencyType.value)
+        self.assetAmountInputView.updateAmountText(with: data?.amount ?? "")
+    }
+    
     /// 뷰모델과 데이터 바인딩 설정하는 함수
     private func setBindings() {
         viewModel.orgData.bind({ data in
-            self.assetNameTextField.text = data?.title ?? ""
-            self.assetBioTextField.text = data?.bio ?? ""
-            self.assetAmountInputView =  CurrencyAmountInputView(
-                defaultCurrencyType: self.viewModel.currencyType.value,
-                defaultAmountString: data?.amount ?? "",
-                showCurrencyPickerAction: {
-                    let pickerViewController = CurrencyTypePickerViewController(viewModel: self.viewModel)
-                    pickerViewController.sheetPresentationController?.detents = [.medium()]
-                    
-                    self.present(pickerViewController, animated: true)
-                }
-            )
+            self.setUIWithData(with: data)
         })
         
         viewModel.isCompleteBtnEnable.bind{ isEnable in
-//            print(#fileID, #function, #line, "\(isEnable)")
             self.completeButton.setButtonEnabled(isEnable)
         }
         

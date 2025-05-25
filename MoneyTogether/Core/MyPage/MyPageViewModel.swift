@@ -31,6 +31,12 @@ final class MyPageViewModel {
     /// 유저 자산 리스트 바인딩 용 클로져
     var onUserAssetsUpdated: (() -> Void)?
     
+    /// 유저 자산 추가 바인딩 용 클로져
+    var onAssetAdded: ((UserAsset) -> Void)?
+    
+    /// 유저 자산 수정 바인딩 용 클로져
+    var onAssetUpdated: ((UUID, UserAsset) -> Void)?
+    
     // var onDeleteAsset: ((IndexPath) -> Void)?
     
     
@@ -99,33 +105,57 @@ extension MyPageViewModel {
 
 // MARK: User Asset List
 extension MyPageViewModel {
+    /// 유저 자산 리스트 count
     func getCountOfUserAssetList() -> Int {
         return userAssets.count
     }
     
+    /// 인덱스로 유저 자산 찾기
     func getUserAsset(at index: Int) -> UserAsset? {
+        return userAssets[index]
+    }
+    
+    /// 유저 자산 id로 자산 찾기
+    func getUserAsset(id: UUID) -> UserAsset? {
+        guard let index = self.userAssets.firstIndex(where: { $0.id == id }) else { return nil }
         return userAssets[index]
     }
 }
 
 // MARK: A User Asset
 extension MyPageViewModel {
+    /// 유저 자산 추가 버튼 클릭 시
     func handleUserAssetAddBtnTap() {
         self.userAssetAddBtnTapped?()
     }
     
+    /// 유저 자산 수정 버튼 클릭 시
+    /// - Parameter id: 수정할 자산 id
     func handleUserAssetEditBtnTap(for id: UUID) {
-        guard let index = self.userAssets.firstIndex(where: { $0.id == id }) else { return }
-        
-        let tappedAsset = self.userAssets[index]
+        guard let tappedAsset = getUserAsset(id: id) else { return }
         self.userAssetEditBtnTapped?(tappedAsset)
-        
-        print(#fileID, #function, #line, "asset edit \(tappedAsset)")
     }
     
+    /// 자산 리스트에 유저 자산 추가
+    /// - Parameter asset: 추가할 자산
+    func addUserAsset(asset: UserAsset) {
+        self.userAssets.append(asset)
+    }
+    
+    /// 자산 리스트에 유저 자산 업데이트
+    /// - Parameters:
+    ///   - id: 수정할 자산 id
+    ///   - asset: 수정 데이터
+    func updateUserAsset(for id: UUID, asset: UserAsset) {
+        guard let index = self.userAssets.firstIndex(where: { $0.id == id }) else { return }
+        userAssets[index] = asset
+    }
+    
+    /// 유저 자산 삭제
+    /// - Parameter id: 삭제 할 자산 id
     func deleteUserAsset(for id: UUID) { // async throws
         guard let index = self.userAssets.firstIndex(where: { $0.id == id }) else { return }
-        let asset: UserAsset = userAssets[index]
+        let asset = getUserAsset(at: index)
         // let serverId = asset.serverId
         
         // api

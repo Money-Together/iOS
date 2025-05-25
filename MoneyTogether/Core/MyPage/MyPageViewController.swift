@@ -27,7 +27,6 @@ class MyPageViewController: UIViewController {
     private var userAssetTotalAmountView = UserAssetTotalAmountView()
     
     private var userAssetListView = UserAssetListView()
-//    UITableView(frame: .zero, style: .insetGrouped)
     
     
     // MARK: Init & Setup
@@ -42,10 +41,9 @@ class MyPageViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        bindViewModel()
-        viewModel.fetchUserProfile()
-        viewModel.fetchUserAssetsTotalAmounts()
-        viewModel.fetchUserAssetList()
+//        viewModel.fetchUserProfile()
+//        viewModel.fetchUserAssetsTotalAmounts()
+//        viewModel.fetchUserAssetList()
     }
     
     override func viewDidLoad() {
@@ -53,6 +51,11 @@ class MyPageViewController: UIViewController {
         
         setUI()
         setLayout()
+        
+        bindViewModel()
+        viewModel.fetchUserProfile()
+        viewModel.fetchUserAssetsTotalAmounts()
+        viewModel.fetchUserAssetList()
     }
     
     /// Sub Views, UI Components 세팅
@@ -76,7 +79,6 @@ class MyPageViewController: UIViewController {
         userAssetTotalAmountView.layer.cornerRadius = Radius.large
         
         // 유저 자산 리스트
-//        self.setUserAssetTableView()
         userAssetListView.delegate = self
         userAssetListView.backgroundColor = .moneyTogether.grayScale.baseGray20
         userAssetListView.layer.cornerRadius = Radius.large
@@ -93,7 +95,6 @@ class MyPageViewController: UIViewController {
         )
         
         let assetSummaryView: UIView = {
-            
             let assetSectionTitle = UILabel.make(
                 text: "내 자산",
                 textColor: .moneyTogether.label.normal,
@@ -130,13 +131,12 @@ class MyPageViewController: UIViewController {
             spacing: 48,
             subViews: [
                 pageTitle, userProfileView, assetSummaryView, userAssetListView
-            ])
-//        stackView.backgroundColor = .gray40
+            ]
+        )
         
         self.view.addSubview(scrollView)
         scrollView.addSubview(scrollContentsView)
         scrollContentsView.addSubview(stackView)
-        
         
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: self.view.layoutMarginsGuide.topAnchor),
@@ -175,11 +175,17 @@ class MyPageViewController: UIViewController {
             self.userAssetListView.updateUI(newData: self.viewModel.userAssets)
         }
         
-//        viewModel.onDeleteAsset = { [weak self] indexPath in
-//            guard let self = self else { return }
-//            let asset = self.viewModel.getUserAsset(at: indexPath.row)
-//            self.userAssetListView.removeAssetView(assetId: asset.id)
-//        }
+        viewModel.onAssetAdded = { [weak self] newAsset in
+            guard let self = self else { return }
+            self.userAssetListView.addAssetRow(asset: newAsset)
+            self.viewModel.addUserAsset(asset: newAsset)
+        }
+        
+        viewModel.onAssetUpdated = { [weak self] id, newAsset in
+            guard let self = self else { return }
+            self.userAssetListView.updateAssetRow(assetId: id, newData: newAsset)
+            self.viewModel.updateUserAsset(for: id, asset: newAsset)
+        }
     }
 }
 
@@ -193,7 +199,13 @@ extension MyPageViewController {
     }
 }
 
+// MARK:
 extension MyPageViewController: UserAssetListViewDelegate {
+    /// 자산 리스트에서 row 클릭 시 호출
+    /// 수정/삭제 액션 시트 띄우기
+    /// - Parameters:
+    ///   - listView: 자산 리스트 뷰
+    ///   - id: 클릭된 자산 id
     func assetListView(_ listView: UserAssetListView, didTapAsset id: UUID) {
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         
@@ -214,6 +226,8 @@ extension MyPageViewController: UserAssetListViewDelegate {
         self.present(actionSheet, animated: true, completion: nil)
     }
     
+    /// 자산 삭제 시 안내 alert 띄우기
+    /// - Parameter id: 삭제할 자산 id
     private func showAssetDeleteConfirmationAlert(for id: UUID) {
         let alert = UIAlertController(
             title: "정말 삭제할까요?",
@@ -238,8 +252,6 @@ extension MyPageViewController: UserAssetListViewDelegate {
         
         present(alert, animated: true)
     }
-    
-    
 }
 
 
