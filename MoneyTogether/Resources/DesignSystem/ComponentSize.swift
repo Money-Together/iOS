@@ -13,7 +13,7 @@ struct ComponentSize {
     static let navigationBarHeight: CGFloat = 56
     
     /// 아이콘 버튼 사이즈 (width, height 동일)
-    static let iconBtnSize: CGFloat         = 40
+    static let iconBtnSize: CGFloat         = 48
     
     /// CTA 버튼 높이
     static let ctaBtnHeight: CGFloat        = 48

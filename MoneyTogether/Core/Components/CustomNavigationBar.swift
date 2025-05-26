@@ -62,6 +62,8 @@ class CustomNavigationBar: UIView {
     
     init(title: String = "",
          backgroundColor: UIColor? = .clear,
+         leftButtons: [UIView] = [],
+         rightButtons: [UIView] = [],
          backBtnMode: BackButtonMode = .none,
          backAction: (() -> Void)? = nil) {
         
@@ -72,7 +74,7 @@ class CustomNavigationBar: UIView {
         super.init(frame: .zero)
         
         setUI(backgroundColor: backgroundColor)
-        setLayout()
+        setLayout(leftBtns: leftButtons, rightBtns: rightButtons)
     }
     
     required init?(coder: NSCoder) {
@@ -99,14 +101,20 @@ class CustomNavigationBar: UIView {
         )
     }
     
-    func setLayout() {
+    func setLayout(leftBtns: [UIView], rightBtns: [UIView]) {
         // 백 버튼 모드에 따라 버튼 스택에 버튼 추가
         switch self.backButtonMode {
         case .push:
             self.leftBtnStk.addArrangedSubview(self.pushStyleBackBtn)
+            self.addButtonsToLeftStack(buttons: leftBtns)
+            self.addButtonsToRightStack(buttons: rightBtns)
         case .modal:
+            self.addButtonsToLeftStack(buttons: leftBtns)
+            self.addButtonsToRightStack(buttons: rightBtns)
             self.rightBtnStk.addArrangedSubview(self.modalStyleBackBtn)
-        default: break
+        default:
+            self.addButtonsToLeftStack(buttons: leftBtns)
+            self.addButtonsToRightStack(buttons: rightBtns)
         }
         
         self.addSubview(leftBtnStk)
@@ -123,7 +131,7 @@ class CustomNavigationBar: UIView {
             self.leftBtnStk.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 12),
             self.leftBtnStk.centerYAnchor.constraint(equalTo: self.centerYAnchor),
             
-            self.rightBtnStk.trailingAnchor.constraint(equalTo: self.leadingAnchor, constant: -12),
+            self.rightBtnStk.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -12),
             self.rightBtnStk.centerYAnchor.constraint(equalTo: self.centerYAnchor),
             
             self.titleLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor),
@@ -131,6 +139,30 @@ class CustomNavigationBar: UIView {
         ])
         
         self.translatesAutoresizingMaskIntoConstraints = false
+    }
+    
+    /// 왼쪽 버튼 스택에 버튼 추가
+    /// 스택에 최대 2개의 버튼 가능
+    /// - Parameter buttons: 추가할 버튼 뷰 리스트
+    private func addButtonsToLeftStack(buttons: [UIView]) {
+        print(#fileID, #function, #line, "buttons count: \(buttons.count)")
+        let maxCount = backButtonMode == .push ? 1 : 2
+        
+        buttons.prefix(maxCount).forEach { btn in
+            self.leftBtnStk.addArrangedSubview(btn)
+        }
+    }
+    
+    /// 오른쪽 버튼 스택에 버튼 추가
+    /// 스택에 최대 2개의 버튼 가능
+    /// - Parameter buttons: 추가할 버튼 뷰 리스트
+    private func addButtonsToRightStack(buttons: [UIView]) {
+        print(#fileID, #function, #line, "buttons count: \(buttons.count)")
+        let maxCount = backButtonMode == .modal ? 1 : 2
+        
+        buttons.prefix(maxCount).forEach { btn in
+            self.rightBtnStk.addArrangedSubview(btn)
+        }
     }
     
 }
