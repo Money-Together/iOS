@@ -13,10 +13,17 @@ struct CashBox {
     var bio: String?
 }
 
-struct walletMember: Identifiable {
-    var id: UUID
+struct WalletMember: Identifiable {
+    let id: UUID = UUID()
     var nickname: String
-    var profileImg: String
+    var profileImg: String?
+    
+    static func createDummyData(nickname: String? = nil) -> WalletMember {
+        return WalletMember(
+            nickname: nickname ?? "닉네임은최대10자야",
+            profileImg: "https://i.pravatar.cc"
+        )
+    }
 }
 
 struct Wallet {

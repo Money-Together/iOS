@@ -11,34 +11,43 @@ import SwiftUI
 
 /// 지갑 홈에 들어갈 지갑 프로필 뷰
 struct WalletProfileView: View {
+    
+    @ObservedObject var viewModel: WalletViewModel
+    
     /// 지갑 이름
-    var walletName: String
+    var walletName: String {
+        viewModel.walletData?.name ?? ""
+    }
     
     /// 지갑 설명
-    var walletBio: String
+    var walletBio: String {
+        viewModel.walletData?.bio ?? ""
+    }
     
     /// 지갑 공유 멤버 리스트
-    var members: [String] = Array(repeating: "a", count: 100)
+    var members: [WalletMember] {
+        viewModel.members
+    }
     
     /// 저금통 사용 여부
-    var hasCashBox: Bool
+    var hasCashBox: Bool {
+        viewModel.walletData?.hasCashBox ?? false
+    }
     
     /// 저금통 금액
-    var cashBoxAmount: String
-    
-    
-    init(wallet: Wallet) {
-        self.walletName = wallet.name
-        self.walletBio = wallet.bio ?? ""
-        self.hasCashBox = wallet.hasCashBox
-//        self.cashBoxAmount = "10,000 원"
-        if let cashbox = wallet.cashBox,
-           hasCashBox == true {
-            self.cashBoxAmount = cashbox.amount + " " + cashbox.currency.readableName
-            self.cashBoxAmount = cashbox.currency.symbol + " " + cashbox.amount
-        } else {
-            self.cashBoxAmount = ""
+    var cashBoxAmount: String {
+        guard let cashbox = viewModel.walletData?.cashBox,
+              self.hasCashBox == true else {
+            return ""
         }
+        
+        return cashbox.amount + " " + cashbox.currency.readableName
+        // return cashbox.currency.symbol + " " + cashbox.amount
+    }
+    
+    
+    init(viewModel: WalletViewModel) {
+        self.viewModel = viewModel
     }
     
     var body: some View {
@@ -58,6 +67,7 @@ struct WalletProfileView: View {
             
             HStack {
                 memberPreview
+                
                 Spacer()
                 
                 // 저금통 금액 줄여보이기 방지용
@@ -82,7 +92,7 @@ struct WalletProfileView: View {
     var memberPreview: some View {
         HStack(spacing: 0) {
             ForEach(Array(members.prefix(3).enumerated()), id: \.offset) { index, member in
-                createMemberProfileImgView()
+                createMemberProfileImgView(imgUrl: member.profileImg)
                     .offset(x: CGFloat((-2 * index)))
             }
             
@@ -129,8 +139,8 @@ struct WalletProfileView: View {
     }
     
     /// 멤버 프리뷰에 사용되는 멤버 프로필 이미지 뷰 생성 함수
-    private func createMemberProfileImgView() -> some View {
-        ProfileImageView(size: ProfileImgSize.small)
+    private func createMemberProfileImgView(imgUrl: String?) -> some View {
+        ProfileImageView(size: ProfileImgSize.small, imageUrl: imgUrl)
             .background(
                 Circle()
                     .fill(Color.moneyTogether.grayScale.baseGray0)
@@ -139,7 +149,7 @@ struct WalletProfileView: View {
     }
 }
 
-#Preview {
-    WalletHomeViewController()
-//    return WalletProfileView(wallet: Wallet.createDummyData())
-}
+//#Preview {
+////    WalletHomeViewController()
+////    return WalletProfileView(wallet: Wallet.createDummyData())
+//}
