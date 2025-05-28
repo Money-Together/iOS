@@ -65,7 +65,8 @@ struct MoneyLogCellView: View {
                     Text(memoText)
                         .foregroundStyle(Color.moneyTogether.label.alternative)
                         .moneyTogetherFont(style: .detail2)
-                        .lineLimit(2)
+                        .lineSpacing(2)
+                        .lineLimit(3)
                 }
             }
 
@@ -76,3 +77,6 @@ struct MoneyLogCellView: View {
     }
 }
 
+#Preview {
+    MoneyLogCellView(log: MoneyLog.createDummyData(date: "2025-05-25"))
+}
