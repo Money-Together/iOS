@@ -7,9 +7,10 @@
 
 import Foundation
 
-enum MoneyLogType {
-    case expense
-    case income
+/// 머니로그 거래 타입
+enum TransactionType {
+    case spending  // 소비, 지출
+    case earning   // 수입
 }
 
 struct MoneyLog: Identifiable {
@@ -17,7 +18,7 @@ struct MoneyLog: Identifiable {
     var date: String
     var currency: CurrencyType
     var amount: String
-    var type: MoneyLogType
+    var transactionType: TransactionType
     var memo: String?
     
     static func createDummyData(date: String) -> MoneyLog {
@@ -25,8 +26,8 @@ struct MoneyLog: Identifiable {
             date: date,
             currency: .krw,
             amount: "3,000",
-            type: .expense,
-            memo: "#카테고리이름 #계좌이름 kdjfhlsadkfhaslkdfjhlaiwuefhlkdfjhlaikehwk kdsjfhldkasfjhadslk fjdslkf  lkdshf lksdfdlsk fl"
+            transactionType: .spending,
+            memo: "#식비 #우리은행 | 오늘 점심으로 친구들과 엽떡 + 허니콤보 먹음. 역시 너무 맛있었다. 또 먹고 싶다. 아직도 60자밖에 안된다. 근데 사실 내 최애는 고추바사삭 최대 100자"
         )
     }
 }

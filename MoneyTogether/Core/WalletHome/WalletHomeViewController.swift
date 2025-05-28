@@ -131,7 +131,8 @@ extension WalletHomeViewController: UITableViewDataSource, UITableViewDelegate {
     private func setTableView() {
         self.moneylogTableView.dataSource = self
         self.moneylogTableView.delegate = self
-        self.moneylogTableView.register(MoneyLogTableViewCell.self, forCellReuseIdentifier: MoneyLogTableViewCell.reuseId)
+        self.moneylogTableView.register(MoneyLogCell.self, forCellReuseIdentifier: MoneyLogCell.reuseId)
+        self.moneylogTableView.register(MoneyLogDateCell.self, forCellReuseIdentifier: MoneyLogDateCell.reuseId)
         
         self.moneylogTableView.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 24, leading: Layout.side, bottom: 100, trailing: Layout.side)
         self.moneylogTableView.cellLayoutMarginsFollowReadableWidth = false
@@ -141,30 +142,36 @@ extension WalletHomeViewController: UITableViewDataSource, UITableViewDelegate {
         self.moneylogTableView.separatorStyle = .none
     }
     
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return self.viewModel.logsVM.numberOfSections()
-    }
-
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.viewModel.logsVM.numberOfRows(in: section)
     }
 
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return self.viewModel.logsVM.getDate(at: section)
-    }
-
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let log = self.viewModel.logsVM.log(at: indexPath)
+        let cellItem = viewModel.logsVM.cellItem(at: indexPath)
         
-        let cell = moneylogTableView.dequeueReusableCell(withIdentifier: MoneyLogTableViewCell.reuseId, for: indexPath) as? MoneyLogTableViewCell
-        cell?.configure(with: log)
+        switch cellItem {
+        case .date(let dateString):
+            let cell = moneylogTableView.dequeueReusableCell(withIdentifier: MoneyLogDateCell.reuseId, for: indexPath) as? MoneyLogDateCell
+            cell?.configure(with: dateString)
+            return cell ?? UITableViewCell()
+        case .moneyLog(let moneyLog):
+            let cell = moneylogTableView.dequeueReusableCell(withIdentifier: MoneyLogCell.reuseId, for: indexPath) as? MoneyLogCell
+            cell?.configure(with: moneyLog)
+            return cell ?? UITableViewCell()
+        }
         
-        return cell ?? UITableViewCell()
     }
     
+    /// 테이블 뷰 cell 클릭 시 이벤트 처리
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let log = self.viewModel.logsVM.log(at: indexPath)
-        print(#fileID, #function, #line, "\(log.date), \(indexPath.row + 1)th cell tapped")
+        let cellItem = viewModel.logsVM.cellItem(at: indexPath)
+        
+        switch cellItem {
+        case .date: // 날짜 헤더 cell일 경우 액션 없음
+            return
+        case .moneyLog(let moneyLog):
+            print(#fileID, #function, #line, "\(moneyLog.date), \(indexPath.row + 1)th cell tapped")
+        }  
     }
 }
 

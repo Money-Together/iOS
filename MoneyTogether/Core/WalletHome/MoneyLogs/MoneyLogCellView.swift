@@ -9,7 +9,8 @@ import Foundation
 import UIKit
 import SwiftUI
 
-class MoneyLogTableViewCell: UITableViewCell {
+
+class MoneyLogCell: UITableViewCell {
     static let reuseId: String = "MoneyLogCell"
     
     func configure(with data: MoneyLog) {
@@ -25,12 +26,19 @@ struct MoneyLogCellView: View {
     
     var amountText: String {
         var sign = ""
-        switch log.type {
-        case .expense: sign = "-"
-        case .income: sign = "+"
+        switch log.transactionType {
+        case .spending: sign = "-"
+        case .earning: sign = "+"
         }
                
         return sign + " " + log.currency.symbol + log.amount
+    }
+    
+    var amountTextColor: Color {
+        switch log.transactionType {
+        case .spending: return Color.moneyTogether.system.red
+        case .earning: return Color.moneyTogether.system.blue
+        }
     }
     
     var memoText: String {
@@ -49,13 +57,13 @@ struct MoneyLogCellView: View {
             
             VStack(alignment: .leading, spacing: 4) {
                 Text(amountText)
-                    .foregroundStyle(Color.moneyTogether.label.normal)
+                    .foregroundStyle(amountTextColor)
                     .moneyTogetherFont(style: .b1)
                     .lineLimit(1)
                 
                 if (!memoText.isEmpty) {
                     Text(memoText)
-                        .foregroundStyle(Color.moneyTogether.label.assistive)
+                        .foregroundStyle(Color.moneyTogether.label.alternative)
                         .moneyTogetherFont(style: .detail2)
                         .lineLimit(2)
                 }
@@ -63,7 +71,6 @@ struct MoneyLogCellView: View {
 
 #warning("이거 어떡할까")
             Spacer()
-
             
         }.padding(.vertical, 4)
     }
