@@ -26,6 +26,9 @@ class WalletHomeViewController: UIViewController {
     /// 지갑 프로필 뷰
     private var walletProfileView: UIView!
     
+    private var selectedDateFilterView: SelectedDateFilterUIView!
+    
+    /// 머니로그 리스트 뷰
     private var moneylogTableView: UITableView!
     
     // MARK: Init & Set up
@@ -96,6 +99,8 @@ class WalletHomeViewController: UIViewController {
             return view
         }()
         
+        self.selectedDateFilterView = SelectedDateFilterUIView(viewModel: self.viewModel.logsVM)
+        
         self.moneylogTableView = UITableView().disableAutoresizingMask()
         self.setTableView()
         
@@ -103,6 +108,7 @@ class WalletHomeViewController: UIViewController {
     
     private func setLayout() {
         self.view.addSubview(headerView)
+        self.view.addSubview(selectedDateFilterView)
         self.view.addSubview(moneylogTableView)
         
         NSLayoutConstraint.activate([
@@ -110,7 +116,11 @@ class WalletHomeViewController: UIViewController {
             headerView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor),
             headerView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
             
-            moneylogTableView.topAnchor.constraint(equalTo: headerView.bottomAnchor),
+            selectedDateFilterView.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: 12),
+            selectedDateFilterView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor, constant: 12),
+            selectedDateFilterView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            
+            moneylogTableView.topAnchor.constraint(equalTo: selectedDateFilterView.bottomAnchor),
             moneylogTableView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor),
             moneylogTableView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor),
             moneylogTableView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor)

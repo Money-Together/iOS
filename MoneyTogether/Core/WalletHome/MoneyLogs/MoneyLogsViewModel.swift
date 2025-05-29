@@ -6,8 +6,12 @@
 //
 
 import Foundation
+import SwiftUI
 
-class MoneyLogsViewModel {
+class MoneyLogsViewModel : ObservableObject {
+    
+    @Published private(set) var selectedDateFilter: Date = Date()
+    
     private(set) var moneyLogCellItems: [MoneyLogCellItem] = []
     private(set) var logs: [MoneyLog] = []
     
@@ -43,22 +47,67 @@ extension MoneyLogsViewModel {
         self.logs = dummyData
         
         // 머니로그 테이블뷰 데이터소스 업데이트
-        let grouped = Dictionary(grouping: logs) { $0.date }
-            let formatter = DateFormatter()
-            formatter.locale = Locale(identifier: "ko_KR")
-            formatter.dateFormat = "YYYY-MM-dd"
-
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.dateFormat = "YYYY-MM-dd"
+        
+        let grouped = Dictionary(grouping: logs) {
+            formatter.date(from: $0.date)
+        }
+            
         let sorted = grouped.sorted {
-            guard let date1 = formatter.date(from: $0.key),
-                  let date2 = formatter.date(from: $1.key) else { return false }
+            guard let date1 = $0.key,
+                  let date2 = $1.key else { return false }
             return date1 < date2
         }
         
         self.moneyLogCellItems = sorted.flatMap { (date, logs) -> [MoneyLogCellItem] in
             var items: [MoneyLogCellItem] = []
-            items.append(.date(date)) // 날짜 헤더 먼저 추가
-            items.append(contentsOf: logs.map { .moneyLog($0) }) // 해당 날짜의 로그들 추가
+            
+            // 날짜 헤더 먼저 추가
+            let dateStr = date?.formattedString(format: "d일 EEEE") ?? ""
+            items.append(.date(dateStr))
+            
+            // 해당 날짜의 로그들 추가
+            items.append(contentsOf: logs.map { .moneyLog($0) })
+            
             return items
         }
+    }
+}
+
+// MARK: Date Filter Handling
+extension MoneyLogsViewModel {
+    func canMoveToNextMonth() -> Bool {
+        let current = self.selectedDateFilter
+        
+        if let nextMonth = current.addingMonth(1),
+           !nextMonth.isInFuture() {
+            return true
+        }
+        
+        return false
+        
+    }
+    
+    func moveToNextMonth() -> Date {
+        let current = self.selectedDateFilter
+        guard let nextMonth = current.addingMonth(1),
+              !nextMonth.isInFuture() else {
+            return current
+        }
+        
+        self.selectedDateFilter = nextMonth
+        
+        return nextMonth
+    }
+    
+    func moveToPreviousMonth() -> Date {
+        let current = self.selectedDateFilter
+        let prevMonth = current.addingMonth(-1) ?? current
+        
+        self.selectedDateFilter = prevMonth
+        
+        return prevMonth
     }
 }
