@@ -116,13 +116,7 @@ struct WalletProfileView: View {
             .fill(Color.moneyTogether.grayScale.baseGray0)
             .frame(width: ComponentSize.leadingImgSize, height: ComponentSize.leadingImgSize)
             .overlay(
-                Image("savings")
-                    .resizable()
-                    .renderingMode(.template)
-                    .foregroundStyle(Color.moneyTogether.label.alternative)
-                    .clipped()
-                    .scaledToFit()
-                    .frame(width: 24, height: 24)
+                Image("savings").iconStyle(size: 20, padding: 0)
             )
             
     }
