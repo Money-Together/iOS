@@ -78,6 +78,9 @@ extension MoneyLogsViewModel {
 
 // MARK: Date Filter Handling
 extension MoneyLogsViewModel {
+    
+    /// 선택된 날짜에서 한 달 뒤로 이동 가능한지 여부
+    /// - 한 달 뒤로 이동한 날짜가 미래일 경우 이동 불가능
     func canMoveToNextMonth() -> Bool {
         let current = self.selectedDateFilter
         
@@ -87,13 +90,28 @@ extension MoneyLogsViewModel {
         }
         
         return false
-        
     }
     
+    /// 선택된 날짜에서 한 달 앞으로 이동 가능한지 여부
+    /// - 한 달 앞으로 이동한 날짜가 유요한 연도 범위를 벗어났을 경우 이동 불가능
+    func canMoveToPrevMonth() -> Bool {
+        let current = self.selectedDateFilter
+        
+        if let prevMonth = current.addingMonth(-1),
+           prevMonth.year() >= YearRange.min {
+            return true
+        }
+        
+        return false
+    }
+    
+    /// 한 달 뒤로 이동
+    /// selectedDateFilter 값 변경 & 변경된 값 반환
     func moveToNextMonth() -> Date {
         let current = self.selectedDateFilter
+        
         guard let nextMonth = current.addingMonth(1),
-              !nextMonth.isInFuture() else {
+              self.canMoveToNextMonth() else {
             return current
         }
         
@@ -102,12 +120,24 @@ extension MoneyLogsViewModel {
         return nextMonth
     }
     
+    /// 한 달 앞으로 이동
+    /// selectedDateFilter 값 변경 & 변경된 값 반환
     func moveToPreviousMonth() -> Date {
         let current = self.selectedDateFilter
-        let prevMonth = current.addingMonth(-1) ?? current
+        
+        guard let prevMonth = current.addingMonth(-1),
+              self.canMoveToPrevMonth() else {
+            return current
+        }
         
         self.selectedDateFilter = prevMonth
         
         return prevMonth
+    }
+    
+    /// 외부에서 직접 선택된 날짜를 설정할 때 사용
+    /// - Parameter value: 새로 설정할 날짜
+    func setSelectedDateFilter(value: Date) {
+        self.selectedDateFilter = value
     }
 }
