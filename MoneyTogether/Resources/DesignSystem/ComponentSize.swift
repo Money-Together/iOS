@@ -15,6 +15,10 @@ struct ComponentSize {
     /// 아이콘 버튼 사이즈 (width, height 동일)
     static let iconBtnSize: CGFloat         = 48
     
+    /// 아이콘 버튼 이미지 사이즈 (width, height 동일)
+    /// 이미지 사이즈 = 전체 아이콘 버튼 크기 / 2 (패딩 기본 값 = 이미지 사이즈 / 2)
+    static let iconBtnImageSize: CGFloat    = 24
+    
     /// CTA 버튼 높이
     static let ctaBtnHeight: CGFloat        = 48
     

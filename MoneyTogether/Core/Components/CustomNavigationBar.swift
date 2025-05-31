@@ -60,6 +60,14 @@ class CustomNavigationBar: UIView {
     
     // MARK: Init & Setup
     
+    /// 초기화
+    /// - Parameters:
+    ///   - title: 타이틀, 기본값 = ""
+    ///   - backgroundColor: 배경색상, 기본값 = .clear
+    ///   - leftButtons: 타이틀 왼쪽에 들어갈 버튼 리스트, 기본값 = []
+    ///   - rightButtons: 타이틀 오른쪽에 들어갈 버튼 리스트, 기본값 = []
+    ///   - backBtnMode: 뒤로가기 버튼 모드. 기본값 = none
+    ///   - backAction: 뒤로가기 액션 클로져, 기본값 = nil
     init(title: String = "",
          backgroundColor: UIColor? = .clear,
          leftButtons: [UIView] = [],

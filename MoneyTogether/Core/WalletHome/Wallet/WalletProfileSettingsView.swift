@@ -1,18 +1,19 @@
 //
-//  WalletProfileView.swift
+//  WalletProfileSettingsView.swift
 //  MoneyTogether
 //
-//  Created by Heeoh Son on 5/26/25.
+//  Created by Heeoh Son on 5/31/25.
 //
 
 import Foundation
 import SwiftUI
 
 
-/// 지갑 홈에 들어갈 지갑 프로필 뷰
-struct WalletProfileView: View {
+struct WalletProfileSettingsView: View {
     
     @ObservedObject var viewModel: WalletViewModel
+    
+    @State var showInviteMemberView: Bool = false
     
     /// 지갑 이름
     var walletName: String {
@@ -46,14 +47,10 @@ struct WalletProfileView: View {
     }
     
     
-    init(viewModel: WalletViewModel) {
-        self.viewModel = viewModel
-    }
-    
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(walletName)
-                .moneyTogetherFont(style: .h4)
+                .moneyTogetherFont(style: .h6)
                 .foregroundStyle(Color.moneyTogether.label.normal)
                 .lineLimit(1)
             
@@ -70,20 +67,49 @@ struct WalletProfileView: View {
                 
                 Spacer()
                 
-                // 저금통 금액 줄여보이기 방지용
-                // 금액이 작을 경우 멤버 프리뷰와 같은 라인에 보임
-                if hasCashBox && cashBoxAmount.count <= 10 {
-                    cashBoxView
-                }
-            }.padding(.top, 8)
+                CTAButton(
+                    activeState: .active,
+                    buttonStyle: .solid,
+                    labelText: "초대하기",
+                    labelFontStyle: .b1,
+                    buttonHeight: 40,
+                    buttonWidth: 100,
+                    cornerRadius: Radius.medium,
+                    action: {
+                        print(#fileID, #function, #line, "kkk")
+                        showInviteMemberView = true
+                    }
+                )
+            }.padding(.vertical, 8)
             
-            // 저금통 금액 줄여보이기 방지용
-            // 금액이 클 경우 멤버 프리뷰 아래에 보임
-            if hasCashBox && cashBoxAmount.count > 10 {
-                cashBoxView
+            
+            if hasCashBox {
+                Divider()
+                
+                HStack(spacing: 8) {
+                    cashboxIconImg
+                    
+                    Text("저금통")
+                    
+                    Spacer()
+                    
+                    Text(cashBoxAmount)
+                        .moneyTogetherFont(style: .b1)
+                        .foregroundStyle(Color.moneyTogether.label.alternative)
+                }
             }
         }
-        .background(.clear)
+        .padding(20)
+        .padding(.top, 24)
+        .background(Color.moneyTogether.background)
+//        .background(Color.yellow)
+        .clipShape(RoundedRectangle(cornerRadius: Radius.large))
+        .shadow(color: .moneyTogether.grayScale.baseGray30, radius: 5, x: 0, y: 5)
+        .sheet(isPresented: $showInviteMemberView, content: {
+            InviteMemberView()
+                .presentationDetents([.fraction(0.3)])
+        })
+           
     }
     
     /// 저금통 아이콘
@@ -94,7 +120,7 @@ struct WalletProfileView: View {
             .overlay(
                 Image("savings").iconStyle(size: 20, padding: 0)
             )
-            
+        
     }
     
     /// 저금통 아이콘 + 금액
@@ -107,9 +133,15 @@ struct WalletProfileView: View {
                 .foregroundStyle(Color.moneyTogether.label.alternative)
         }
     }
+    
+    
+    
 }
 
-//#Preview {
-////    WalletHomeViewController()
-////    return WalletProfileView(wallet: Wallet.createDummyData())
-//}
+#Preview {
+    let viewModel = WalletViewModel()
+    viewModel.fetchWalletData()
+    viewModel.fetchMembers()
+    
+    return WalletProfileSettingsView(viewModel: viewModel)
+}

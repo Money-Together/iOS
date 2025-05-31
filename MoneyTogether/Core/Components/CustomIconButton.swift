@@ -44,13 +44,13 @@ class CustomIconButton: UIView {
     /// 커스텀 아이콘 버튼 init
     /// - Parameters:
     ///   - iconImage: 아이콘이미지
-    ///   - iconColor: 아이콘 컬러, default = .moneyTogether.label.normal
+    ///   - iconColor: 아이콘 컬러, default = .moneyTogether.label.alternative
     ///   - backgroundColor: 백그라운드컬러, default = .clear
     ///   - size: 아이콘 버튼 사이즈(width = height), default = ComponentSize.iconBtnSize = 48
     ///   - cornerRadius: 아이콘 버튼 뷰 corner radius, default = Radius.small
     ///   - action: 버튼 클릭 이벤트 액션
     init(iconImage: UIImage?,
-         iconColor: UIColor? = .moneyTogether.label.normal,
+         iconColor: UIColor? = .moneyTogether.label.alternative,
          backgroundColor: UIColor? = .clear,
          size: CGFloat = ComponentSize.iconBtnSize,
          cornerRadius: CGFloat = Radius.small,
