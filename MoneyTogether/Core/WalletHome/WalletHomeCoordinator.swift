@@ -13,6 +13,7 @@ class WalletHomeCoordinator: BaseNavCoordinator {
     
     let viewModel = WalletHomeViewModel()
     
+    
     init(navigationController: UINavigationController,
          parentCoordinator: Coordinator? = nil,
          rootCoordinaotr: Coordinator? = nil) {
@@ -31,6 +32,10 @@ extension WalletHomeCoordinator {
     func setVMClosures() {
         guard let root = self.rootCoordinator as? AppCoordinator else {
             return
+        }
+        
+        viewModel.walletSettingBtnTapped = {
+            root.showWalletSettingView(viewModel: self.viewModel.walletVM)
         }
         
     }

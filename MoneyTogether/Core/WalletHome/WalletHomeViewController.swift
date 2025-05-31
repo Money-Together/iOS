@@ -61,7 +61,7 @@ class WalletHomeViewController: UIViewController {
         self.settingBtn = CustomIconButton(
             iconImage: UIImage(named: "setting"),
             action: {
-                print(#fileID, #function, #line, "navigate to wallet setting page")
+                self.viewModel.walletSettingBtnTapped?()
             })
         
         let navigationBar = CustomNavigationBar(rightButtons: [settingBtn])

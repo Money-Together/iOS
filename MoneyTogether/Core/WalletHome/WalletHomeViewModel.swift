@@ -11,6 +11,10 @@ class WalletHomeViewModel {
     let walletVM: WalletViewModel
     let logsVM: MoneyLogsViewModel
     
+    // MARK: Closures For Event Handling
+    
+    var walletSettingBtnTapped: (() -> Void)?
+    
     init(walletVM: WalletViewModel = WalletViewModel(), logsVM: MoneyLogsViewModel = MoneyLogsViewModel()) {
         self.walletVM = walletVM
         self.logsVM = logsVM

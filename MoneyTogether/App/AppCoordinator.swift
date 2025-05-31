@@ -48,3 +48,9 @@ extension AppCoordinator {
         self.navigationController.popViewController(animated: true)
     }
 }
+
+extension AppCoordinator {
+    func showWalletSettingView(viewModel: WalletViewModel) {
+        self.navigationController.pushViewController(WalletSettingViewController(viewModel: viewModel), animated: true)
+    }
+}
