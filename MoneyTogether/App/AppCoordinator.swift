@@ -50,7 +50,17 @@ extension AppCoordinator {
 }
 
 extension AppCoordinator {
+    /// 루트 네비게이션에서 지갑 설정 페이지 띄우기
     func showWalletSettingView(viewModel: WalletViewModel) {
         self.navigationController.pushViewController(WalletSettingViewController(viewModel: viewModel), animated: true)
+    }
+    
+    /// 루트 네비게이션에서 지갑 멤버 리스트 페이지  띄우기
+    /// 지갑 홈 / 지갑 설정 페이지에서 멤버 프리뷰 클릭 시 실행
+    /// - Parameter members: 보여줄 멤버 리스트
+    func showWalletMemberListView(members: [WalletMember]) {
+        self.navigationController.pushViewController(WalletMemberListViewController(members: members, onBackTapped: { [weak self] in
+            self?.navigationController.popViewController(animated: true)
+        }), animated: true)
     }
 }

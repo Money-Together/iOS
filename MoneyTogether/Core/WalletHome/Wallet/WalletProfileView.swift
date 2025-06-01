@@ -67,6 +67,9 @@ struct WalletProfileView: View {
             
             HStack {
                 WalletMembersPreview(members: members)
+                    .onTapGesture {
+                        self.viewModel.walletMembersPreviewTapped?(members)
+                    }
                 
                 Spacer()
                 

@@ -64,6 +64,10 @@ struct WalletProfileSettingsView: View {
             
             HStack {
                 WalletMembersPreview(members: members)
+                    .onTapGesture {
+                        self.viewModel.walletMembersPreviewTapped?(members)
+                        // print(#fileID, #function, #line, "✅ show more wallet members")
+                    }
                 
                 Spacer()
                 
@@ -90,6 +94,8 @@ struct WalletProfileSettingsView: View {
                     cashboxIconImg
                     
                     Text("저금통")
+                        .moneyTogetherFont(style: .b2)
+                        .foregroundStyle(Color.moneyTogether.label.alternative)
                     
                     Spacer()
                     

@@ -35,9 +35,6 @@ struct WalletMembersPreview: View {
             Spacer()
         }
         .frame(height: 40)
-        .onTapGesture {
-            print(#fileID, #function, #line, "✅ show more wallet members")
-        }
     }
     
     /// 멤버 프리뷰에 사용되는 멤버 프로필 이미지 뷰 생성 함수

@@ -38,5 +38,9 @@ extension WalletHomeCoordinator {
             root.showWalletSettingView(viewModel: self.viewModel.walletVM)
         }
         
+        viewModel.walletVM.walletMembersPreviewTapped = { members in
+            root.showWalletMemberListView(members: members)
+        }
+        
     }
 }

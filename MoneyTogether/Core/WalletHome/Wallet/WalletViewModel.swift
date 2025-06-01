@@ -11,6 +11,9 @@ class WalletViewModel: ObservableObject {
     
     @Published var walletData: Wallet?
     @Published var members: [WalletMember] = []
+    
+    /// 지갑멤버 프리뷰 클릭 시 호출되는 클로져
+    var walletMembersPreviewTapped: (([WalletMember]) -> Void)?
 }
 
 
