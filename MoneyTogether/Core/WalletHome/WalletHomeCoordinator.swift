@@ -35,11 +35,15 @@ extension WalletHomeCoordinator {
         }
         
         viewModel.walletSettingBtnTapped = {
-            root.showWalletSettingView(viewModel: self.viewModel.walletVM)
+            root.show(.walletSetting(viewModel: self.viewModel.walletVM))
         }
         
         viewModel.walletVM.walletMembersPreviewTapped = { members in
-            root.showWalletMemberListView(members: members)
+            root.show(.walletMemberList(members: members))
+        }
+        
+        viewModel.walletVM.onBackTapped = {
+            root.navigateBack(ofType: WalletSettingViewController.self, animated: true)
         }
         
     }

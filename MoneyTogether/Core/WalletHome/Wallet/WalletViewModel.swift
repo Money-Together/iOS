@@ -14,6 +14,9 @@ class WalletViewModel: ObservableObject {
     
     /// 지갑멤버 프리뷰 클릭 시 호출되는 클로져
     var walletMembersPreviewTapped: (([WalletMember]) -> Void)?
+    
+    /// 뒤로가기 버튼 클릭 시 호출되는 클로져
+    var onBackTapped: (() -> Void)?
 }
 
 

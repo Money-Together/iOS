@@ -37,9 +37,9 @@ extension MyPageCoordinator {
         // 유저 프로필 편집 버튼 클릭
         viewModel.profileEditBtnTapped = {
             let editProfileVM = EditProfileViewModel(orgData: self.viewModel.profile)
-            root.showProfileEditView(viewModel: editProfileVM)
+            root.show(.editProfile(viewModel: editProfileVM))
             editProfileVM.onFinishFlow = {
-                root.backFromProfileEdit()
+                root.navigateBack(ofType: EditProfileViewController.self, animated: true)
             }
         }
         
@@ -69,7 +69,7 @@ extension MyPageCoordinator {
         
         let editUserAssetVM = EditUserAssetViewModel(mode: editingMode)
         editUserAssetVM.onFinishFlow = { asset in
-            root.backFromUserAssetEdit()
+            root.navigateBack(ofType: EditUserAssetViewController.self, animated: true)
             guard let newData = asset else { return }
             
             switch editingMode {
@@ -80,7 +80,7 @@ extension MyPageCoordinator {
             }
         }
         
-        root.showUserAssetEditView(viewModel: editUserAssetVM)
+        root.show(.editUserAsset(viewModel: editUserAssetVM))
     }
 }
 

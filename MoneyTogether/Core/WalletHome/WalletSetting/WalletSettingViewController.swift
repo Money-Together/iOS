@@ -40,7 +40,7 @@ class WalletSettingViewController: UIViewController {
             title: "지갑 설정",
             backBtnMode: .push,
             backAction: {
-                print(#fileID, #function, #line, "back")
+                self.viewModel.onBackTapped?()
             }
         )
         
