@@ -83,12 +83,15 @@ class WalletHomeViewController: UIViewController {
             view.addSubview(navigationBar)
             view.addSubview(self.walletProfileView)
             
+            // SE 시리즈 (홈버튼 없는 경우) safe area top inset = 0 -> 임의로 inset 추가
+            let safeAreaTopInset = SafeAreaUtil.topInset == 0 ? 16 : SafeAreaUtil.topInset
+            
             NSLayoutConstraint.activate([
-                navigationBar.topAnchor.constraint(equalTo: view.topAnchor, constant: SafeAreaUtil.topInset),
+                navigationBar.topAnchor.constraint(equalTo: view.topAnchor, constant: safeAreaTopInset),
                 navigationBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
                 navigationBar.centerXAnchor.constraint(equalTo: view.centerXAnchor),
                 
-                walletProfileView.topAnchor.constraint(equalTo: view.topAnchor, constant: SafeAreaUtil.topInset + ComponentSize.navigationBarHeight + 8),
+                walletProfileView.topAnchor.constraint(equalTo: view.topAnchor, constant: safeAreaTopInset + ComponentSize.navigationBarHeight + 8),
                 walletProfileView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -48),
                 walletProfileView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Layout.side + 4),
                 walletProfileView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
