@@ -44,15 +44,15 @@ class CustomIconButton: UIView {
     /// 커스텀 아이콘 버튼 init
     /// - Parameters:
     ///   - iconImage: 아이콘이미지
-    ///   - iconColor: 아이콘 컬러, default = .moneyTogether.label.normal
+    ///   - iconColor: 아이콘 컬러, default = .moneyTogether.label.alternative
     ///   - backgroundColor: 백그라운드컬러, default = .clear
-    ///   - size: 아이콘 버튼 사이즈(width = height), default = 40
+    ///   - size: 아이콘 버튼 사이즈(width = height), default = ComponentSize.iconBtnSize = 48
     ///   - cornerRadius: 아이콘 버튼 뷰 corner radius, default = Radius.small
     ///   - action: 버튼 클릭 이벤트 액션
     init(iconImage: UIImage?,
-         iconColor: UIColor? = .moneyTogether.label.normal,
+         iconColor: UIColor? = .moneyTogether.label.alternative,
          backgroundColor: UIColor? = .clear,
-         size: CGFloat = 40,
+         size: CGFloat = ComponentSize.iconBtnSize,
          cornerRadius: CGFloat = Radius.small,
          action: (() -> Void)? = nil) {
         
@@ -74,7 +74,7 @@ class CustomIconButton: UIView {
     }
     
     private func setUI(iconImage: UIImage?,
-                       iconColor: UIColor? = .moneyTogether.label.normal ,
+                       iconColor: UIColor? = .moneyTogether.label.alternative ,
                        backgroundColor: UIColor? = .clear,
                        cornerRadius: CGFloat = Radius.small) {
         self.iconImageView.image = iconImage?.withRenderingMode(.alwaysTemplate)
@@ -96,8 +96,8 @@ class CustomIconButton: UIView {
             
             iconImageView.centerXAnchor.constraint(equalTo: self.centerXAnchor),
             iconImageView.centerYAnchor.constraint(equalTo: self.centerYAnchor),
-            iconImageView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 8),
-            iconImageView.topAnchor.constraint(equalTo: self.topAnchor, constant: 8),
+            iconImageView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: btnSize/4),
+            iconImageView.topAnchor.constraint(equalTo: self.topAnchor, constant: btnSize/4),
             
             button.centerXAnchor.constraint(equalTo: self.centerXAnchor),
             button.centerYAnchor.constraint(equalTo: self.centerYAnchor),

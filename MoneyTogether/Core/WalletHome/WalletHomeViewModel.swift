@@ -1,0 +1,29 @@
+//
+//  WalletHomeViewModel.swift
+//  MoneyTogether
+//
+//  Created by Heeoh Son on 5/27/25.
+//
+
+import Foundation
+
+class WalletHomeViewModel {
+    let walletVM: WalletViewModel
+    let logsVM: MoneyLogsViewModel
+    
+    // MARK: Closures For Event Handling
+    
+    var walletSettingBtnTapped: (() -> Void)?
+    
+    init(walletVM: WalletViewModel = WalletViewModel(), logsVM: MoneyLogsViewModel = MoneyLogsViewModel()) {
+        self.walletVM = walletVM
+        self.logsVM = logsVM
+    }
+    
+    func fetchWalletProfile() {
+        walletVM.fetchWalletData()
+        walletVM.fetchMembers()
+    }
+    
+}
+

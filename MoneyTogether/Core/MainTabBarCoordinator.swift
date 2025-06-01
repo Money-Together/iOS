@@ -138,7 +138,7 @@ extension MainTabBarCoordinator {
         // 코디네이터 생성 및 실행
         switch tabBarItemType {
         case .walletHome:
-            let walletHomeCoordinator = WalletHomeCoordinator(navigationController: tabNavigationController, parentCoordinator: self)
+            let walletHomeCoordinator = WalletHomeCoordinator(navigationController: tabNavigationController, parentCoordinator: self, rootCoordinaotr: self.parent)
             walletHomeCoordinator.start()
             self.children.append(walletHomeCoordinator)
             

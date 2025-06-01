@@ -24,7 +24,7 @@ enum ButtonState {
 import SwiftUI
 
 /// CTAButton 에서 사용하는 Custom ButtonStyle
-class CTAButtonStyle: ButtonStyle {
+struct CTAButtonStyle: ButtonStyle {
     var style: ButtonStyleType
     var state: ButtonState
     var cornerRadius: CGFloat
@@ -38,9 +38,6 @@ class CTAButtonStyle: ButtonStyle {
     }
     
     func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .moneyTogetherFont(style: .h6)
-        
         switch (style, state) {
         case (.solid, .active):
             configureActiveSolidStyle(config: configuration)
@@ -60,7 +57,6 @@ class CTAButtonStyle: ButtonStyle {
 extension CTAButtonStyle {
     private func configureActiveSolidStyle(config: Configuration) -> some View {
         config.label
-            .moneyTogetherFont(style: .h6)
             .foregroundColor(.moneyTogether.label.rNormal)
             .background(Color.moneyTogether.brand.primary)
             .cornerRadius(cornerRadius)
@@ -68,7 +64,6 @@ extension CTAButtonStyle {
     
     private func configureActiveGhostStyle(config: Configuration) -> some View {
         config.label
-            .moneyTogetherFont(style: .h6)
             .foregroundColor(.moneyTogether.brand.primary)
             .overlay(
                 RoundedRectangle(cornerRadius: cornerRadius)
@@ -78,7 +73,6 @@ extension CTAButtonStyle {
     
     private func configureInactiveSolidStyle(config: Configuration) -> some View {
         config.label
-            .moneyTogetherFont(style: .h6)
             .foregroundColor(.moneyTogether.label.inactive)
             .background(Color.moneyTogether.grayScale.baseGray20)
             .cornerRadius(cornerRadius)
@@ -86,7 +80,6 @@ extension CTAButtonStyle {
     
     private func configureInactiveGhostStyle(config: Configuration) -> some View {
         config.label
-            .moneyTogetherFont(style: .h6)
             .foregroundColor(.moneyTogether.label.inactive)
             .overlay(
                 RoundedRectangle(cornerRadius: cornerRadius)
