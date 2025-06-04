@@ -148,57 +148,7 @@ class CurrencyAmountInputView: UIView {
     /// - Parameter input: 금액 텍스트필드 입력값
     func updateAmountText(with input: String) {
         // 입력값 선택된 통화에 맞는 decimal 스타일로 변환
-        
-        let amountString = input.replacingOccurrences(of: ",", with: "")
-        
-        guard let number = Decimal(string: amountString) else {
-            return
-        }
-        
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-//        formatter.currencyCode = self.pickedCurrencyType.code
-//        formatter.locale = self.pickedCurrencyType.locale
-        
-        guard var decimalString = formatter.string(for: number) else {
-            return
-        }
-        
-        // 통화 기호 제거
-//        let currencySymbol = self.pickedCurrencyType.symbol
-//        var decimalString = formattedStr.hasPrefix(currencySymbol)
-//        ? String(formattedStr.dropFirst(currencySymbol.count))
-//        : formattedStr
-        
-        
-        // 소수점 처리를 위해 .(dot)을 입력받은 경우 처리
-        
-        // 소수점(dot) 기준 split
-        let components = amountString.split(separator: ".", omittingEmptySubsequences: false)
-        
-        // 소수점 아래 길이
-        let fractionalLength = components.count == 2 ? components[1].count : 0
-        
-        // 소수점 아래 0으로 구성되어 있는지 여부
-        let endsWithZero = components.count == 2 && components[1].allSatisfy { $0 == "0" }
-        
-        // 소수점 .(dot)이 1개 있고, 소수점 이하 숫자 개수가 max 이하 일 때
-        // 소수점 아래 입력 살리기
-        if components.count == 2
-            && formatter.maximumFractionDigits > 0 {
-            
-            // 소수점 아래 입력을 위해 .(dot)을 입력한 상태
-            // ex) "22." -> .(dot) 유지
-            if fractionalLength == 0 {
-                decimalString += "."
-            }
-            
-            // 소수점 아래에 0을 입력한 상태
-            // ex) "22.0", "22.00" -> 0 유지
-            else if endsWithZero {
-                decimalString += "." + String(repeating: "0", count: min(fractionalLength, formatter.maximumFractionDigits))
-            }
-        }
+        let decimalString = input.replacingOccurrences(of: ",", with: "").decimalWithPoint()
         
         // 텍스트필드 UI 업데이트
         self.amountTextField.text = decimalString
