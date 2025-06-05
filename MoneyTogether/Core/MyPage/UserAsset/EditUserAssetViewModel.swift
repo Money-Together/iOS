@@ -7,36 +7,6 @@
 
 import Foundation
 
-/// 데이터 편집 상태
-enum InputEditState<T: Equatable>: Equatable {
-    case empty
-    case unchanged
-    case updated(newValue: T)
-    case invalid
-
-    var newValue: T? {
-        if case let .updated(value) = self {
-            return value
-        }
-        return nil
-    }
-}
-
-/// 편집 모드
-/// - 생성, 수정
-enum EditingMode<T> {
-    case create
-    case update(orgData: T)
-    
-    var orgData: T? {
-        if case let .update(orgData) = self {
-            return orgData
-        }
-        
-        return nil
-    }
-}
-
 final class EditUserAssetViewModel {
 
     private var mode: EditingMode<UserAsset>
