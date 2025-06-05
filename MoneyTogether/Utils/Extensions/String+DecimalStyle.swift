@@ -17,6 +17,24 @@ extension String {
         return self.rangeOfCharacter(from: validCharacters.inverted) == nil
     }
     
+    /// 숫자(decimal digits)와 소수점(point), 천단위 쉼표(comma)로만 구성되어 있는지 확인
+    /// 천단위 쉼표가 올바른 위치에 있는지 확인
+    /// - self가 완성된 형태(소수점 아래가 생략될 수 있는 경우 생략되어 있어야 함)로 되어 있어야 함
+    /// - Returns: 숫자와 소수점, 쉼표으로만 구성되어 있으면 true
+    func isDecimalStyleWithComma() -> Bool {
+        var validCharacters = CharacterSet.decimalDigits
+        validCharacters.insert(".")
+        validCharacters.insert(",")
+        
+        guard self.rangeOfCharacter(from: validCharacters.inverted) == nil else {
+            return false
+        }
+        
+        let formatted = self.decimalStyle()
+        
+        return formatted == self
+    }
+    
     /// 숫자 문자열을 decimal style로 변환하는 함수
     /// - decimal style: 숫자 문자열(소수점 가능) + 쉼표(comma)를 포함
     /// - self가 숫자 문자열(숫자와 소수점으로만 구성)이 아닐 경우 self를 리턴
@@ -36,7 +54,7 @@ extension String {
         formatter.numberStyle = .decimal
 
         
-        guard var decimalString = formatter.string(for: number) else {
+        guard let decimalString = formatter.string(for: number) else {
             return self
         }
 
