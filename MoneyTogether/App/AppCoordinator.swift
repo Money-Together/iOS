@@ -12,7 +12,13 @@ enum RootRoute {
     case editProfile(viewModel: EditProfileViewModel)
     case editUserAsset(viewModel: EditUserAssetViewModel)
     case walletSetting(viewModel: WalletViewModel)
+    case editWalletProfile(viewModel: WalletViewModel)
     case walletMemberList(members: [WalletMember])
+}
+
+enum RootRouteTarget {
+    case walletSetting
+    case editWallet
 }
 
 /// 앱 루트 네비게이션을 관리하는 코디네이터
@@ -56,9 +62,13 @@ extension AppCoordinator {
         case .walletSetting(let viewModel):
             viewController = WalletSettingViewController(viewModel: viewModel)
             
+        case .editWalletProfile(let viewModel):
+            viewController = EditWalletProfileViewController(viewModel: viewModel)
+            
         case .walletMemberList(let members):
             viewController = WalletMemberListViewController(members: members, onBackTapped: { [weak self] in
-                self?.navigationController.popViewController(animated: true)
+                guard let self = self else { return }
+                self.navigationController.popViewController(animated: true)
             })
         }
         

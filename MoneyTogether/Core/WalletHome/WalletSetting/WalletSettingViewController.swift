@@ -40,7 +40,7 @@ class WalletSettingViewController: UIViewController {
             title: "지갑 설정",
             backBtnMode: .push,
             backAction: {
-                self.viewModel.onBackTapped?()
+                self.viewModel.onBackTapped?(.walletSetting)
             }
         )
         
@@ -48,6 +48,7 @@ class WalletSettingViewController: UIViewController {
             iconImage: UIImage(named: "more_horiz"),
             action: {
                 print(#fileID, #function, #line, "navigate to wallet profile edit page")
+                self.viewModel.walletEditBtnTapped?()
             })
         
         self.walletProfileView = {

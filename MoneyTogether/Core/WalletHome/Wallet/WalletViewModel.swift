@@ -7,16 +7,32 @@
 
 import Foundation
 
+
 class WalletViewModel: ObservableObject {
     
     @Published var walletData: Wallet?
+    
     @Published var members: [WalletMember] = []
+    
+    
+    // MARK: For Wallet Profile Editing
+    
+    var dataEditState = WalletDataEditState()
+    
+    var isCompleteBtnEnable: Binder<Bool> = Binder(false)
+    
+    
+    // MARK: For Navigating
     
     /// 지갑멤버 프리뷰 클릭 시 호출되는 클로져
     var walletMembersPreviewTapped: (([WalletMember]) -> Void)?
     
+    /// 지갑 프로필 편집 버튼 클릭 시 호출되는 클로져
+    var walletEditBtnTapped: (() -> Void)?
+    
     /// 뒤로가기 버튼 클릭 시 호출되는 클로져
-    var onBackTapped: (() -> Void)?
+    var onBackTapped: ((RootRouteTarget) -> Void)?
+    
 }
 
 

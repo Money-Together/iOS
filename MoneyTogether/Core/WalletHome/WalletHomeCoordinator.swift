@@ -34,7 +34,8 @@ extension WalletHomeCoordinator {
             return
         }
         
-        viewModel.walletSettingBtnTapped = {
+        viewModel.walletSettingBtnTapped = { [weak self] in
+            guard let self = self else { return }
             root.show(.walletSetting(viewModel: self.viewModel.walletVM))
         }
         
@@ -42,8 +43,20 @@ extension WalletHomeCoordinator {
             root.show(.walletMemberList(members: members))
         }
         
-        viewModel.walletVM.onBackTapped = {
-            root.navigateBack(ofType: WalletSettingViewController.self, animated: true)
+        viewModel.walletVM.walletEditBtnTapped = { [weak self] in
+            guard let self = self else { return }
+            root.show(.editWalletProfile(viewModel: self.viewModel.walletVM))
+        }
+        
+        viewModel.walletVM.onBackTapped = { target in
+            switch target {
+            case .walletSetting:
+                root.navigateBack(ofType: WalletSettingViewController.self, animated: true)
+            case .editWallet:
+                root.navigateBack(ofType: EditWalletProfileViewController.self, animated: true)
+            default: return
+            }
+            
         }
         
     }
