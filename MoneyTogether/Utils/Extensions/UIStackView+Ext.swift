@@ -63,6 +63,15 @@ extension UIStackView {
                                 subViews: subViews)
     }
     
+    
+    /// 스택에 여러 개의 뷰 추가
+    /// - Parameter views: 추가할 뷰 배열
+    func addArrangedSubViews(_ views: [UIView]) {
+        views.forEach {
+            self.addArrangedSubview($0)
+        }
+    }
+    
     /// 스택 하위 뷰 제거
     func clear() {
         self.arrangedSubviews.forEach {
