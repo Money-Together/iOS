@@ -73,6 +73,11 @@ class EditWalletProfileViewController: UIViewController {
             guard let self = self else { return }
             self.completeButton.setButtonEnabled(isEnable)
         })
+        
+        self.viewModel.isErrorAlertVisible.bind({ [weak self] isVisible in
+            guard let self = self else { return }
+            self.showErrorAlert(title: "지갑 프로필 수정을 실패했어요", message: "입력한 내용과 네트워크를 확인해주세요.")
+        })
     }
     
     /// 서브뷰 UI 세팅
@@ -139,6 +144,7 @@ class EditWalletProfileViewController: UIViewController {
             labelText: "완료",
             action: {
                 print(#fileID, #function, #line, "complete button tapped")
+                self.viewModel.completeWalletProfileEditing()
             }
         )
         

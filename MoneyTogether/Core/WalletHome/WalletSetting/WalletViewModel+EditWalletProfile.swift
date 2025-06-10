@@ -70,7 +70,36 @@ extension WalletViewModel {
     
     /// 지갑 프로필 편집 완료
     func completeWalletProfileEditing() {
+        guard isCompleteBtnEnable.value else {
+            return
+        }
         
+        let newName = dataEditState.nameEditState.newValue
+        let newBio = dataEditState.bioEditState.newValue
+        let hasCashbox = dataEditState.hasCashboxEditState.newValue
+        let newCashboxAmount = dataEditState.cashboxAmountEditState.newValue
+        let newCashboxBio = dataEditState.cashboxBioEditState.newValue
+        
+        let updatedData = Wallet(
+            name: newName ?? originalValue(of: .name) ?? "",
+            bio: newBio ?? originalValue(of: .bio),
+            baseCurrency: walletData?.baseCurrency ?? .krw,
+            hasCashBox: hasCashbox ?? walletData?.hasCashBox ?? true,
+            cashBox: CashBox(
+                amount: newCashboxAmount ?? originalValue(of: .cashboxAmount) ?? "",
+                currency: walletData?.baseCurrency ?? .krw,
+                bio: newCashboxBio ?? originalValue(of: .cashboxBio)
+            )
+        )
+        
+        // api
+        
+        // if success
+        self.walletData = updatedData
+        self.onBackTapped?(.editWallet)
+        
+        // if fail
+        // self.isErrorAlertVisible.value = true
     }
     
     /// 지갑 프로필 편집을 완료할 수 있는 상태인지 확인

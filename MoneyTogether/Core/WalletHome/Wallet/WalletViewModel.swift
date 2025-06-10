@@ -19,7 +19,11 @@ class WalletViewModel: ObservableObject {
     
     var dataEditState = WalletDataEditState()
     
-    var isCompleteBtnEnable: Binder<Bool> = Binder(false)
+    /// 지갑 프로필 편집 완료 버튼 활성화 여부
+    private(set) var isCompleteBtnEnable: Binder<Bool> = Binder(false)
+    
+    /// 에러 alert 표시 여부
+    private(set) var isErrorAlertVisible: Binder<Bool> = Binder(false)
     
     
     // MARK: For Navigating
