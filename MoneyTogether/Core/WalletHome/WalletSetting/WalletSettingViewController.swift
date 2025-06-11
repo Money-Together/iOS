@@ -114,7 +114,17 @@ class WalletSettingViewController: UIViewController {
         // 월 시작일 Row
         self.startDayRowTrailingView = createRowTrailingView(contentText: "1일")
         self.startDaySettingRow = createSettingRow(title: "월 시작일", trailingView: self.startDayRowTrailingView, tabAction: {
-            print(#fileID, #function, #line, "월 시작일 선택 모달 띄우기")
+            
+            // 월 시작일 선택 모달 띄우기
+            let hostingVC = UIHostingController(rootView: WalletStartDayPickerView(selectedDay: 1, onDone: { selectedDay in
+                print(#fileID, #function, #line, "selected start day: \(selectedDay)")
+            }))
+            hostingVC.modalPresentationStyle = .formSheet
+            if let sheet = hostingVC.sheetPresentationController {
+                sheet.detents = [.customFraction(0.4)]
+                sheet.largestUndimmedDetentIdentifier = .medium
+            }
+            self.present(hostingVC, animated: true)
         })
         
         // 기본 통화 Row
@@ -194,37 +204,38 @@ extension WalletSettingViewController {
             titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             titleLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor)
         ])
-        
-        // set tab action
-        let btnforTab = UIButton(primaryAction: UIAction(handler: { _ in
-            // print(#fileID, #function, #line, "row tab")
-            tabAction?()
-        })).disableAutoresizingMask()
-        view.addSubview(btnforTab)
-        NSLayoutConstraint.activate([
-            btnforTab.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            btnforTab.topAnchor.constraint(equalTo: view.topAnchor),
-            btnforTab.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            btnforTab.centerYAnchor.constraint(equalTo: view.centerYAnchor)
-        ])
 
-        // if no trailing view
-        guard let contentTrailingView = trailingView else {
+        // set trailing view
+        if let contentTrailingView = trailingView {
+            view.addSubview(contentTrailingView)
+            
+            NSLayoutConstraint.activate([
+                contentTrailingView.leadingAnchor.constraint(greaterThanOrEqualTo: titleLabel.trailingAnchor, constant: 12),
+                contentTrailingView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                contentTrailingView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            ])
+        } else {
+            // if no trailing view
             NSLayoutConstraint.activate([
                 titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
             ])
-            return view
         }
         
-        // set trailing view
-        view.addSubview(contentTrailingView)
         
-        NSLayoutConstraint.activate([
-            contentTrailingView.leadingAnchor.constraint(greaterThanOrEqualTo: titleLabel.trailingAnchor, constant: 12),
-            contentTrailingView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            contentTrailingView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-        ])
-        
+        // set tab action
+        if tabAction != nil {
+            let btnforTab = UIButton(primaryAction: UIAction(handler: { _ in
+                // print(#fileID, #function, #line, "row tab")
+                tabAction?()
+            })).disableAutoresizingMask()
+            view.addSubview(btnforTab)
+            NSLayoutConstraint.activate([
+                btnforTab.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                btnforTab.topAnchor.constraint(equalTo: view.topAnchor),
+                btnforTab.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+                btnforTab.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+            ])
+        }
         
         return view
     }
@@ -241,7 +252,7 @@ extension WalletSettingViewController {
         // sub views
         let textLabel = createRowContentLabel(text: contentText)
         let iconImg = UIImageView(image: UIImage(named: "chevron_right"))
-        iconImg.iconStyle()
+        iconImg.iconStyle(iconColor: .moneyTogether.label.assistive, size: 12)
         
         view.addSubview(textLabel)
         view.addSubview(iconImg)
@@ -249,8 +260,8 @@ extension WalletSettingViewController {
         // set layout
         NSLayoutConstraint.activate([
             textLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            iconImg.leadingAnchor.constraint(equalTo: textLabel.trailingAnchor, constant: 4),
-            iconImg.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 8),
+            iconImg.leadingAnchor.constraint(equalTo: textLabel.trailingAnchor, constant: 8),
+            iconImg.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             
             textLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             iconImg.centerYAnchor.constraint(equalTo: view.centerYAnchor),
