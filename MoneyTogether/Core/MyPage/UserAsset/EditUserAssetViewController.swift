@@ -75,8 +75,8 @@ extension EditUserAssetViewController {
         // Asset amount input view
         assetAmountInputView = CurrencyAmountInputView(
             showCurrencyPickerAction: {
-                let pickerViewController = CurrencyTypePickerViewController(viewModel: self.viewModel)
-                pickerViewController.sheetPresentationController?.detents = [.medium()]
+                let pickerViewController = CurrencyTypePickerViewController(defaultCurrency: self.viewModel.currencyType.value)
+                pickerViewController.sheetPresentationController?.detents = [.medium(), .large()]
                 
                 self.present(pickerViewController, animated: true)
             }

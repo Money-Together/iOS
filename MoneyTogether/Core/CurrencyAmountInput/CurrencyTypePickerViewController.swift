@@ -43,6 +43,7 @@ final class CurrencyTypeCellView: UITableViewCell {
         
         title = UILabel.make(
             text: "\(currencyType.country) \(currencyType.displayName)",
+            font: .moneyTogetherFont(style: .b2),
             numberOfLines: 1
         )
         
@@ -85,26 +86,32 @@ final class CurrencyTypeCellView: UITableViewCell {
 class CurrencyTypePickerViewController: UIViewController {
     
     // MARK: Properties
-    var viewModel: EditUserAssetViewModel
+    // var viewModel: EditUserAssetViewModel
+    
+    var selectedCurrency: Binder<CurrencyType>
     
     var data: [CurrencyType] = CurrencyType.allCases
     
     // MARK: Sub Views
     
-    private var sectionHeader = UILabel.make(
-        text: "통화 선택",
-        textColor: .moneyTogether.label.assistive,
-        font: .moneyTogetherFont(style: .detail1),
-        numberOfLines: 1
-    )
+//    private var sectionHeader = UILabel.make(
+//        text: "통화 선택",
+//        textColor: .moneyTogether.label.assistive,
+//        font: .moneyTogetherFont(style: .detail1),
+//        numberOfLines: 1
+//    )
+    
+    //private var sectionHeader: CustomNavigationBar!
+    
+    private var sectionHeader: ModalHeaderView!
     
     lazy private var tableView: UITableView = UITableView(frame: .zero, style: .plain)
     
     
     // MARK: Init & Setup
     
-    init(viewModel: EditUserAssetViewModel) {
-        self.viewModel = viewModel
+    init(defaultCurrency: CurrencyType = .krw) {
+        self.selectedCurrency = Binder(.krw)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -119,6 +126,17 @@ class CurrencyTypePickerViewController: UIViewController {
     }
     
     private func setUI() {
+        self.view.backgroundColor = .moneyTogether.background
+        
+//        self.sectionHeader = CustomNavigationBar(
+//            title: "통화 선택",
+//            backBtnMode: .modal, backAction: {
+//                self.dismiss(animated: true)
+//            })
+        
+        self.sectionHeader = ModalHeaderView(title: "통화 선택" , onCancel: {
+            self.dismiss(animated: true)
+        })
         
         tableView.dataSource = self
         tableView.delegate = self
@@ -131,7 +149,7 @@ class CurrencyTypePickerViewController: UIViewController {
         tableView.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         
         
-        self.view.backgroundColor = .moneyTogether.background
+        
         
     }
     
@@ -141,12 +159,13 @@ class CurrencyTypePickerViewController: UIViewController {
         
         NSLayoutConstraint.activate([
             sectionHeader.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            sectionHeader.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: Layout.side),
-            sectionHeader.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
+            sectionHeader.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            sectionHeader.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            //constant: 24),
             
             tableView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            tableView.topAnchor.constraint(equalTo: sectionHeader.bottomAnchor, constant: 16),
+            tableView.topAnchor.constraint(equalTo: sectionHeader.bottomAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
@@ -166,9 +185,8 @@ extension CurrencyTypePickerViewController: UITableViewDataSource, UITableViewDe
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        print(#fileID, #function, #line, "\(indexPath.row) is selected")
-        
-        viewModel.updateAssetCurrencyType(newValue: data[indexPath.row])
+        print(#fileID, #function, #line, "\((data[indexPath.row]).displayName) is selected")
+        self.selectedCurrency.value = data[indexPath.row]
         self.dismiss(animated: true)
     }
 }
@@ -179,7 +197,7 @@ extension CurrencyTypePickerViewController: UITableViewDataSource, UITableViewDe
 import SwiftUI
 
 #Preview {
-    CurrencyTypePickerViewController(viewModel: EditUserAssetViewModel(mode: .create))
+    CurrencyTypePickerViewController()
 }
 
 #endif

@@ -119,18 +119,20 @@ class WalletSettingViewController: UIViewController {
             let hostingVC = UIHostingController(rootView: WalletStartDayPickerView(selectedDay: 1, onDone: { selectedDay in
                 print(#fileID, #function, #line, "selected start day: \(selectedDay)")
             }))
-            hostingVC.modalPresentationStyle = .formSheet
-            if let sheet = hostingVC.sheetPresentationController {
-                sheet.detents = [.customFraction(0.4)]
-                sheet.largestUndimmedDetentIdentifier = .medium
-            }
-            self.present(hostingVC, animated: true)
+            
+            self.showSheet(viewController: hostingVC, detents: [.customFraction(0.4)])
+           
         })
         
         // 기본 통화 Row
         self.baseCurrencyRowTrailingView = createRowTrailingView(contentText: "KRW")
         self.baseCurrencySettingRow = createSettingRow(title: "기본 통화", trailingView: self.baseCurrencyRowTrailingView, tabAction: {
             print(#fileID, #function, #line, "통화 리스트 페이지로 이동")
+            let vc = CurrencyTypePickerViewController()
+            vc.selectedCurrency.bind({ value in
+                print(#fileID, #function, #line, "selected base currency: \(value)")
+            })
+            self.showSheet(viewController: vc, detents: [.medium()])
         })
         
         // 카테고리 Row

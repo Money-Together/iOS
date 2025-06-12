@@ -21,31 +21,15 @@ struct WalletStartDayPickerView: View {
     var body: some View {
         VStack {
             // 네비게이션 바
-            HStack {
-                // 닫기 버튼
-                Button(action: {
+            ModalHeaderBar (
+                title: "월 시작일",
+                onCancel: {
                     dismiss()
-                }) {
-                    Image("close")
-                        .iconStyle(size: 16, padding: 12)
-                }
-                
-                Text("월 시작일")
-                    .moneyTogetherFont(style: .b1)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                
-                // 선택 완료 버튼
-                Button(action: {
+                }, onDone: {
                     onDone?(selectedDay)
                     dismiss()
-                }) {
-                    Image("circle")
-                        .iconStyle(size: 20)
                 }
-                
-            }
-            .frame(height: ComponentSize.navigationBarHeight)
-            .padding(.horizontal, 12)
+            )
             
             // 피커
             Picker("Start Day Of Wallet", selection: $selectedDay) {
