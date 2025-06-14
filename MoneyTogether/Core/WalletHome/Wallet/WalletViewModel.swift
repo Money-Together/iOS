@@ -34,8 +34,10 @@ class WalletViewModel: ObservableObject {
     /// 지갑 프로필 편집 버튼 클릭 시 호출되는 클로져
     var walletEditBtnTapped: (() -> Void)?
     
+    var categoriesButtonTapped: (() -> Void)?
+    
     /// 뒤로가기 버튼 클릭 시 호출되는 클로져
-    var onBackTapped: ((RootRouteTarget) -> Void)?
+    var onBackTapped: ((WalletHomeRouteTarget) -> Void)?
     
 }
 

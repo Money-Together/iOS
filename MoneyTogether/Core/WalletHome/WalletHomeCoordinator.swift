@@ -8,6 +8,12 @@
 import Foundation
 import UIKit
 
+enum WalletHomeRouteTarget {
+    case walletSetting
+    case walletMemberList
+    case editWallet
+}
+
 class WalletHomeCoordinator: BaseNavCoordinator {
     var rootCoordinator: Coordinator?
     
@@ -36,11 +42,16 @@ extension WalletHomeCoordinator {
         
         viewModel.walletSettingBtnTapped = { [weak self] in
             guard let self = self else { return }
-            root.show(.walletSetting(viewModel: self.viewModel.walletVM))
+            let viewController = WalletSettingViewController(viewModel: self.viewModel.walletVM)
+            self.navigationController.pushViewController(viewController, animated: true)
         }
         
         viewModel.walletVM.walletMembersPreviewTapped = { members in
-            root.show(.walletMemberList(members: members))
+            let viewController = WalletMemberListViewController(members: members, onBackTapped: { [weak self] in
+                guard let self = self else { return }
+                self.navigationController.popViewController(animated: true)
+            })
+            self.navigationController.pushViewController(viewController, animated: true)
         }
         
         viewModel.walletVM.walletEditBtnTapped = { [weak self] in
@@ -48,10 +59,18 @@ extension WalletHomeCoordinator {
             root.show(.editWalletProfile(viewModel: self.viewModel.walletVM))
         }
         
+        viewModel.walletVM.categoriesButtonTapped = { [weak self] in
+            guard let self = self else { return }
+            let viewController = CategoryListViewController()
+            self.navigationController.pushViewController(viewController, animated: true)
+        }
+        
         viewModel.walletVM.onBackTapped = { target in
             switch target {
             case .walletSetting:
-                root.navigateBack(ofType: WalletSettingViewController.self, animated: true)
+                self.navigateBack(ofType: WalletSettingViewController.self, animated: true)
+//            case .walletMemberList:
+//                self.navigateBack(ofType: WalletMemberListViewController.self, animated: true)
             case .editWallet:
                 root.navigateBack(ofType: EditWalletProfileViewController.self, animated: true)
             default: return
