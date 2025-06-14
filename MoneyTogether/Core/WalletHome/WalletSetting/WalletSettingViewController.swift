@@ -139,6 +139,7 @@ class WalletSettingViewController: UIViewController {
         self.categoryRowTrailingView = createRowTrailingView(contentText: "")
         self.categorySettingRow = createSettingRow(title: "카테고리", trailingView: self.categoryRowTrailingView, tabAction: {
             print(#fileID, #function, #line, "카테고리 리스트 페이지로 이동")
+            self.viewModel.categoriesButtonTapped?()
         })
         
         // 알림 Row
