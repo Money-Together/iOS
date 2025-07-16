@@ -75,8 +75,8 @@ extension EditUserAssetViewController {
         // Asset amount input view
         assetAmountInputView = CurrencyAmountInputView(
             showCurrencyPickerAction: {
-                let pickerViewController = CurrencyTypePickerViewController(viewModel: self.viewModel)
-                pickerViewController.sheetPresentationController?.detents = [.medium()]
+                let pickerViewController = CurrencyTypePickerViewController(defaultCurrency: self.viewModel.currencyType.value)
+                pickerViewController.sheetPresentationController?.detents = [.medium(), .large()]
                 
                 self.present(pickerViewController, animated: true)
             }
@@ -150,23 +150,28 @@ extension EditUserAssetViewController {
     
     /// 뷰모델과 데이터 바인딩 설정하는 함수
     private func setBindings() {
-        viewModel.orgData.bind({ data in
+        viewModel.orgData.bind({ [weak self] data in
+            guard let self = self else { return }
             self.setUIWithData(with: data)
         })
         
-        viewModel.isCompleteBtnEnable.bind{ isEnable in
+        viewModel.isCompleteBtnEnable.bind{ [weak self] isEnable in
+            guard let self = self else { return }
             self.completeButton.setButtonEnabled(isEnable)
         }
         
-        viewModel.currencyType.bind{ newType in
+        viewModel.currencyType.bind{ [weak self] newType in
+            guard let self = self else { return }
             self.assetAmountInputView.updatePickedCurrencyLabel(currencyType: newType)
         }
         
-        assetAmountInputView.currencyTypeBinding = { currencyType in
+        assetAmountInputView.currencyTypeBinding = { [weak self] currencyType in
+            guard let self = self else { return }
             self.viewModel.updateAssetCurrencyType(newValue: currencyType)
         }
         
-        assetAmountInputView.assetAmountBinding = { amountString in
+        assetAmountInputView.assetAmountBinding = { [weak self] amountString in
+            guard let self = self else { return }
             self.viewModel.updateAssetAmount(newValue: amountString)
         }
     }

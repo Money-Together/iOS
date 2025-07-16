@@ -44,12 +44,16 @@ class WalletHomeViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        self.viewModel.fetchWalletProfile()
-        self.viewModel.logsVM.fetchLogs()
+        //self.viewModel.fetchWalletProfile()
+        //self.viewModel.logsVM.fetchLogs()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.viewModel.fetchWalletProfile()
+        self.viewModel.logsVM.fetchLogs()
+        
         setUI()
         setLayout()
         setBindings()
@@ -107,13 +111,14 @@ class WalletHomeViewController: UIViewController {
         self.moneylogTableView = UITableView().disableAutoresizingMask()
         self.setTableView()
         
-    }
-    
-    private func setLayout() {
+        
         self.view.addSubview(headerView)
         self.view.addSubview(selectedDateFilterView)
         self.view.addSubview(moneylogTableView)
         
+    }
+    
+    private func setLayout() {
         NSLayoutConstraint.activate([
             headerView.topAnchor.constraint(equalTo: self.view.topAnchor),
             headerView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor),
@@ -127,8 +132,6 @@ class WalletHomeViewController: UIViewController {
             moneylogTableView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor),
             moneylogTableView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor),
             moneylogTableView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor)
-            
-            
         ])
     }
     

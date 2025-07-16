@@ -139,9 +139,6 @@ struct WalletProfileSettingsView: View {
                 .foregroundStyle(Color.moneyTogether.label.alternative)
         }
     }
-    
-    
-    
 }
 
 #Preview {
