@@ -12,6 +12,8 @@ enum WalletHomeRouteTarget {
     case walletSetting
     case walletMemberList
     case editWallet
+    case baseCurrency
+    case categoryList
 }
 
 class WalletHomeCoordinator: BaseNavCoordinator {
@@ -55,13 +57,33 @@ extension WalletHomeCoordinator {
         }
         
         viewModel.walletVM.walletEditBtnTapped = { [weak self] in
+            guard let self = self,
+                  let walletData = self.viewModel.walletVM.walletData else {
+                return
+            }
+            
+            let editViewModel = EditWalletProfileViewModel(mode: .update(orgData: walletData))
+            editViewModel.onBackTapped = { target in
+                root.navigateBack(ofType: EditWalletProfileViewController.self, animated: true)
+            }
+            editViewModel.onUpdated = { newValue in
+                self.viewModel.walletVM.walletData = newValue
+            }
+            root.show(.editWalletProfile(viewModel: editViewModel))
+        }
+        
+        viewModel.walletVM.baseCurrencyButtonTapped = { [weak self] in
             guard let self = self else { return }
-            root.show(.editWalletProfile(viewModel: self.viewModel.walletVM))
+            let viewController = CurrencyTypePickerViewController()
+            viewController.selectedCurrency.bind({ value in
+                print(#fileID, #function, #line, "selected base currency: \(value)")
+            })
+            self.navigationController.pushViewController(viewController, animated: true)
         }
         
         viewModel.walletVM.categoriesButtonTapped = { [weak self] in
             guard let self = self else { return }
-            let viewController = CategoryListViewController()
+            let viewController = CategoryListViewController(viewModel: self.viewModel.walletVM)
             self.navigationController.pushViewController(viewController, animated: true)
         }
         
@@ -73,6 +95,10 @@ extension WalletHomeCoordinator {
 //                self.navigateBack(ofType: WalletMemberListViewController.self, animated: true)
             case .editWallet:
                 root.navigateBack(ofType: EditWalletProfileViewController.self, animated: true)
+            case .baseCurrency:
+                self.navigateBack(ofType: CurrencyTypePickerViewController.self)
+            case .categoryList:
+                self.navigateBack(ofType: CategoryListViewController.self)
             default: return
             }
             

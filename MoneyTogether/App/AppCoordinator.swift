@@ -12,7 +12,7 @@ enum RootRoute {
     case editProfile(viewModel: EditProfileViewModel)
     case editUserAsset(viewModel: EditUserAssetViewModel)
 //    case walletSetting(viewModel: WalletViewModel)
-    case editWalletProfile(viewModel: WalletViewModel)
+    case editWalletProfile(viewModel: EditWalletProfileViewModel)
 //    case walletMemberList(members: [WalletMember])
 }
 

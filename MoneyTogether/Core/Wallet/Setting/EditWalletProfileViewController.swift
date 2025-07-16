@@ -10,7 +10,8 @@ import UIKit
 
 /// 지갑 프로필 편집 뷰
 class EditWalletProfileViewController: UIViewController {
-    var viewModel: WalletViewModel
+    //var viewModel: WalletViewModel
+    var viewModel: EditWalletProfileViewModel
     
     // MARK: Sub Views
     
@@ -49,7 +50,7 @@ class EditWalletProfileViewController: UIViewController {
     
     // MARK: Init & Set up
     
-    init(viewModel: WalletViewModel) {
+    init(viewModel: EditWalletProfileViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -58,16 +59,26 @@ class EditWalletProfileViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setBindings()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        setBindings()
+        //setBindings()
         setUI()
         setLayout()
-        setUIWithData(with: self.viewModel.walletData)
+        setUIWithData(with: self.viewModel.orgData.value)
     }
     
     /// 뷰모델 데이터 바인딩 처리
     private func setBindings() {
+        viewModel.orgData.bind({ [weak self] data in
+            guard let self = self else { return }
+            self.setUIWithData(with: data)
+        })
+        
         // 완료 버튼 활성화 여부에 따른 버튼 UI 변경
         self.viewModel.isCompleteBtnEnable.bind({ [weak self] isEnable in
             guard let self = self else { return }
@@ -425,25 +436,12 @@ extension EditWalletProfileViewController: UITextFieldDelegate {
 
 import SwiftUI
 
-// 1. UIViewController 래퍼 정의
-struct EditWalletProfileViewControllerWrapper: UIViewControllerRepresentable {
-    func makeUIViewController(context: Context) -> some UIViewController {
-        let viewModel = WalletViewModel()
-        viewModel.fetchWalletData()
-        
-        return EditWalletProfileViewController(viewModel: viewModel)
-    }
-
-    func updateUIViewController(_ uiViewController: UIViewControllerType, context: Context) {
-        // 업데이트 로직이 필요 없다면 비워두세요
-    }
-}
-
-
 #Preview {
-    let viewModel = WalletViewModel()
-    viewModel.fetchWalletData()
-    return EditWalletProfileViewController(viewModel: viewModel)
+//    let viewModel = WalletViewModel()
+//    viewModel.fetchWalletData()
+//    let editVM = EditWalletProfileViewModel(mode: .update(orgData: viewModel.walletData))
+    let editVM = EditWalletProfileViewModel(mode: .create)
+    return EditWalletProfileViewController(viewModel: editVM)
 }
 
 #endif

@@ -12,6 +12,10 @@ class WalletViewModel: ObservableObject {
     
     @Published var walletData: Wallet?
     
+    @Published var startDay: Int = 1
+    
+    @Published var baseCurrency: CurrencyType = .krw
+    
     @Published var members: [WalletMember] = []
     
     
@@ -34,6 +38,7 @@ class WalletViewModel: ObservableObject {
     /// 지갑 프로필 편집 버튼 클릭 시 호출되는 클로져
     var walletEditBtnTapped: (() -> Void)?
     
+    var baseCurrencyButtonTapped: (() -> Void)?
     var categoriesButtonTapped: (() -> Void)?
     
     /// 뒤로가기 버튼 클릭 시 호출되는 클로져
@@ -51,6 +56,7 @@ extension WalletViewModel {
         
         // 데이터 업데이트
         self.walletData = dummyData
+        self.baseCurrency = dummyData.baseCurrency
     }
     
     func fetchMembers() {

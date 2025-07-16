@@ -94,7 +94,7 @@ class CustomNavigationBar: UIView {
         
         // 네비게이션 push 스타일 백 버튼 초기화
         self.pushStyleBackBtn = CustomIconButton(
-            iconImage: UIImage(systemName: "chevron.left"),
+            iconImage: UIImage(named: "chevron_left"),
             action: {
                 self.doBackAction()
             }
@@ -102,7 +102,8 @@ class CustomNavigationBar: UIView {
         
         // 모달 present 스타일 백 버튼 초기화
         self.modalStyleBackBtn = CustomIconButton(
-            iconImage: UIImage(systemName: "x.square"),
+            iconImage: UIImage(named: "close"),
+            size: 40,
             action: {
                 self.doBackAction()
             }

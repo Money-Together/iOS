@@ -55,6 +55,7 @@ class CategoryListViewController: UIViewController {
     
     // MARK: Properties
     
+    var viewModel: WalletViewModel
 //    var tappedCateogry: Binder<Category>
     
     var data: [Category] = Category.createDummyList()
@@ -67,6 +68,15 @@ class CategoryListViewController: UIViewController {
     
     
     // MARK: Init & Setup
+    
+    init(viewModel: WalletViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -82,6 +92,7 @@ class CategoryListViewController: UIViewController {
             backBtnMode: .push,
             backAction: {
                 print(#fileID, #function, #line, "back btn tapped")
+                self.viewModel.onBackTapped?(.categoryList)
             })
         
         tableView.dataSource = self
@@ -134,6 +145,6 @@ extension CategoryListViewController: UITableViewDataSource, UITableViewDelegate
     }
 }
 
-#Preview {
-    CategoryListViewController()
-}
+//#Preview {
+//    CategoryListViewController()
+//}

@@ -191,6 +191,24 @@ extension CurrencyTypePickerViewController: UITableViewDataSource, UITableViewDe
     }
 }
 
+import SwiftUI
+
+struct CurrencyTypePickerViewControllerWrapper: UIViewControllerRepresentable {
+    var onSelect: ((CurrencyType) -> Void)?
+    
+    func makeUIViewController(context: Context) -> CurrencyTypePickerViewController {
+        let vc = CurrencyTypePickerViewController()
+        vc.selectedCurrency.bind({ value in
+            onSelect?(value)
+            print(#fileID, #function, #line, "selected base currency: \(value)")
+        })
+        return vc
+    }
+
+    func updateUIViewController(_ uiViewController: CurrencyTypePickerViewController, context: Context) {
+        // 업데이트가 필요할 때 사용
+    }
+}
 
 #if DEBUG
 
