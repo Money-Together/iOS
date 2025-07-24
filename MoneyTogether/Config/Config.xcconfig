@@ -1,0 +1,14 @@
+//
+//  Config.xcconfig
+//  MoneyTogether
+//
+//  Created by Heeoh Son on 7/24/25.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+#include "Secrets.xcconfig"
+
+// server
+API_BASE_URL = https://

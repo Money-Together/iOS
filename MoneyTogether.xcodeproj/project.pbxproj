@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		3E3767C92E2CF4CB00A1FDBB /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 3E3767C82E2CF4CB00A1FDBB /* GoogleSignIn */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		3E4929512DAE4DB900C3C2BB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -65,6 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3E3767C92E2CF4CB00A1FDBB /* GoogleSignIn in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,12 +90,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3E3767C72E2CF4CB00A1FDBB /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		3E4929312DAE4DB500C3C2BB = {
 			isa = PBXGroup;
 			children = (
 				3E49293C2DAE4DB600C3C2BB /* MoneyTogether */,
 				3E4929532DAE4DB900C3C2BB /* MoneyTogetherTests */,
 				3E49295D2DAE4DB900C3C2BB /* MoneyTogetherUITests */,
+				3E3767C72E2CF4CB00A1FDBB /* Frameworks */,
 				3E49293B2DAE4DB600C3C2BB /* Products */,
 			);
 			indentWidth = 4;
@@ -127,6 +140,7 @@
 			);
 			name = MoneyTogether;
 			packageProductDependencies = (
+				3E3767C82E2CF4CB00A1FDBB /* GoogleSignIn */,
 			);
 			productName = MoneyTogether;
 			productReference = 3E49293A2DAE4DB600C3C2BB /* MoneyTogether.app */;
@@ -211,6 +225,9 @@
 			);
 			mainGroup = 3E4929312DAE4DB500C3C2BB;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				3E623EBC2E2CEECD009B4077 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 3E49293B2DAE4DB600C3C2BB /* Products */;
 			projectDirPath = "";
@@ -345,6 +362,8 @@
 		};
 		3E4929662DAE4DB900C3C2BB /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 3E49293C2DAE4DB600C3C2BB /* MoneyTogether */;
+			baseConfigurationReferenceRelativePath = Config/Config.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -397,6 +416,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "프로필 이미지 설정을 위해 사진 라이브러리에 접근하도록 허용합니다.";
+				INFOPLIST_PREPROCESS = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -410,6 +430,8 @@
 		};
 		3E4929672DAE4DB900C3C2BB /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = 3E49293C2DAE4DB600C3C2BB /* MoneyTogether */;
+			baseConfigurationReferenceRelativePath = Config/Config.xcconfig;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -456,6 +478,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "프로필 이미지 설정을 위해 사진 라이브러리에 접근하도록 허용합니다.";
+				INFOPLIST_PREPROCESS = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.2;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -582,6 +605,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		3E623EBC2E2CEECD009B4077 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		3E3767C82E2CF4CB00A1FDBB /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3E623EBC2E2CEECD009B4077 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 3E4929322DAE4DB500C3C2BB /* Project object */;
 }
