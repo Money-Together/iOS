@@ -73,7 +73,7 @@ struct SliderSegmentedPicker<T: SliderSegmentedPickable>: View {
             .frame(maxWidth: .infinity)
         }
         .padding(.horizontal, spacing)
-        .frame(maxWidth: .infinity, maxHeight: pickerHeight)
+        .frame(maxWidth: .infinity, minHeight: pickerHeight)
         .background(Color.moneyTogether.grayScale.baseGray20)
         .clipShape(RoundedRectangle(cornerRadius: pickerHeight / 2))
     }

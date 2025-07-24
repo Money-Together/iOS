@@ -8,5 +8,6 @@
 import Foundation
 
 struct Layout {
-    static let side : CGFloat = 24
+    static let side : CGFloat   = 24
+    static let bottom : CGFloat = 100
 }
