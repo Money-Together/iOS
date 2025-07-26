@@ -7,6 +7,8 @@
 
 import Foundation
 import UIKit
+import FirebaseCore
+import FirebaseAuth
 import GoogleSignIn
 
 class LoginViewController: UIViewController {
@@ -24,26 +26,7 @@ class LoginViewController: UIViewController {
         
         loginButton = CTAUIButton(activeState: .active, buttonStyle: .solid, labelText: "구글로 로그인", action: {
             print(#fileID, #function, #line, "do login")
-            
-            GIDSignIn.sharedInstance.signIn(withPresenting: self) { signInResult, error in
-                guard error == nil else { return }
-                guard let signInResult = signInResult else { return }
-                
-                print(#fileID, #function, #line, "sign in success")
-                
-                signInResult.user.refreshTokensIfNeeded { user, error in
-                    guard error == nil else { return }
-                    guard let user = user else { return }
-                    
-                    guard let idToken = user.idToken else { return }
-                    print(#fileID, #function, #line, "token: \(idToken.tokenString)")
-                    self.testAPIRequest(token: idToken.tokenString)
-                    // Send ID token to backend (example below).
-                }
-                
-                // If sign in succeeded, display the app's main content View.
-                
-            }
+            self.doGoogleSocialLogin()
         })
         
         view.addSubview(loginButton)
@@ -56,6 +39,58 @@ class LoginViewController: UIViewController {
             loginButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: Layout.side),
             loginButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -150)
         ])
+    }
+    
+    func doGoogleSocialLogin() {
+        guard let clientID = FirebaseApp.app()?.options.clientID else { return }
+
+        // Create Google Sign In configuration object.
+        let config = GIDConfiguration(clientID: clientID)
+        GIDSignIn.sharedInstance.configuration = config
+
+        // Start the sign in flow!
+        GIDSignIn.sharedInstance.signIn(withPresenting: self) { [unowned self] signInResult, error in
+            guard error == nil else {
+                print(#fileID, #function, #line, "❌ Error: \(String(describing: error?.localizedDescription))")
+                return
+            }
+            
+            guard let user = signInResult?.user,
+                  let googleIdToken = user.idToken?.tokenString else {
+                print(#fileID, #function, #line, "❌ Error: no google token")
+                return
+            }
+            
+            // firebase 사용자 인증 정보 (with google idToken)
+            let credential = GoogleAuthProvider.credential(withIDToken: googleIdToken, accessToken: user.accessToken.tokenString)
+            doFirebaseLogin(credential: credential)
+            
+        }
+    }
+    
+    func doFirebaseLogin(credential: AuthCredential) {
+        // firebase login
+        Auth.auth().signIn(with: credential) { result, error in
+            guard error == nil else {
+                print(#fileID, #function, #line, "❌ Error: \(error?.localizedDescription ?? "Unknown error"))")
+                return
+            }
+            
+            guard let user = Auth.auth().currentUser else {
+                print(#fileID, #function, #line, "❌ Error: No current user signed in Firebase ")
+                return
+            }
+            
+            user.getIDToken { idToken, error in
+                guard let idToken = idToken, error == nil else {
+                    print("❌ Error: \(error?.localizedDescription ?? "Unknown error")")
+                    return
+                }
+                
+                // 서버 로그인
+                self.testAPIRequest(token: idToken)
+            }
+        }
     }
     
     func testAPIRequest(token: String) {
