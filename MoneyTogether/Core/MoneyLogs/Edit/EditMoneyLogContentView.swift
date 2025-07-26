@@ -21,10 +21,6 @@ struct EditMoneyLogContentView : View {
     @State var isPrivate: Bool = false
     @State var useCashBox: Bool = false
     
-    var members: [WalletMember] = Array(0..<5).map { idx in
-        WalletMember.createDummyData(nickname: "user\(idx)")
-    }
-    
     private var settlementMembers: [SettlementMember] = [
         SettlementMember.createDummyData(isPayer: true, status: SettlementMemberStatus(userStatus: .active, settlementStatus: .completed)),
         SettlementMember.createDummyData(status: SettlementMemberStatus(userStatus: .active, settlementStatus: .pending)),
@@ -185,7 +181,7 @@ extension EditMoneyLogContentView {
             LabeledContent {
                 HStack(spacing: 8) {
                     // WalletMembersPreview(members: members)
-                    Text("\(members.count) 명")
+                    Text("\(settlementMembers.count) 명")
                         .foregroundStyle(Color.moneyTogether.label.alternative)
                         .moneyTogetherFont(style: .b1)
                     Image("chevron_right")

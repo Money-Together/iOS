@@ -36,7 +36,7 @@ struct SettlementMemberStatus {
 struct SettlementMember: Identifiable {
     let id: UUID = UUID()
     let userInfo: SimpleUser
-    let isPayer: Bool
+    var isPayer: Bool
     let isMe: Bool
     let amount: String
     let status: SettlementMemberStatus
