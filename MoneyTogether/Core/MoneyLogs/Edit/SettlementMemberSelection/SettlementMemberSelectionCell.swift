@@ -9,13 +9,13 @@ import Foundation
 import UIKit
 import SwiftUI
 
-// MARK: UITableViewCell
+// MARK: UICollectionViewCell
 
 /// 지갑 멤버 리스트 custom cell
 /// SwiftUI 뷰를 호스팅해 UITableView에서 사용할 Cell 구성
-class SettlementMemberSelectionCell: UITableViewCell {
+class SettlementMemberSelectionCell: UICollectionViewCell {
     static let reuseId: String = "SettlemmentMemberCell"
-    
+
     func configure(with data: SelectableSettlementMember, onIsPayerChanged: ((Bool) -> Void)?, onIsSelectedChanged: ((Bool) -> Void)?) {
         self.contentConfiguration = UIHostingConfiguration {
             SettlementMemberSelectionCellView(
@@ -28,7 +28,10 @@ class SettlementMemberSelectionCell: UITableViewCell {
                 })
             )
         }
-        self.selectionStyle = .none
+        contentView.preservesSuperviewLayoutMargins = false
+        contentView.layoutMargins = .zero
+//        self.selectionStyle = .none
+        contentView.backgroundColor = .clear
     }
 }
 
@@ -75,6 +78,7 @@ struct SettlementMemberSelectionCellView: View {
             Toggle(isOn: $isSelected, label: {})
                 .toggleStyle(.customCheckbox)
         }
+        .frame(height: 40)
         .onChange(of: isPayer) {
             self.isPayerBinder = isPayer
         }

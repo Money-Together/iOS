@@ -166,7 +166,6 @@ class CustomNavigationBar: UIView {
     /// 스택에 최대 2개의 버튼 가능
     /// - Parameter buttons: 추가할 버튼 뷰 리스트
     private func addButtonsToRightStack(buttons: [UIView]) {
-        print(#fileID, #function, #line, "buttons count: \(buttons.count)")
         let maxCount = backButtonMode == .modal ? 1 : 2
         
         buttons.prefix(maxCount).forEach { btn in

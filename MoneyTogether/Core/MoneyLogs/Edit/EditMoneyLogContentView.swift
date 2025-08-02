@@ -209,7 +209,7 @@ extension EditMoneyLogContentView {
                         ProfileImageView(size: ProfileImgSize.small, imageUrl: member.userInfo.profileImgUrl)
                             .overlay {
                                 if member.isPayer {
-                                    PayerMark
+                                    PayerMark()
                                 }
                             }
                         
