@@ -43,13 +43,13 @@ class SettlementMemberSelectionViewController: UIViewController {
     
     private var searchBar: CustomTextField!
     
-    private var payerHeaderLabel: UIView!
-    
     private var settlementMemberHeaderLabel: UIView!
     
     private var allMembersSectionHeader: UIView!
     
-    private var collectionView: UICollectionView!
+    private var selectedMemberListView: UICollectionView!
+    
+    private var memberListView: UICollectionView!
     
 
     // MARK: Init & Set up
@@ -80,34 +80,78 @@ class SettlementMemberSelectionViewController: UIViewController {
         
         self.setupNavigationBar()
         self.setupSearchBar()
-        self.setupCollectionView()
+        self.setupSelectedMemberListView()
+        self.setupMemberListView()
         
         self.view.addSubview(navigationBar)
-//        self.view.addSubview(searchBar)
-        //self.view.addSubview(tableHeaderView)
-        self.view.addSubview(collectionView)
+        self.view.addSubview(selectedMemberListView)
+        self.view.addSubview(searchBar)
+        self.view.addSubview(memberListView)
         
     }
     
     private func setLayout() {
+        
+        let checkboxDescriptionLabel: UIView = {
+            let view = UIView().disableAutoresizingMask()
+
+            let payerLabel = UILabel.make(
+                text: "결제",
+                textColor: .moneyTogether.label.assistive,
+                font: .moneyTogetherFont(style: .detail2)
+            )
+            payerLabel.textAlignment = .center
+            
+            let participantLabel = UILabel.make(
+                text: "함께",
+                textColor: .moneyTogether.label.assistive,
+                font: .moneyTogetherFont(style: .detail2)
+            )
+            participantLabel.textAlignment = .center
+            
+            view.addSubview(payerLabel)
+            view.addSubview(participantLabel)
+            
+            NSLayoutConstraint.activate([
+                payerLabel.widthAnchor.constraint(equalToConstant: 40),
+                participantLabel.widthAnchor.constraint(equalToConstant: 40),
+                
+                payerLabel.topAnchor.constraint(equalTo: view.topAnchor),
+                payerLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+                participantLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+                participantLabel.topAnchor.constraint(equalTo: view.topAnchor),
+                
+                participantLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                participantLabel.leadingAnchor.constraint(equalTo: payerLabel.trailingAnchor, constant: 8),
+            ])
+            
+            return view
+        }()
+        
+        self.view.addSubview(checkboxDescriptionLabel)
         
         NSLayoutConstraint.activate([
             navigationBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             navigationBar.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             navigationBar.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             
-//            searchBar.topAnchor.constraint(equalTo: navigationBar.bottomAnchor, constant: 24),
-//            searchBar.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: Layout.side),
-//            searchBar.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            selectedMemberListView.topAnchor.constraint(equalTo: navigationBar.bottomAnchor, constant: 12),
+            selectedMemberListView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+            selectedMemberListView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            selectedMemberListView.heightAnchor.constraint(equalToConstant: ComponentSize.verticalProfileCellSize.height),
             
-//            tableHeaderView.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 24),
-//            tableHeaderView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: Layout.side),
-//            tableHeaderView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            searchBar.topAnchor.constraint(equalTo: selectedMemberListView.bottomAnchor, constant: 12),
+            searchBar.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: Layout.side),
+            searchBar.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
             
-            collectionView.topAnchor.constraint(equalTo: navigationBar.bottomAnchor, constant:4),
-            collectionView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-            collectionView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            checkboxDescriptionLabel.topAnchor.constraint(equalTo: searchBar.bottomAnchor, constant: 12),
+            checkboxDescriptionLabel.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: Layout.side),
+            checkboxDescriptionLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            
+            memberListView.topAnchor.constraint(equalTo: checkboxDescriptionLabel.bottomAnchor, constant:4),
+            memberListView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
+            memberListView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+            memberListView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
         ])
     }
 }
@@ -139,55 +183,65 @@ extension SettlementMemberSelectionViewController {
         self.hideKeyboardWhenTappedAround()
     }
     
-    private func setupCollectionView() {
-        
+    private func setupSelectedMemberListView() {
         // layout
-        let layout = UICollectionViewCompositionalLayout { (sectionIndex,_) -> NSCollectionLayoutSection? in
-            return self.createSection(for: Section(rawValue: sectionIndex))
+        let layout = UICollectionViewCompositionalLayout { (_,_) -> NSCollectionLayoutSection? in
+            return self.createHorizontalScrollingSection()
         }
         
         // collection view
-        self.collectionView = UICollectionView(frame: self.view.bounds, collectionViewLayout: layout).disableAutoresizingMask()
-        self.collectionView.backgroundColor = .moneyTogether.background
-        self.collectionView.dataSource = self
+        self.selectedMemberListView = UICollectionView(frame: self.view.bounds, collectionViewLayout: layout).disableAutoresizingMask()
+        self.selectedMemberListView.backgroundColor = .moneyTogether.background
+        self.selectedMemberListView.dataSource = self
         
         // register cell
-        self.collectionView.register(SelectedMemberCell.self, forCellWithReuseIdentifier: SelectedMemberCell.reuseId)
-        self.collectionView.register(SettlementMemberSelectionCell.self, forCellWithReuseIdentifier: SettlementMemberSelectionCell.reuseId)
+        self.selectedMemberListView.register(SelectedMemberCell.self, forCellWithReuseIdentifier: SelectedMemberCell.reuseId)
+    }
+    
+    private func setupMemberListView() {
+        
+        // layout
+        let layout = UICollectionViewCompositionalLayout { (_,_) -> NSCollectionLayoutSection? in
+            return self.createSingleColumnSection()
+        }
+        
+        // collection view
+        self.memberListView = UICollectionView(frame: self.view.bounds, collectionViewLayout: layout).disableAutoresizingMask()
+        self.memberListView.backgroundColor = .moneyTogether.background
+        self.memberListView.dataSource = self
+        
+        // register cell
+        self.memberListView.register(SettlementMemberSelectionCell.self, forCellWithReuseIdentifier: SettlementMemberSelectionCell.reuseId)
     }
     
 }
 
 // MARK: Collection View DataSource
 extension SettlementMemberSelectionViewController: UICollectionViewDataSource {
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return Section.allCases.count
-    }
-    
+
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let sectionType = Section(rawValue: section)
-        switch sectionType {
-        case .selected: return selectedMembers.count
-        case .allMembers: return membersCount
-        default: return 0
+        switch collectionView {
+        case selectedMemberListView: return selectedMembers.count
+        case memberListView: return membersCount
+        default:
+            print("[❌ Error] at: \(#fileID):\(#function):\(#line) - invalid collection view ❌")
+            return 0
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
 
-        let section = Section(rawValue: indexPath.section)
-        
-        switch section {
-        case .selected:
+        switch collectionView {
+        case selectedMemberListView:
             if let cell = createSelectedMemberCell(indexPath: indexPath) {
                 return cell
             }
-        case .allMembers:
+        case memberListView:
             if let cell = createMemberCell(indexPath: indexPath) {
                 return cell
             }
         default:
-            print("[❌ Error] at: \(#fileID):\(#function):\(#line) - invalid section ❌")
+            print("[❌ Error] at: \(#fileID):\(#function):\(#line) - invalid collection view ❌")
             return UICollectionViewCell()
         }
         
@@ -198,18 +252,7 @@ extension SettlementMemberSelectionViewController: UICollectionViewDataSource {
 
 // MARK: Collection View Layout
 extension SettlementMemberSelectionViewController {
-    private func createSection(for sectionType: Section?) -> NSCollectionLayoutSection {
-        switch sectionType {
-        case .selected:
-            return createHorizontalScrollingSection()
-        case .allMembers:
-            return createSingleColumnSection()
-        default: // error
-            print("[❌ Error] at: \(#fileID):\(#function):\(#line) - invalid section ❌")
-            return createSingleColumnSection()
-        }
-    }
-    
+
     private func createSingleColumnSection() -> NSCollectionLayoutSection {
         let spacing: CGFloat = 16
         let cellCount: CGFloat = CGFloat(membersCount)
@@ -222,10 +265,9 @@ extension SettlementMemberSelectionViewController {
         
         let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(groupHeight))
         let group = NSCollectionLayoutGroup.vertical(layoutSize: groupSize, subitems: [item])
-//        group.interItemSpacing = .fixed(spacing)
         
         let section = NSCollectionLayoutSection(group: group)
-        section.contentInsets = .init(top: 20, leading: Layout.side, bottom: 40, trailing: Layout.side)
+        section.contentInsets = .init(top: 0, leading: Layout.side, bottom: 40, trailing: Layout.side)
         
         return section
     }
@@ -259,7 +301,7 @@ extension SettlementMemberSelectionViewController {
     private func createSelectedMemberCell(indexPath: IndexPath) -> SelectedMemberCell? {
         let data = selectedMembers[indexPath.row]
         
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SelectedMemberCell.reuseId, for: indexPath) as? SelectedMemberCell else {
+        guard let cell = selectedMemberListView.dequeueReusableCell(withReuseIdentifier: SelectedMemberCell.reuseId, for: indexPath) as? SelectedMemberCell else {
             return nil
         }
         
@@ -276,7 +318,7 @@ extension SettlementMemberSelectionViewController {
     private func createMemberCell(indexPath: IndexPath) -> SettlementMemberSelectionCell? {
         let data = members[indexPath.row]
         
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SettlementMemberSelectionCell.reuseId, for: indexPath) as? SettlementMemberSelectionCell else {
+        guard let cell = memberListView.dequeueReusableCell(withReuseIdentifier: SettlementMemberSelectionCell.reuseId, for: indexPath) as? SettlementMemberSelectionCell else {
             return nil
         }
         
