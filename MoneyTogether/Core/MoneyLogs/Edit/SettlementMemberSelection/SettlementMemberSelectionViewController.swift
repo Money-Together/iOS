@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import Combine
 
 /// 정산 멤버 선택을 위한 멤버 리스트 뷰
 /// - members: 보여줄 멤버 리스트, 정산멤버 선택을 위한 데이터 포함
@@ -18,15 +19,25 @@ class SettlementMemberSelectionViewController: UIViewController {
         case allMembers = 1
     }
     
+    typealias Member = SelectableSettlementMember
+    
+    private var cancellables = Set<AnyCancellable>()
+    
     // MARK:Properties
+    
+    private var viewModel: SettlementMemberSelectionViewModel
     
     /// 뒤로가기 실행 클로져
     private var onBackTapped: (() -> Void)?
     
     /// 보여줄 멤버 리스트
-    private var members: [SelectableSettlementMember]
+    private var members: [Member] {
+        viewModel.displayedMembers
+    }
     
-    private var selectedMembers: [SelectableSettlementMember]
+    private var selectedMembers: [Member] {
+        viewModel.selectedMembers
+    }
     
     /// 멤버 수
     private var membersCount: Int {
@@ -34,6 +45,9 @@ class SettlementMemberSelectionViewController: UIViewController {
     }
     
     var dataSource: UICollectionViewDiffableDataSource<Int, SelectableSettlementMember>!
+    
+    private var selectedMembersViewHeightConstraint: NSLayoutConstraint!
+
     
     // MARK: Sub Views
     
@@ -54,14 +68,10 @@ class SettlementMemberSelectionViewController: UIViewController {
 
     // MARK: Init & Set up
     init(members: [WalletMember], onBackTapped: (() -> Void)?) {
-        self.members = members.enumerated().map{ idx, data in
-            SelectableSettlementMember(id: data.id, userInfo: SimpleUser(userId: idx, nickname: data.nickname, profileImgUrl: data.profileImg), isPayer: false, isSelected: false)
-        }
-        self.members.prefix(10).forEach { $0.isSelected = true }
-        self.selectedMembers = self.members.filter{
-            $0.isPayer || $0.isSelected
-        }
+        self.viewModel = SettlementMemberSelectionViewModel(members: members)
+        
         self.onBackTapped = onBackTapped
+        
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -71,8 +81,22 @@ class SettlementMemberSelectionViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setBindings()
         setUI()
         setLayout()
+    }
+    
+    private func setBindings() {
+        // members 배열이 업데이트될 때
+        viewModel.$displayedMembers
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] members in
+                guard let self = self else {return}
+                // 변경된 멤버 리스트로 리로드
+                self.memberListView.reloadData()
+            }
+            .store(in: &cancellables)
+        
     }
     
     private func setUI() {
@@ -138,7 +162,6 @@ class SettlementMemberSelectionViewController: UIViewController {
             selectedMemberListView.topAnchor.constraint(equalTo: navigationBar.bottomAnchor, constant: 12),
             selectedMemberListView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
             selectedMemberListView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            selectedMemberListView.heightAnchor.constraint(equalToConstant: ComponentSize.verticalProfileCellSize.height),
             
             searchBar.topAnchor.constraint(equalTo: selectedMemberListView.bottomAnchor, constant: 12),
             searchBar.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: Layout.side),
@@ -184,6 +207,7 @@ extension SettlementMemberSelectionViewController {
     }
     
     private func setupSelectedMemberListView() {
+        
         // layout
         let layout = UICollectionViewCompositionalLayout { (_,_) -> NSCollectionLayoutSection? in
             return self.createHorizontalScrollingSection()
@@ -196,6 +220,11 @@ extension SettlementMemberSelectionViewController {
         
         // register cell
         self.selectedMemberListView.register(SelectedMemberCell.self, forCellWithReuseIdentifier: SelectedMemberCell.reuseId)
+        
+        // colection view height constraint
+        self.selectedMembersViewHeightConstraint = self.selectedMemberListView.heightAnchor.constraint(equalToConstant: selectedMembers.isEmpty ? 0 : ComponentSize.verticalProfileCellSize.height)
+        self.selectedMembersViewHeightConstraint.isActive = true
+        
     }
     
     private func setupMemberListView() {
@@ -212,6 +241,20 @@ extension SettlementMemberSelectionViewController {
         
         // register cell
         self.memberListView.register(SettlementMemberSelectionCell.self, forCellWithReuseIdentifier: SettlementMemberSelectionCell.reuseId)
+    }
+    
+    private func updateSelectedMembersViewHeight(animated: Bool = true) {
+        let hasSelectedMembers = !self.selectedMembers.isEmpty
+        let height: CGFloat = hasSelectedMembers ? ComponentSize.verticalProfileCellSize.height : 0
+        
+        guard selectedMembersViewHeightConstraint.constant != height else {
+            return
+        }
+        
+        selectedMembersViewHeightConstraint.constant = height
+        UIView.animate(withDuration: 0.35) {
+            self.view.layoutIfNeeded()
+        }
     }
     
 }
@@ -308,7 +351,7 @@ extension SettlementMemberSelectionViewController {
         cell.configure(
             with: data,
             onDeselect: {
-                print(#fileID, #function, #line, "deselect \(data.userInfo.nickname)")
+                self.handleSelectedMemberDeletion(id: data.id)
             }
         )
         
@@ -324,10 +367,10 @@ extension SettlementMemberSelectionViewController {
         
         cell.configure(
             with: data,
-            onIsPayerChanged: { newValue in
-                self.members[indexPath.row].isPayer = newValue
-            }, onIsSelectedChanged: { newValue in
-                self.members[indexPath.row].isSelected = newValue
+            onIsPayerChanged: { isPayer in
+                self.handlePayerSelectionChange(id: data.id, isPayer: isPayer)
+            }, onIsSelectedChanged: { isSelected in
+                self.handleMemberSelectionChange(id: data.id, isSelected: isSelected)
             }
         )
         
@@ -335,14 +378,91 @@ extension SettlementMemberSelectionViewController {
     }
 }
 
+// MARK: isSelected/isPayer Change Handler
+extension SettlementMemberSelectionViewController {
+    
+    /// 정산 멤버 선택 / 해제 처리
+    /// - 뷰모델에서 데이터 처리
+    /// - selected member list view UI 업데이트
+    func handleMemberSelectionChange(id: UUID, isSelected: Bool) {
+        if isSelected {
+            // 뷰모델에서 멤버 선택 처리
+            viewModel.selectMember(id: id)
+            
+            // selected member list에 아이템 추가 (항상 첫 번째 위치에 추가)
+            let indexPath = IndexPath(item: 0, section: 0)
+            selectedMemberListView.insertItems(at: [indexPath])
+            
+            // selected member list view 높이 업데이트
+            // 선택된 멤버가 없을 경우, 리스트뷰가 보이지 않게 높이 0으로 설정됨
+            if !selectedMembers.isEmpty {
+                updateSelectedMembersViewHeight()
+            }
+        } else {
+            // selected member list에 해당 멤버가 포함되어 있을 경우
+            if let index = viewModel.getIndexOfSelectedMember(id: id) {
+                // 뷰모델에서 멤버 선택 해제 처리
+                viewModel.deselectMember(id: id)
+                
+                // selected member list에서 아이템 삭제
+                let indexPath = IndexPath(item: index, section: 0)
+                selectedMemberListView.deleteItems(at: [indexPath])
+                
+                // selected member list view 높이 업데이트
+                // 선택된 멤버가 없을 경우, 리스트뷰가 보이지 않게 높이 0으로 설정됨
+                if selectedMembers.isEmpty {
+                    updateSelectedMembersViewHeight()
+                }
+            }
+        }
+    }
+    
+    
+    /// 결제자 선택 / 해제 처리
+    /// - 뷰모델에서 데이터 처리
+    /// - selected member list의 cell UI 업데이트
+    func handlePayerSelectionChange(id: UUID, isPayer: Bool) {
+        // 뷰모델에서 데이터 처리
+        self.viewModel.setPayer(isPayer, for: id)
+        
+        // update selected member cell
+        // payer 마크 추가 / 제거
+        if let index = viewModel.getIndexOfSelectedMember(id: id) {
+            let indexPath = IndexPath(item: index, section: 0)
+            selectedMemberListView.reloadItems(at: [indexPath])
+        }
+    }
+    
+    /// 선택된 멤버 삭제 처리
+    /// selected member list view에서 cell에 있는 삭제 버튼 클릭 시
+    /// - 선택 해제 처리
+    /// - memer list view의 cell의 체크박스 UI 업데이트
+    func handleSelectedMemberDeletion(id: UUID) {
+        // 선택 해제
+        self.handleMemberSelectionChange(id: id, isSelected: false)
+        
+        // member list view에서 해당 멤버 cell UI 업데이트
+        if let index = self.viewModel.getIndexOfMember(id: id) {
+            let indexPath = IndexPath(item: index, section: 0)
+            self.memberListView.reloadItems(at: [indexPath])
+        }
+    }
+}
 
+// MARK: Search
 extension SettlementMemberSelectionViewController: UITextFieldDelegate {
     func textFieldDidChangeSelection(_ textField: UITextField) {
         guard textField == self.searchBar else { return }
         
-        print(#fileID, #function, #line, "search input: \(textField.text ?? "no input")")
+        // if no input, all members are displayed
+        guard let input = textField.text,
+              input != "" else {
+            self.viewModel.initDisplayedMembers()
+            return
+        }
         
         // search action
+        self.viewModel.updateDisplayedMembers(with: input)
     }
 }
 

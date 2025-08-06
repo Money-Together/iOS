@@ -13,13 +13,18 @@ extension ToggleStyle where Self == CheckboxToggleStyle {
 }
 
 struct CheckboxToggleStyle: ToggleStyle {
+    @State private var checkboxImageName: String = "circle"
     func makeBody(configuration: Configuration) -> some View {
-        // Return a view that has checklist appearance and behavior.
-        Image(configuration.isOn ? "check_circle_fill" : "circle")
-            .iconStyle(size: 24, foregroundColor: .moneyTogether.brand.primary, padding: 8)
-            .onTapGesture {
-                configuration.isOn.toggle()
-            }
-            .animation(.bouncy, value: configuration.isOn)
+        HStack {
+            configuration.label
+            Image(checkboxImageName)
+                .iconStyle(size: 24, foregroundColor: .moneyTogether.brand.primary, padding: 8)
+                .onTapGesture {
+                    withAnimation(.bouncy) {
+                        configuration.isOn.toggle()
+                        self.checkboxImageName = configuration.isOn ? "check_circle_fill" : "circle"
+                    }
+                }
+        }
     }
 }
