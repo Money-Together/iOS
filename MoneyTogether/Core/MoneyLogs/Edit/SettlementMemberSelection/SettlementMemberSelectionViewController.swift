@@ -30,6 +30,9 @@ class SettlementMemberSelectionViewController: UIViewController {
     /// 뒤로가기 실행 클로져
     private var onBackTapped: (() -> Void)?
     
+    /// 완료 실행 클로져
+    private var onDoneTapped: (([SettlementMember]) -> Void)?
+    
     /// 보여줄 멤버 리스트
     private var members: [Member] {
         viewModel.displayedMembers
@@ -67,10 +70,13 @@ class SettlementMemberSelectionViewController: UIViewController {
     
 
     // MARK: Init & Set up
-    init(members: [WalletMember], onBackTapped: (() -> Void)?) {
+    init(members: [WalletMember],
+         onBackTapped: (() -> Void)?,
+         onDoneTapped: (([SettlementMember]) -> Void)?) {
         self.viewModel = SettlementMemberSelectionViewModel(members: members)
         
         self.onBackTapped = onBackTapped
+        self.onDoneTapped = onDoneTapped
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -467,17 +473,17 @@ extension SettlementMemberSelectionViewController: UITextFieldDelegate {
 }
 
 
-#if DEBUG
-
-import SwiftUI
-
-#Preview {
-    let vm = WalletViewModel()
-    vm.fetchMembers()
-    return SettlementMemberSelectionViewController(members: vm.members, onBackTapped: {
-        print(#fileID, #function, #line, "back btn tapped")
-    })
-}
-
-#endif
+//#if DEBUG
+//
+//import SwiftUI
+//
+//#Preview {
+//    let vm = WalletViewModel()
+//    vm.fetchMembers()
+//    return SettlementMemberSelectionViewController(members: vm.members, onBackTapped: {
+//        print(#fileID, #function, #line, "back btn tapped")
+//    })
+//}
+//
+//#endif
 

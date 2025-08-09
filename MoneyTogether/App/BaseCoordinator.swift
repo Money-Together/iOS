@@ -13,6 +13,14 @@ protocol Coordinator: AnyObject {
     var children: [Coordinator] { get set }
     
     func start()
+    
+    func removeChild(_ child: Coordinator)
+}
+
+extension Coordinator {
+    func removeChild(_ child: Coordinator) {
+        self.children.removeAll { $0 === child }
+    }
 }
 
 /// 네비게이션 타입 기본 코디네이터

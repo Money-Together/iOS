@@ -11,15 +11,27 @@ import UIKit
 
 class EditMoneyLogViewController: UIViewController {
     
+    var viewModel: EditMoneyLogViewModel
+    
     // MARK: Sub Views
     
     /// 네비게이션 바
     private var navigationBar: CustomNavigationBar!
     
+    /// scroll view
     private var scrollView: UIScrollView!
-    /// Contents
+    
+    /// scroll view contents
     private var contentView: UIView!
     
+    init(viewModel: EditMoneyLogViewModel) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,9 +46,10 @@ class EditMoneyLogViewController: UIViewController {
         // 네비게이션 바
         self.navigationBar = CustomNavigationBar(
             title: "",
-            backBtnMode: .push,
+            backBtnMode: .modal,
             backAction: {
                 print(#fileID, #function, #line, "뒤로가기")
+                self.viewModel.onBackTapped?()
             }
         )
         
@@ -81,7 +94,11 @@ class EditMoneyLogViewController: UIViewController {
 import SwiftUI
 
 #Preview {
-    return EditMoneyLogViewController()
+    let vm = WalletViewModel()
+    vm.fetchWalletData()
+    vm.fetchMembers()
+    
+    return EditMoneyLogViewController(viewModel: EditMoneyLogViewModel(walletData: vm.walletData!, walletMembers: vm.members))
 }
 
 #endif

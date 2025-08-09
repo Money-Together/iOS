@@ -191,6 +191,7 @@ extension EditMoneyLogContentView {
                 createRowTitleLabel(title: "참여자")
             }.onTapGesture {
                 print(#fileID, #function, #line, "참여자 선택 모달 present")
+                
             }
             
             // 참여자 리스트
@@ -301,5 +302,9 @@ extension EditMoneyLogContentView {
 }
 
 #Preview {
-    EditMoneyLogViewController()
+    let vm = WalletViewModel()
+    vm.fetchWalletData()
+    vm.fetchMembers()
+    
+    return EditMoneyLogViewController(viewModel: EditMoneyLogViewModel(walletData: vm.walletData!, walletMembers: vm.members))
 }

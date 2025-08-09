@@ -28,6 +28,6 @@ struct PayerMark: View {
     var body: some View {
         Image("crown")
             .iconStyle(size: iconSize, foregroundColor: .yellow, padding: 0)
-            .offset(y: -(ProfileImgSize.large / 2) - 2)
+            .offset(y: -(profileImgSize / 2) - 2)
     }
 }
