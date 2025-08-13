@@ -87,6 +87,9 @@ extension EditMoneyLogCoordinator {
         let payerIDs = selectedMembers.filter{ $0.isPayer }.map { $0.id }
         let selectedIDs = selectedMembers.map { $0.id }
         
+#warning("TODO: api 연결 후 유저 고유 id 기준으로 수정")
+// 뷰모델의 members는 [WallerMember]이고 selectedMemebers는 [SettlementMember]라 id 값이 다름
+// isPayer, isSelected 값이 항상 false
         let selectableMembers = self.viewModel.members.map {
             SelectableSettlementMember(
                 id: $0.id,
