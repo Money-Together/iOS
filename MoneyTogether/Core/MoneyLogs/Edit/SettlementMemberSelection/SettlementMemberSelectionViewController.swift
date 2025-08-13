@@ -27,11 +27,6 @@ class SettlementMemberSelectionViewController: UIViewController {
     
     private var viewModel: SettlementMemberSelectionViewModel
     
-    /// 뒤로가기 실행 클로져
-    private var onBackTapped: (() -> Void)?
-    
-    /// 완료 실행 클로져
-    private var onDoneTapped: (([SettlementMember]) -> Void)?
     
     /// 보여줄 멤버 리스트
     private var members: [Member] {
@@ -70,13 +65,8 @@ class SettlementMemberSelectionViewController: UIViewController {
     
 
     // MARK: Init & Set up
-    init(members: [WalletMember],
-         onBackTapped: (() -> Void)?,
-         onDoneTapped: (([SettlementMember]) -> Void)?) {
-        self.viewModel = SettlementMemberSelectionViewModel(members: members)
-        
-        self.onBackTapped = onBackTapped
-        self.onDoneTapped = onDoneTapped
+    init(viewModel: SettlementMemberSelectionViewModel) {
+        self.viewModel = viewModel
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -192,6 +182,7 @@ extension SettlementMemberSelectionViewController {
             iconImage: UIImage(named: "circle"),
             action: {
                 print(#fileID, #function, #line, "done")
+                self.viewModel.onDoneTapped?(self.selectedMembers)
             }
         )
         
@@ -201,7 +192,7 @@ extension SettlementMemberSelectionViewController {
             backBtnMode: .push,
             backAction: {
                 print(#fileID, #function, #line, "뒤로가기")
-                self.onBackTapped?()
+                self.viewModel.onBackTapped?()
             }
         )
     }

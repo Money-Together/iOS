@@ -11,28 +11,30 @@ import Combine
 
 class SettlementMemberSelectionViewModel {
     
-    var members: [SelectableSettlementMember]
+    typealias Member = SelectableSettlementMember
+    
+    var members: [Member]
 //    var displayedMembers: [SelectableSettlementMember] = []
-    var selectedMembers: [SelectableSettlementMember] = []
+    var selectedMembers: [Member] = []
     
     @Published var displayedMembers: [SelectableSettlementMember] = []
 //    @Published var selectedMembers: [SelectableSettlementMember] = []
     
-    init(members: [WalletMember], selected: [Int] = []) {
-        self.members = members.enumerated().map{ idx, data in
-            SelectableSettlementMember(
-                id: data.id,
-                userInfo: SimpleUser(
-                    userId: idx,
-                    nickname: data.nickname,
-                    profileImgUrl: data.profileImg
-                ),
-                isPayer: false,
-                isSelected: false
-            )
-        }
-//        self.members.prefix(1).forEach { $0.isSelected = true }
+    /// 뒤로가기 실행 클로져
+    var onBackTapped: (() -> Void)?
+    
+    /// 완료 실행 클로져
+    var onDoneTapped: (([Member]) -> Void)?
+    
+    init(members: [Member],
+         onBackTapped: (() -> Void)?,
+         onDoneTapped: (([Member]) -> Void)?) {
         
+        self.onBackTapped = onBackTapped
+        self.onDoneTapped = onDoneTapped
+        
+        self.members = members
+
         self.initDisplayedMembers()
         
         self.selectedMembers = self.members.filter {

@@ -1,5 +1,5 @@
 //
-//  EditMoneyLogContentView.swift
+//  EditMoneyLogView.swift
 //  MoneyTogether
 //
 //  Created by Heeoh Son on 7/25/25.
@@ -8,7 +8,9 @@
 import Foundation
 import SwiftUI
 
-struct EditMoneyLogContentView : View {
+struct EditMoneyLogView : View {
+    
+    @ObservedObject var viewModel: EditMoneyLogViewModel
     
     @State var selectedType: TransactionType = .spending
     private var settlementSectionTitle: String {
@@ -21,92 +23,99 @@ struct EditMoneyLogContentView : View {
     @State var isPrivate: Bool = false
     @State var useCashBox: Bool = false
     
-    private var settlementMembers: [SettlementMember] = [
-        SettlementMember.createDummyData(isPayer: true, status: SettlementMemberStatus(userStatus: .active, settlementStatus: .completed)),
-        SettlementMember.createDummyData(status: SettlementMemberStatus(userStatus: .active, settlementStatus: .pending)),
-        SettlementMember.createDummyData(isMe: true, status: SettlementMemberStatus(userStatus: .active, settlementStatus: .pending)),
-        SettlementMember.createDummyData(status: SettlementMemberStatus(userStatus: .inactive, settlementStatus: .completed)),
-        SettlementMember.createDummyData(status:  SettlementMemberStatus(userStatus: .inactive, settlementStatus: .pending))
-    ]
+    // MARK: Init
+
+    init(viewModel: EditMoneyLogViewModel) {
+        self.viewModel = viewModel
+    }
     
     // MARK: Body
     
     var body: some View {
-//        ScrollView {
-            VStack(spacing: 48) {
-                // 거래 타입 슬라이더 피커
-                SliderSegmentedPicker(
-                    selection: $selectedType,
-                    items: TransactionType.allCases,
-                    getTitle: { type in type.description }
-                )
-                
-                #warning("TODO: 금액 입력 필드")
-                
-                // 거래내역 필수 정보
-                // - 날짜, 카테고리, 나만보기 여부
-                createSectionView(title: "필수 정보", content: {
-                    VStack(spacing: 4) {
-                        dateRow
-                        categoryRow
-                        privateRow
-                    }
-                    .padding(.horizontal, Layout.side)
-                    .padding(.vertical, 12)
-                    .background(Color.moneyTogether.background)
-                    .cornerRadius(Radius.large)
-                    .shadow(color: .moneyTogether.grayScale.baseGray30, radius: 5, x: 0, y: 5)
-                })
-                
-                // 메모
-                createSectionView(title: "메모", content: {
-                    VStack(spacing: 4) {
-                        #warning("TODO: 메모 입력 필드")
-                    }
-                    .frame(maxWidth: .infinity, minHeight: 30)
-                    .padding(.horizontal, Layout.side)
-                    .padding(.vertical, 12)
-                    .background(Color.moneyTogether.background)
-                    .cornerRadius(Radius.large)
-                    .shadow(color: .moneyTogether.grayScale.baseGray30, radius: 5, x: 0, y: 5)
-                })
-                
-                // 자산 및 정산 정보
-                // 거래 타입에 따라 다른 뷰가 보여짐
-                createSectionView(title: settlementSectionTitle, content: {
-                    VStack(spacing: 4) {
-                        switch selectedType {
-                        case .spending: spendingSettlementView  // 정산 정보
-                        case .earning: earningSettlementView    // 입금될 자산 정보
+        ZStack(alignment: .top) {
+            CustomNavigationBarView(
+                title: "",
+                backBtnMode: .modal,
+                backAction: {
+                    print(#fileID, #function, #line, "뒤로가기")
+                    self.viewModel.onBackTapped?()
+                }
+            ).zIndex(1)
+
+            ScrollView {
+                VStack(spacing: 48) {
+                    // 거래 타입 슬라이더 피커
+                    SliderSegmentedPicker(
+                        selection: $selectedType,
+                        items: TransactionType.allCases,
+                        getTitle: { type in type.description }
+                    )
+                    
+#warning("TODO: 금액 입력 필드")
+                    
+                    // 거래내역 필수 정보
+                    // - 날짜, 카테고리, 나만보기 여부
+                    createSectionView(title: "필수 정보", content: {
+                        VStack(spacing: 4) {
+                            dateRow
+                            categoryRow
+                            privateRow
                         }
-                    }
-                    .frame(maxWidth: .infinity, minHeight: 30)
-                    .padding(.horizontal, Layout.side)
-                    .padding(.vertical, 12)
-                    .background(Color.moneyTogether.background)
-                    .cornerRadius(Radius.large)
-                    .shadow(color: .moneyTogether.grayScale.baseGray30, radius: 5, x: 0, y: 5)
-                })
-                
-                CTAButton(
-                    activeState: .active,
-                    buttonStyle: .solid,
-                    labelText: "완료", action: {
-                        print(#fileID, #function, #line, "머니로그 편집 완료")
-                    }
-                ).padding(.top, 40)
-                
-                Spacer()
+                        .padding(.horizontal, Layout.side)
+                        .padding(.vertical, 12)
+                        .background(Color.moneyTogether.background)
+                        .cornerRadius(Radius.large)
+                        .shadow(color: .moneyTogether.grayScale.baseGray30, radius: 5, x: 0, y: 5)
+                    })
+                    
+                    // 메모
+                    createSectionView(title: "메모", content: {
+                        VStack(spacing: 4) {
+#warning("TODO: 메모 입력 필드")
+                        }
+                        .frame(maxWidth: .infinity, minHeight: 30)
+                        .padding(.horizontal, Layout.side)
+                        .padding(.vertical, 12)
+                        .background(Color.moneyTogether.background)
+                        .cornerRadius(Radius.large)
+                        .shadow(color: .moneyTogether.grayScale.baseGray30, radius: 5, x: 0, y: 5)
+                    })
+                    
+                    // 자산 및 정산 정보
+                    // 거래 타입에 따라 다른 뷰가 보여짐
+                    createSectionView(title: settlementSectionTitle, content: {
+                        VStack(spacing: 4) {
+                            switch selectedType {
+                            case .spending: spendingSettlementView  // 정산 정보
+                            case .earning: earningSettlementView    // 입금될 자산 정보
+                            }
+                        }
+                        .padding(.horizontal, Layout.side)
+                        .padding(.vertical, 12)
+                        .background(Color.moneyTogether.background)
+                        .cornerRadius(Radius.large)
+                        .shadow(color: .moneyTogether.grayScale.baseGray30, radius: 5, x: 0, y: 5)
+                    })
+                    
+                    CTAButton(
+                        activeState: .active,
+                        buttonStyle: .solid,
+                        labelText: "완료", action: {
+                            print(#fileID, #function, #line, "머니로그 편집 완료")
+                        }
+                    ).padding(.top, 40)
+                    
+                }
+                .padding(.horizontal, Layout.side)
+                .padding(.top, ComponentSize.navigationBarHeight + 40)
+                .padding(.bottom, Layout.bottom)
             }
-            .padding(.horizontal, Layout.side)
-            .padding(.top, 40)
-            .padding(.bottom, Layout.bottom)
-//        }
+        }
     }
 }
 
 // MARK: Basic Info Row
-extension EditMoneyLogContentView {
+extension EditMoneyLogView {
     /// 날짜 정보
     /// 선택된 날짜를 보여줌
     /// 탭할 경우, 날짜 선택 모달을 띄워줌
@@ -146,7 +155,7 @@ extension EditMoneyLogContentView {
 }
 
 // MARK: Settlement View
-extension EditMoneyLogContentView {
+extension EditMoneyLogView {
     /// 거래 타입이 수입일 경우, 자산 및 정산 정보 섹션 뷰
     /// - 금액이 입급될 자산 선택 Row
     private var earningSettlementView: some View {
@@ -177,11 +186,11 @@ extension EditMoneyLogContentView {
             }
             
             // 참여자 선택
-            // 탭하면 참여자 및 결제자 선택 모달 나옴
+            // 탭하면 참여자 및 결제자 선택 화면으로 이동
             LabeledContent {
                 HStack(spacing: 8) {
                     // WalletMembersPreview(members: members)
-                    Text("\(settlementMembers.count) 명")
+                    Text("\(self.viewModel.settlementMembers.count) 명")
                         .foregroundStyle(Color.moneyTogether.label.alternative)
                         .moneyTogetherFont(style: .b1)
                     Image("chevron_right")
@@ -190,22 +199,24 @@ extension EditMoneyLogContentView {
             } label: {
                 createRowTitleLabel(title: "참여자")
             }.onTapGesture {
-                print(#fileID, #function, #line, "참여자 선택 모달 present")
-                
+                // 정산 멤버 선택 화면으로 이동
+                self.viewModel.onSelectSettlementMember?(self.viewModel.settlementMembers)
             }
             
             // 참여자 리스트
             // 참여자 별 정산 금액 보여줌, 정산 금액 수정 가능
-            ForEach(settlementMembers, id: \.id) { member in
+            ForEach(self.viewModel.settlementMembers, id: \.id) { member in
                 let nickanmeText = member.userInfo.nickname + (member.isPayer ? "(결제자)" : "")
                 
                 LabeledContent {
+                    // 멤버 별 정산 금액 - trailing
                     Text("2,000")
                         .foregroundStyle(Color.moneyTogether.label.normal)
                         .moneyTogetherFont(style: .detail2)
                         .frame(height: 40)
                         .lineLimit(1)
                 } label: {
+                    // 멤버 프로필 이미지 & 닉네임 - leading
                     HStack {
                         ProfileImageView(size: ProfileImgSize.small, imageUrl: member.userInfo.profileImgUrl)
                             .overlay {
@@ -236,7 +247,7 @@ extension EditMoneyLogContentView {
 
 
 // MARK: View Creators
-extension EditMoneyLogContentView {
+extension EditMoneyLogView {
     /// [섹션 타이틀 + 컨텐츠 뷰] 레이아웃으로 섹션 생성하는 함수
     /// - Parameters:
     ///   - title: 타이틀
@@ -306,5 +317,6 @@ extension EditMoneyLogContentView {
     vm.fetchWalletData()
     vm.fetchMembers()
     
-    return EditMoneyLogViewController(viewModel: EditMoneyLogViewModel(walletData: vm.walletData!, walletMembers: vm.members))
+    return EditMoneyLogView(viewModel: EditMoneyLogViewModel(walletData: vm.walletData!, walletMembers: vm.members))
 }
+

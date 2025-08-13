@@ -20,3 +20,15 @@ class SelectableSettlementMember: NSObject {
         self.isSelected = isSelected
     }
 }
+
+extension SelectableSettlementMember {
+    func toSettlementMember() -> SettlementMember {
+        SettlementMember(
+            userInfo: self.userInfo,
+            isPayer: self.isPayer,
+            isMe: false,
+            amount: "0",
+            status: .init(userStatus: .active, settlementStatus: .pending)
+        )
+    }
+}

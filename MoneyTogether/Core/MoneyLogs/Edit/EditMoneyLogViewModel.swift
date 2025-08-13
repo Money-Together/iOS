@@ -7,20 +7,23 @@
 
 import Foundation
 
-class EditMoneyLogViewModel {
+class EditMoneyLogViewModel: ObservableObject {
     
     let walletData: Wallet
     
     let members: [WalletMember]
     
-    var settlementMembers: [SettlementMember] = []
+    @Published var settlementMembers: [SettlementMember] = []
     
     
     // closures to navigate
     
     var onBackTapped: (() -> Void)?
     
-    var onSelectSettlementMember: (() -> Void)?
+    var onSelectSettlementMember: (([SettlementMember]) -> Void)?
+    
+    
+    // init
     
     init(walletData: Wallet,
          walletMembers: [WalletMember]) {
