@@ -216,19 +216,19 @@ class CustomNavigationBar: UIView {
         // 네비게이션 push 스타일 백 버튼 초기화
         self.pushStyleBackBtn = CustomIconButton(
             iconImage: UIImage(named: "chevron_left"),
-            action: {
-                self.doBackAction()
-            }
+            iconSize: 20,
+            padding: 10,
+            action: { self.doBackAction() }
         )
         
         // 모달 present 스타일 백 버튼 초기화
         self.modalStyleBackBtn = CustomIconButton(
             iconImage: UIImage(named: "close"),
-            size: 40,
-            action: {
-                self.doBackAction()
-            }
+            iconSize: 20,
+            padding: 10,
+            action: { self.doBackAction() }
         )
+        
     }
     
     func setLayout(leftBtns: [UIView], rightBtns: [UIView]) {
@@ -258,10 +258,10 @@ class CustomNavigationBar: UIView {
             self.leftBtnStk.heightAnchor.constraint(equalToConstant: ComponentSize.iconBtnSize),
             self.rightBtnStk.heightAnchor.constraint(equalToConstant: ComponentSize.iconBtnSize),
             
-            self.leftBtnStk.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 12),
+            self.leftBtnStk.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 14),
             self.leftBtnStk.centerYAnchor.constraint(equalTo: self.centerYAnchor),
             
-            self.rightBtnStk.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -12),
+            self.rightBtnStk.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -14),
             self.rightBtnStk.centerYAnchor.constraint(equalTo: self.centerYAnchor),
             
             self.titleLabel.centerXAnchor.constraint(equalTo: self.centerXAnchor),

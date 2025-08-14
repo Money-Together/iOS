@@ -134,11 +134,12 @@ extension EditMoneyLogView {
     /// 탭할 경우, 카테고리 선택 모달을 띄워줌
     private var categoryRow: some View {
         LabeledContent {
-            createRowTrailingView(contentText: nil, placeholder: "필수 사항")
+            createRowTrailingView(contentText: self.viewModel.category?.name, placeholder: "필수 사항")
         } label: {
             createRowTitleLabel(title: "카테고리")
         }.onTapGesture {
             print(#fileID, #function, #line, "카테고리 선택 모달 present")
+            self.viewModel.onSelectCategory?()
         }
     }
     

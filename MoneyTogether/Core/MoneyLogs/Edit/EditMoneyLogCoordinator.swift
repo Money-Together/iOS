@@ -13,6 +13,8 @@ class EditMoneyLogCoordinator: BaseNavCoordinator {
 
     var viewModel: EditMoneyLogViewModel!
     
+    var rootViewController: UIHostingController<EditMoneyLogView>!
+    
     init(parentCoordinator: Coordinator? = nil,
          walletData: Wallet,
          walletMembers: [WalletMember]) {
@@ -26,12 +28,12 @@ class EditMoneyLogCoordinator: BaseNavCoordinator {
     }
     
     override func start() {
-        setVMClosures()
-
         let rootView = EditMoneyLogView(viewModel: self.viewModel)
-        let hostingVC = UIHostingController(rootView: rootView)
+        self.rootViewController = UIHostingController(rootView: rootView)
         
-        self.show(hostingVC, animated: true)
+        self.show(self.rootViewController, animated: true)
+        
+        setVMClosures()
     }
 }
 
@@ -45,6 +47,25 @@ extension EditMoneyLogCoordinator {
             
             self.navigationController.dismiss(animated: true)
             self.parent?.removeChild(self)
+        }
+        
+        // 카테고리 선택 모달 띄우기
+        viewModel.onSelectCategory = { [weak self] in
+            guard let self = self else { return }
+            
+            let viewController = CategorySelectionViewController()
+            viewController.onBackBtnTapped = {
+                viewController.dismiss(animated: true)
+            }
+            viewController.onSelect = { selected in
+                print(#fileID, #function, #line, "selected category: \(selected.name)")
+                self.viewModel.updateCategory(selected)
+                viewController.dismiss(animated: true)
+            }
+            self.rootViewController.showSheet(
+                viewController: viewController,
+                detents: [.customFraction(0.5), .large()]
+            )
         }
 
         // 정산 멤버 선택화면으로 이동
