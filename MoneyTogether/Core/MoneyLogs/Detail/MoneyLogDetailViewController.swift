@@ -9,52 +9,6 @@ import Foundation
 import UIKit
 import SwiftUI
 
-enum SettlementStatus {
-    case completed
-    case pending
-    case cancelled
-    
-    var description: String {
-        switch self {
-        case .completed:    return "정산 완료"
-        case .pending:      return "미정산"
-        case .cancelled:    return "정산 취소"
-        }
-    }
-}
-
-enum UserStatus {
-    case active
-    case inactive
-}
-
-struct SettlementMemberStatus {
-    let userStatus: UserStatus
-    let settlementStatus: SettlementStatus
-}
-
-struct SettlementMember: Identifiable {
-    let id: UUID = UUID()
-    let userInfo: SimpleUser
-    var isPayer: Bool
-    let isMe: Bool
-    let amount: String
-    let status: SettlementMemberStatus
-    
-    static func createDummyData(isPayer: Bool = false, isMe: Bool = false, status: SettlementMemberStatus = SettlementMemberStatus(userStatus: .active, settlementStatus: .completed)) -> Self {
-        SettlementMember(
-            userInfo: SimpleUser(
-                userId: 1,
-                nickname: "홍길동",
-                profileImgUrl: "https://i.pravatar.cc"
-            ),
-            isPayer: isPayer,
-            isMe: isMe,
-            amount: "2,000",
-            status: status)
-    }
-}
-
 struct MoneyLogDetailContentView: View {
     
     private var amountText: String = "$ +10,000"
