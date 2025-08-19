@@ -60,12 +60,7 @@ final class CategorySelectionViewController: UIViewController {
     
     private func setupNavigationBar() {
         self.navigationBar = CustomNavigationBar(
-            title: "카테고리를 선택해주세요",
-            backBtnMode: .modal,
-            backAction: {
-                print(#fileID, #function, #line, "back")
-                self.onBackBtnTapped?()
-            }
+            title: "카테고리를 선택해주세요"
         )
     }
     

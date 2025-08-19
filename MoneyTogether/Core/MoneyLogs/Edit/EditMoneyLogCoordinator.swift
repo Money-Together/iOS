@@ -49,23 +49,17 @@ extension EditMoneyLogCoordinator {
             self.parent?.removeChild(self)
         }
         
+        // 날짜 선택 모달 띄우기
+        viewModel.onSelectDate = { [weak self] in
+            guard let self = self else { return }
+            self.presentDatePicker()
+            
+        }
+        
         // 카테고리 선택 모달 띄우기
         viewModel.onSelectCategory = { [weak self] in
             guard let self = self else { return }
-            
-            let viewController = CategorySelectionViewController()
-            viewController.onBackBtnTapped = {
-                viewController.dismiss(animated: true)
-            }
-            viewController.onSelect = { selected in
-                print(#fileID, #function, #line, "selected category: \(selected.name)")
-                self.viewModel.updateCategory(selected)
-                viewController.dismiss(animated: true)
-            }
-            self.rootViewController.showSheet(
-                viewController: viewController,
-                detents: [.customFraction(0.5), .large()]
-            )
+            self.presentCategorySelection()
         }
 
         // 정산 멤버 선택화면으로 이동
@@ -80,9 +74,46 @@ extension EditMoneyLogCoordinator {
 }
 
 extension EditMoneyLogCoordinator {
+    /// 날짜 선택 모달 띄우기
+    private func presentDatePicker() {
+        let rootView = DatePickerView(
+            date: self.viewModel.date,
+            onDone: { date in
+                self.viewModel.updateDate(date)
+            }
+        )
+        let hostingVC = UIHostingController(rootView: rootView)
+        
+        self.rootViewController.showSheet(viewController: hostingVC, detents: [.fixedHeight(400)])
+    }
+    
+    /// 카테고리 선택 모달 띄우기
+    private func presentCategorySelection() {
+        let viewController = CategorySelectionViewController()
+//            viewController.onBackBtnTapped = {
+//                viewController.dismiss(animated: true)
+//            }
+        viewController.onSelect = { selected in
+            print(#fileID, #function, #line, "selected category: \(selected.name)")
+            self.viewModel.updateCategory(selected)
+            viewController.dismiss(animated: true)
+        }
+
+        self.rootViewController.showSheet(
+            viewController: viewController,
+            detents: [.fixedHeight(400), .large()]
+        )
+    }
+}
+
+extension EditMoneyLogCoordinator {
+    /// 정산 멤버 선택 뷰로 이동
+    /// - Parameter selectedMembers: 이전에 선택된 정산 멤버 리스트
     private func navigateToSettlementMemberSelection(with selectedMembers: [SettlementMember]) {
+        // 정산 멤버 선택 뷰에서 사용되는 selectableMember 모델로 변환
         let selectableMembers = prepareSelectableMembers(with: selectedMembers)
         
+        // 정산 멤버 선택 뷰모델
         let viewModel = SettlementMemberSelectionViewModel(
             members: selectableMembers,
             onBackTapped: {
@@ -99,11 +130,16 @@ extension EditMoneyLogCoordinator {
             }
         )
         
+        // 정산 멤버 선택 뷰 컨트롤러
         let viewController = SettlementMemberSelectionViewController(viewModel: viewModel)
 
+        // 화면 이동
         self.show(viewController, animated: true)
     }
     
+    /// 정산 멤버 선택 뷰에서 필요한 데이터 준비
+    /// - 해당 뷰에서 사용되는 selectable member 모델로 데이터 변환
+    /// - 이전 데이터 (selected members) 데이터 반영
     private func prepareSelectableMembers(with selectedMembers: [SettlementMember]) -> [SelectableSettlementMember] {
         let payerIDs = selectedMembers.filter{ $0.isPayer }.map { $0.id }
         let selectedIDs = selectedMembers.map { $0.id }

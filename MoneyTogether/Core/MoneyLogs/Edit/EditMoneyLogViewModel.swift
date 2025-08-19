@@ -15,9 +15,11 @@ class EditMoneyLogViewModel: ObservableObject {
     
     // money log data
     
-    @Published var category: Category? = nil
+    @Published private(set) var date: Date = Date()
     
-    @Published var settlementMembers: [SettlementMember] = []
+    @Published private(set) var category: Category? = nil
+    
+    @Published private(set) var settlementMembers: [SettlementMember] = []
     
     
     // closures to navigate
@@ -25,6 +27,8 @@ class EditMoneyLogViewModel: ObservableObject {
     var onBackTapped: (() -> Void)?
     
     var onSelectSettlementMember: (([SettlementMember]) -> Void)?
+    
+    var onSelectDate: (() -> Void)?
     
     var onSelectCategory: (() -> Void)?
     
@@ -39,6 +43,14 @@ class EditMoneyLogViewModel: ObservableObject {
 }
 
 extension EditMoneyLogViewModel {
+    
+    func getFormattedDateString() -> String {
+        self.date.formattedString(format: "yyyy. MM. dd")
+    }
+    
+    func updateDate(_ newValue: Date) {
+        self.date = newValue
+    }
     
     /// 머니로그 카테고리 업데이트
     /// - Parameter newValue: 업데이트 할 데이터, 카테고리 선택이 안된 경우 nil
