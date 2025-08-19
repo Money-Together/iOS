@@ -13,6 +13,7 @@ struct EditMoneyLogView : View {
     @ObservedObject var viewModel: EditMoneyLogViewModel
     
     @State var selectedType: TransactionType = .spending
+    
     private var settlementSectionTitle: String {
         switch selectedType {
         case .spending: return "입금 정보"
@@ -20,8 +21,11 @@ struct EditMoneyLogView : View {
         default: return "자산 및 정산 정보"
         }
     }
-    @State var isPrivate: Bool = false
-    @State var useCashBox: Bool = false
+    
+    /// 포맷된 날짜 텍스트
+    var formattedDateString: String {
+        self.viewModel.date.formattedString(format: "yyyy. MM. dd")
+    }
     
     // MARK: Init
 
@@ -122,7 +126,7 @@ extension EditMoneyLogView {
     private var dateRow: some View {
         LabeledContent {
             createRowTrailingView(
-                contentText: self.viewModel.getFormattedDateString(),
+                contentText: formattedDateString,
                 placeholder: "필수 사항"
             )
         } label: {
@@ -154,8 +158,17 @@ extension EditMoneyLogView {
     /// 나만보기 여부를 스위치를 통해 선택 가능
     private var privateRow: some View {
         LabeledContent {
-            Toggle(isOn: $isPrivate, label: {})
-                .tint(Color.moneyTogether.grayScale.baseGray100)
+            Toggle(
+                isOn: Binding(get: {
+                    self.viewModel.isPrivate
+                }, set: { newValue in
+                    withAnimation(.spring) {
+                        self.viewModel.updatePrivateState(newValue)
+                    }
+                }),
+                label: {}
+            )
+            .tint(Color.moneyTogether.grayScale.baseGray100)
         } label: {
             createRowTitleLabel(title: "나만 보기")
         }
@@ -184,14 +197,20 @@ extension EditMoneyLogView {
     /// - 참여자 별 정산 금액
     /// - 정산하고 남은 금액
     private var spendingSettlementView: some View {
+        
         VStack {
-            // 저금통 사용 여부 선택
-            LabeledContent {
-                Toggle(isOn: $useCashBox, label: {})
-                    .tint(Color.moneyTogether.grayScale.baseGray100)
-            } label: {
-                createRowTitleLabel(title: "저금통을 사용할까요?")
+            if self.viewModel.canUseCashbox {
+                
+                // 저금통 사용 여부 선택
+                LabeledContent {
+                    Toggle(isOn: self.$viewModel.useCashbox, label: {})
+                        .tint(Color.moneyTogether.grayScale.baseGray100)
+                } label: {
+                    createRowTitleLabel(title: "저금통을 사용할까요?")
+                }
+                
             }
+            
             
             // 참여자 선택
             // 탭하면 참여자 및 결제자 선택 화면으로 이동

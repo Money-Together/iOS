@@ -15,11 +15,27 @@ class EditMoneyLogViewModel: ObservableObject {
     
     // money log data
     
+    /// 날짜
     @Published private(set) var date: Date = Date()
     
+    /// 카테고리
     @Published private(set) var category: Category? = nil
     
+    /// 나만 보기 여부
+    @Published private(set) var isPrivate: Bool = true
+    
+    /// 저금통 사용 여부
+    @Published var useCashbox: Bool = false
+    
+    /// 정산 멤버
     @Published private(set) var settlementMembers: [SettlementMember] = []
+    
+    /// 저금통 사용 가능 여부
+    /// - 나만 보기일 경우, 불가능
+    /// - 저금통을 비활성화한 경우, 불가능
+    var canUseCashbox: Bool {
+        isPrivate ? false : true
+    }
     
     
     // closures to navigate
@@ -44,10 +60,7 @@ class EditMoneyLogViewModel: ObservableObject {
 
 extension EditMoneyLogViewModel {
     
-    func getFormattedDateString() -> String {
-        self.date.formattedString(format: "yyyy. MM. dd")
-    }
-    
+    /// 날짜 업데이트
     func updateDate(_ newValue: Date) {
         self.date = newValue
     }
@@ -58,8 +71,15 @@ extension EditMoneyLogViewModel {
         self.category = newValue
     }
     
+    /// 나만보기 여부 업데이트
+    func updatePrivateState(_ newValue: Bool) {
+        self.isPrivate = newValue
+    }
+
     /// 정산멤버 리스트 업데이트
     func updateSettlementMembers(_ newValue: [SettlementMember]) {
         self.settlementMembers = newValue
     }
 }
+
+
