@@ -22,10 +22,13 @@ class EditMoneyLogViewModel: ObservableObject {
     @Published private(set) var category: Category? = nil
     
     /// 나만 보기 여부
-    @Published private(set) var isPrivate: Bool = true
+    @Published private(set) var isPrivate: Bool = false
     
     /// 저금통 사용 여부
     @Published var useCashbox: Bool = false
+    
+    /// 자산
+    @Published var asset: UserAsset? = nil
     
     /// 정산 멤버
     @Published private(set) var settlementMembers: [SettlementMember] = []
@@ -34,7 +37,10 @@ class EditMoneyLogViewModel: ObservableObject {
     /// - 나만 보기일 경우, 불가능
     /// - 저금통을 비활성화한 경우, 불가능
     var canUseCashbox: Bool {
-        isPrivate ? false : true
+        let canUse = isPrivate ? false : true
+        
+        return canUse
+        
     }
     
     
@@ -47,6 +53,8 @@ class EditMoneyLogViewModel: ObservableObject {
     var onSelectDate: (() -> Void)?
     
     var onSelectCategory: (() -> Void)?
+    
+    var onSelectAsset: (() -> Void)?
     
     
     // init
@@ -74,6 +82,16 @@ extension EditMoneyLogViewModel {
     /// 나만보기 여부 업데이트
     func updatePrivateState(_ newValue: Bool) {
         self.isPrivate = newValue
+        if !canUseCashbox {
+            self.updateCashboxUsage(false)
+        }
+    }
+    
+    /// 저금통 사용 여부 업데이트
+    func updateCashboxUsage(_ newValue: Bool) {
+        if canUseCashbox {
+            self.useCashbox = newValue
+        }
     }
 
     /// 정산멤버 리스트 업데이트

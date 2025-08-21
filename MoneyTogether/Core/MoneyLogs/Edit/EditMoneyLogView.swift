@@ -16,8 +16,8 @@ struct EditMoneyLogView : View {
     
     private var settlementSectionTitle: String {
         switch selectedType {
-        case .spending: return "입금 정보"
-        case .earning: return "정산 정보"
+        case .earning: return "입금 정보"
+        case .spending: return "정산 정보"
         default: return "자산 및 정산 정보"
         }
     }
@@ -157,36 +157,49 @@ extension EditMoneyLogView {
     /// 나만 보기 정보
     /// 나만보기 여부를 스위치를 통해 선택 가능
     private var privateRow: some View {
-        LabeledContent {
-            Toggle(
-                isOn: Binding(get: {
-                    self.viewModel.isPrivate
-                }, set: { newValue in
-                    withAnimation(.spring) {
-                        self.viewModel.updatePrivateState(newValue)
-                    }
-                }),
-                label: {}
-            )
-            .tint(Color.moneyTogether.grayScale.baseGray100)
-        } label: {
-            createRowTitleLabel(title: "나만 보기")
+        VStack {
+            LabeledContent {
+                Toggle(
+                    isOn: Binding(get: {
+                        self.viewModel.isPrivate
+                    }, set: { newValue in
+                        withAnimation(.spring) {
+                            self.viewModel.updatePrivateState(newValue)
+                        }
+                    }),
+                    label: {}
+                )
+                .tint(Color.moneyTogether.grayScale.baseGray100)
+                .labelsHidden()
+            } label: {
+                createRowTitleLabel(title: "나만 보기")
+            }
+            
+            Text("* 다른 멤버는 이 머니로그를 볼 수 없어요. \n* 나만 보기로 설정 시, 저금통을 사용할 수 없어요.")
+                .frame(maxWidth: .infinity, alignment: .topLeading)
+                .moneyTogetherFont(style: .detail2)
+                .foregroundStyle(Color.moneyTogether.label.assistive)
+                .lineSpacing(2)
+                .offset(y: -4)
         }
     }
 }
 
 // MARK: Settlement View
 extension EditMoneyLogView {
-    /// 거래 타입이 수입일 경우, 자산 및 정산 정보 섹션 뷰
-    /// - 금액이 입급될 자산 선택 Row
-    private var earningSettlementView: some View {
-        VStack {
-            LabeledContent {
-                createRowTrailingView(contentText: nil, placeholder: "필수 사항")
-            } label: {
-                createRowTitleLabel(title: "자산")
-            }.onTapGesture {
-                print(#fileID, #function, #line, "자산 선택 모달 present")
+    /// 자산 정보
+    /// 선택된 자산을 보여줌
+    /// 탭할 경우, 자산 선택 모달을 띄워줌
+    var assetRow: some View {
+        LabeledContent {
+            createRowTrailingView(contentText: self.viewModel.asset?.title, placeholder: "필수 사항")
+        } label: {
+            createRowTitleLabel(title: "자산")
+            
+        }.onTapGesture {
+            if !self.viewModel.useCashbox {
+                // 자산 선택 모달 present
+                self.viewModel.onSelectAsset?()
             }
         }
     }

@@ -61,15 +61,18 @@ extension EditMoneyLogCoordinator {
             guard let self = self else { return }
             self.presentCategorySelection()
         }
+        
+        // 자산 선택 모달 띄우기
+        viewModel.onSelectAsset = { [weak self] in
+            guard let self = self else { return }
+            self.presentAssetSelection()
+        }
 
         // 정산 멤버 선택화면으로 이동
         viewModel.onSelectSettlementMember = { [weak self] selectedMembers in
             guard let self = self else { return }
             self.navigateToSettlementMemberSelection(with: selectedMembers)
         }
-        
-        
-        
     }
 }
 
@@ -103,6 +106,17 @@ extension EditMoneyLogCoordinator {
             viewController: viewController,
             detents: [.fixedHeight(400), .large()]
         )
+    }
+    
+    /// 자산 선택 모달 띄우기
+    private func presentAssetSelection() {
+        let viewController = AssetSelectionViewController()
+        viewController.onSelect = { selected in
+            self.viewModel.asset = selected
+            viewController.dismiss(animated: true)
+        }
+        
+        self.rootViewController.showSheet(viewController: viewController, detents: [.fixedHeight(400)])
     }
 }
 
