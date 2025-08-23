@@ -15,6 +15,14 @@ class EditMoneyLogViewModel: ObservableObject {
     
     // money log data
     
+    @Published var transactionType: TransactionType = .spending
+    
+    /// 통화 타입
+    @Published var currencyType: CurrencyType
+    
+    /// 금액
+    @Published var amount: String = ""
+    
     /// 날짜
     @Published private(set) var date: Date = Date()
     
@@ -24,14 +32,42 @@ class EditMoneyLogViewModel: ObservableObject {
     /// 나만 보기 여부
     @Published private(set) var isPrivate: Bool = false
     
+    /// 메모
+    @Published var memo: String = ""
+    
     /// 저금통 사용 여부
-    @Published var useCashbox: Bool = false
+    @Published private(set) var useCashbox: Bool = false
     
     /// 자산
     @Published var asset: UserAsset? = nil
     
     /// 정산 멤버
     @Published private(set) var settlementMembers: [SettlementMember] = []
+    
+    /// 정산 멤버 별 정산 금액 편집 가능 여부
+    var canEditSettlementAmount: Bool {
+        !useCashbox
+    }
+    
+    /// 총 금액 - 정산 금액 총합이 유효한지 여부
+    var isValidLeftAmount: Bool {
+        return leftAmount != "앗! 총액을 초과했어요. 금액을 다시 확인해주세요."
+    }
+    
+    /// 총 금액 - 정산 금액 총합
+    var leftAmount: String {
+        let amount = Decimal(string: self.amount.replacingOccurrences(of: ",", with: "")) ?? 0
+        
+        let sum = self.settlementMembers
+            .compactMap{ Decimal(string:$0.amount.replacingOccurrences(of: ",", with: "")) }
+            .reduce(Decimal(0)) { $0 + $1 }
+        
+        if amount < sum {
+            return "앗! 총액을 초과했어요. 금액을 다시 확인해주세요."
+        } else {
+            return "남은 금액: \(amount - sum)"
+        }
+    }
     
     /// 저금통 사용 가능 여부
     /// - 나만 보기일 경우, 불가능
@@ -48,6 +84,8 @@ class EditMoneyLogViewModel: ObservableObject {
     
     var onBackTapped: (() -> Void)?
     
+    var onCurrencyTypeSelection: (() -> Void)?
+    
     var onSelectSettlementMember: (([SettlementMember]) -> Void)?
     
     var onSelectDate: (() -> Void)?
@@ -63,10 +101,28 @@ class EditMoneyLogViewModel: ObservableObject {
          walletMembers: [WalletMember]) {
         self.walletData = walletData
         self.members = walletMembers
+        
+        self.currencyType = walletData.baseCurrency
     }
 }
 
 extension EditMoneyLogViewModel {
+    
+    /// 통화 타입 업데이트
+    func updateCurrencyType(_ newValue: CurrencyType) {
+        self.currencyType = newValue
+    }
+    
+    /// 금액 업데이트
+    /// decimal 스타일로 수정하여 변경
+    func updateAmountText(with input: String) {
+        // 입력값 선택된 통화에 맞는 decimal 스타일로 변환
+        let decimalString = input.replacingOccurrences(of: ",", with: "").decimalWithPoint()
+        if self.amount != decimalString {
+            self.amount = decimalString
+            self.initSettlementMemberAmount()
+        }
+    }
     
     /// 날짜 업데이트
     func updateDate(_ newValue: Date) {
@@ -91,12 +147,39 @@ extension EditMoneyLogViewModel {
     func updateCashboxUsage(_ newValue: Bool) {
         if canUseCashbox {
             self.useCashbox = newValue
+            
+            // 저금통 사용 시 정산 멤버 별 정산 금액 모두 동일하게 설정됨
+            if self.useCashbox {
+                initSettlementMemberAmount()
+            }
         }
     }
-
+    
     /// 정산멤버 리스트 업데이트
     func updateSettlementMembers(_ newValue: [SettlementMember]) {
         self.settlementMembers = newValue
+        self.initSettlementMemberAmount()
+    }
+    
+    /// 모든 정산 멤버의 정산 금액을 동일하게 설정 (1/n 더치페이)
+    func initSettlementMemberAmount() {
+        let total = self.amount.toDecimal() ?? 0
+        
+        let perMemberAmount = total / Decimal(settlementMembers.count)
+        
+        settlementMembers.enumerated().forEach { idx, member in
+            settlementMembers[idx].amount = "\(perMemberAmount)".decimalStyle()
+        }
+    }
+    
+    /// 정산멤버(member)의 정산 금액을 업데이트
+    func updateSettlementMemberAmount(of member: SettlementMember, with newValue: String) {
+        guard let idx = self.settlementMembers.firstIndex(where: { $0.id == member.id }) else {
+            return
+        }
+        
+        self.settlementMembers[idx].amount = newValue
+        
     }
 }
 

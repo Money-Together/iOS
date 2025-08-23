@@ -13,7 +13,7 @@ struct SettlementMember: Identifiable {
     let userInfo: SimpleUser
     var isPayer: Bool
     let isMe: Bool
-    let amount: String
+    var amount: String
     let status: SettlementMemberStatus
     
     static func createDummyData(isPayer: Bool = false, isMe: Bool = false, status: SettlementMemberStatus = SettlementMemberStatus(userStatus: .active, settlementStatus: .completed)) -> Self {

@@ -119,4 +119,14 @@ extension String {
         
         return decimalString
     }
+    
+    /// decimal 스타일 문자열을 decimal 타입으로 변환
+    func toDecimal() -> Decimal? {
+        guard self.isDecimalStyleWithComma() else {
+            return nil
+        }
+        
+        return Decimal(string: self.replacingOccurrences(of: ",", with: ""))
+        
+    }
 }

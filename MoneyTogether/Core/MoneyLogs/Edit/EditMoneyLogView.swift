@@ -12,10 +12,8 @@ struct EditMoneyLogView : View {
     
     @ObservedObject var viewModel: EditMoneyLogViewModel
     
-    @State var selectedType: TransactionType = .spending
-    
     private var settlementSectionTitle: String {
-        switch selectedType {
+        switch self.viewModel.transactionType {
         case .earning: return "입금 정보"
         case .spending: return "정산 정보"
         default: return "자산 및 정산 정보"
@@ -50,12 +48,23 @@ struct EditMoneyLogView : View {
                 VStack(spacing: 48) {
                     // 거래 타입 슬라이더 피커
                     SliderSegmentedPicker(
-                        selection: $selectedType,
+                        selection: self.$viewModel.transactionType,
                         items: TransactionType.allCases,
                         getTitle: { type in type.description }
                     )
+
+                    // 금액 및 통화타입
+                    HStack(spacing: 12) {
+                        currencyTypePicker
+                        amountTextField
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, Layout.side)
+                    .padding(.vertical, 12)
+                    .background(Color.moneyTogether.background)
+                    .cornerRadius(Radius.large)
+                    .shadow(color: .moneyTogether.grayScale.baseGray30, radius: 5, x: 0, y: 5)
                     
-#warning("TODO: 금액 입력 필드")
                     
                     // 거래내역 필수 정보
                     // - 날짜, 카테고리, 나만보기 여부
@@ -75,9 +84,17 @@ struct EditMoneyLogView : View {
                     // 메모
                     createSectionView(title: "메모", content: {
                         VStack(spacing: 4) {
-#warning("TODO: 메모 입력 필드")
+                            TextField(
+                                "",
+                                text: self.$viewModel.memo,
+                                prompt: Text("메모를 작성하세요."),
+                                axis: .vertical
+                            )
+                            .moneyTogetherFont(style: .b1)
+                            .tint(Color.moneyTogether.brand.primary)
+                            .background(Color.clear)
+                            .frame(maxWidth: .infinity, minHeight: 40)
                         }
-                        .frame(maxWidth: .infinity, minHeight: 30)
                         .padding(.horizontal, Layout.side)
                         .padding(.vertical, 12)
                         .background(Color.moneyTogether.background)
@@ -89,7 +106,7 @@ struct EditMoneyLogView : View {
                     // 거래 타입에 따라 다른 뷰가 보여짐
                     createSectionView(title: settlementSectionTitle, content: {
                         VStack(spacing: 4) {
-                            switch selectedType {
+                            switch self.viewModel.transactionType {
                             case .spending: spendingSettlementView  // 정산 정보
                             case .earning: earningSettlementView    // 입금될 자산 정보
                             }
@@ -111,9 +128,48 @@ struct EditMoneyLogView : View {
                     
                 }
                 .padding(.horizontal, Layout.side)
-                .padding(.top, ComponentSize.navigationBarHeight + 40)
+                .padding(.top, ComponentSize.navigationBarHeight + 24)
                 .padding(.bottom, Layout.bottom)
             }
+        }
+    }
+}
+
+// MARK: Amount Info
+extension EditMoneyLogView {
+    /// 통화 타입 선택 모달 띄우기 버튼 + 선택된 통화 타입 라벨
+    private var currencyTypePicker: some View {
+        HStack {
+            Text(self.viewModel.currencyType.displayName)
+                .moneyTogetherFont(style: .b1)
+                .foregroundStyle(Color.moneyTogether.label.alternative)
+                .lineLimit(1)
+            Image(systemName: "chevron.down")
+                .iconStyle(size: 14, foregroundColor: .moneyTogether.label.assistive ,padding: 0)
+        }
+        .padding(.vertical, 12)
+        .onTapGesture {
+            self.viewModel.onCurrencyTypeSelection?()
+        }
+    }
+    
+    /// 금액 입력 필드
+    private var amountTextField: some View {
+        TextField(
+            "금액",
+            text: self.$viewModel.amount,
+            prompt: Text("금액을 입력하세요.")
+        )
+        .multilineTextAlignment(.trailing)
+        .keyboardType(.decimalPad)
+        .textInputAutocapitalization(.never)
+        .autocorrectionDisabled()
+        .moneyTogetherFont(style: .b1)
+        .tint(Color.moneyTogether.brand.primary)
+        .background(Color.clear)
+        .frame(maxWidth: .infinity, minHeight: 40)
+        .onChange(of: self.viewModel.amount) { before, after in
+            self.viewModel.updateAmountText(with: after)
         }
     }
 }

@@ -30,6 +30,7 @@ class EditMoneyLogCoordinator: BaseNavCoordinator {
     override func start() {
         let rootView = EditMoneyLogView(viewModel: self.viewModel)
         self.rootViewController = UIHostingController(rootView: rootView)
+        self.rootViewController.hideKeyboardWhenTappedAround()
         
         self.show(self.rootViewController, animated: true)
         
@@ -47,6 +48,12 @@ extension EditMoneyLogCoordinator {
             
             self.navigationController.dismiss(animated: true)
             self.parent?.removeChild(self)
+        }
+        
+        // 통화 타입 선택 모달 띄우기
+        viewModel.onCurrencyTypeSelection = { [weak self] in
+            guard let self = self else { return }
+            self.presentCurrencyTypeSelection()
         }
         
         // 날짜 선택 모달 띄우기
@@ -77,6 +84,17 @@ extension EditMoneyLogCoordinator {
 }
 
 extension EditMoneyLogCoordinator {
+    
+    /// 통화 타입 선택 모달 띄우기
+    private func presentCurrencyTypeSelection() {
+        let viewController = CurrencyTypePickerViewController(defaultCurrency: self.viewModel.currencyType)
+        viewController.selectedCurrency.bind({ newValue in
+            self.viewModel.updateCurrencyType(newValue)
+        })
+        
+        self.navigationController.showSheet(viewController: viewController, detents: [.fixedHeight(400), .large()])
+    }
+    
     /// 날짜 선택 모달 띄우기
     private func presentDatePicker() {
         let rootView = DatePickerView(

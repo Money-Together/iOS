@@ -8,7 +8,63 @@
 import Foundation
 import SwiftUI
 
-#warning("TODO: 정산금액 편집 & 저금통 사용 시 금액 자동 분배")
+// MARK: SettlementAmountTextField
+
+/// 각 정산 멤버의 정산 금액 입력 필드
+struct SettlementAmountTextField: View {
+    @Binding var amount: String
+    
+    @State var previousAmount: String
+    
+    @State var isEditing: Bool = false
+    
+    init(amount: Binding<String>) {
+        self._amount = amount
+        self.previousAmount = amount.wrappedValue
+    }
+    
+    var body: some View {
+        TextField(
+            "\(previousAmount)",
+            text: $amount,
+            onEditingChanged: { isEditing in
+                self.isEditing = isEditing
+            }
+        )
+        .multilineTextAlignment(.trailing)
+        .keyboardType(.decimalPad)
+        .textInputAutocapitalization(.never)
+        .autocorrectionDisabled()
+        .foregroundStyle(Color.moneyTogether.label.normal)
+        .moneyTogetherFont(style: isEditing ? .b1 : .detail2)
+        .frame(height: 40)
+        .lineLimit(1)
+        .onChange(of: isEditing) { before, after in
+            print(#fileID, #function, #line, "isEditing changed \(self.isEditing)")
+            if before == after { return }
+            if after == true {
+                // 이전 금액을 placeholder로 보여주고 금액 초기화
+                self.previousAmount = self.amount
+                self.amount = ""
+            } else {
+                // 편집 전 금액으로 다시 설정
+                if self.amount.isEmpty {
+                    self.amount = previousAmount
+                    self.previousAmount = self.amount
+                }
+            }
+        }
+        .onChange(of: amount) { before, after in
+            if before != after {
+                // decimal 스타일로
+                amount = after.replacingOccurrences(of: ",", with: "").decimalStyle()
+            }
+        }
+    }
+}
+
+// MARK: SpendingSettlementView
+
 extension EditMoneyLogView {
 
     /// 거래 타입이 지출일 경우, 자산 및 정산 정보 섹션 뷰
@@ -36,14 +92,15 @@ extension EditMoneyLogView {
                 
                 // 참여자 리스트
                 // 참여자 별 정산 금액 보여줌, 정산 금액 수정 가능
+                // 저금통 사용 중일 경우, 정산 금액 수정 불가능
                 ForEach(self.viewModel.settlementMembers, id: \.id) { member in
                     createSettlementMemberRow(member: member)
                         .padding(.horizontal, 8)
                 }
                 
                 // 모든 참여자의 정산 금액과 거래내역 금액 간의 차액
-                Text("남은 금액: 2,000")
-                    .foregroundStyle(Color.moneyTogether.label.alternative)
+                Text("\(self.viewModel.leftAmount)")
+                    .foregroundStyle(self.viewModel.isValidLeftAmount ?  Color.moneyTogether.label.alternative : Color.moneyTogether.system.red)
                     .moneyTogetherFont(style: .detail2)
                     .frame(maxWidth: .infinity, minHeight: 40, alignment: .trailing)
             }
@@ -92,11 +149,15 @@ extension EditMoneyLogView {
         
         return LabeledContent {
             // 멤버 별 정산 금액 - trailing
-            Text("2,000")
-                .foregroundStyle(Color.moneyTogether.label.normal)
-                .moneyTogetherFont(style: .detail2)
-                .frame(height: 40)
-                .lineLimit(1)
+            SettlementAmountTextField(
+                // 정산 멤버의 정산 금액
+                amount: Binding(
+                    get: { member.amount},
+                    set: { newValue in
+                        self.viewModel.updateSettlementMemberAmount(of: member, with: newValue)
+                    }
+                )
+            ).disabled(!self.viewModel.canEditSettlementAmount) // 저금통 사용 시, 금액 수정 불가
         } label: {
             // 멤버 프로필 이미지 & 닉네임 - leading
             HStack {
