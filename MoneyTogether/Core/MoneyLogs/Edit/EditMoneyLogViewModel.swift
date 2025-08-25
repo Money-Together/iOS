@@ -139,10 +139,11 @@ extension EditMoneyLogViewModel {
     func updatePrivateState(_ newValue: Bool) {
         self.isPrivate = newValue
         if !canUseCashbox {
-            self.updateCashboxUsage(false)
+            // 나만보기 사용 시 - 저금통 사용 불가 & 개인 자산 선택 가능
+            self.useCashbox = false
         }
     }
-    
+
     /// 저금통 사용 여부 업데이트
     func updateCashboxUsage(_ newValue: Bool) {
         if canUseCashbox {
