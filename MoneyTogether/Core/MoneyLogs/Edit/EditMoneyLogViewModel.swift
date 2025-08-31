@@ -13,12 +13,20 @@ class EditMoneyLogViewModel: ObservableObject {
     
     let members: [WalletMember]
     
+    
+    // error
+    @Published var hasEditingError: Bool = false
+    
+    var errorType: MoneyLogInputError = .none
+    
+    
+    
     // money log data
     
     @Published var transactionType: TransactionType = .spending
     
     /// 통화 타입
-    @Published var currencyType: CurrencyType
+    @Published private(set) var currencyType: CurrencyType
     
     /// 금액
     @Published var amount: String = ""
@@ -39,7 +47,7 @@ class EditMoneyLogViewModel: ObservableObject {
     @Published private(set) var useCashbox: Bool = false
     
     /// 자산
-    @Published var asset: UserAsset? = nil
+    @Published private(set) var  asset: UserAsset? = nil
     
     /// 정산 멤버
     @Published private(set) var settlementMembers: [SettlementMember] = []
@@ -107,6 +115,26 @@ class EditMoneyLogViewModel: ObservableObject {
 }
 
 extension EditMoneyLogViewModel {
+    func completeEdit()  {
+        guard validate() else {
+            self.hasEditingError = true
+            return
+        }
+        
+        // do action
+        
+        // if success
+        self.onBackTapped?()
+        return
+        
+        // if fail
+//        self.errorType = .commonInputError
+//        self.hasEditingError = true
+        
+    }
+}
+
+extension EditMoneyLogViewModel {
     
     /// 통화 타입 업데이트
     func updateCurrencyType(_ newValue: CurrencyType) {
@@ -138,8 +166,9 @@ extension EditMoneyLogViewModel {
     /// 나만보기 여부 업데이트
     func updatePrivateState(_ newValue: Bool) {
         self.isPrivate = newValue
-        if !canUseCashbox {
-            // 나만보기 사용 시 - 저금통 사용 불가 & 개인 자산 선택 가능
+        
+        // 나만보기 사용 시 - 저금통 사용 불가 & 개인 자산 선택 가능
+        if isPrivate {
             self.useCashbox = false
         }
     }
@@ -182,6 +211,15 @@ extension EditMoneyLogViewModel {
         self.settlementMembers[idx].amount = newValue
         
     }
+    
+    /// 자산 업데이트
+    func updateAsset(_ newValue: UserAsset?) {
+        self.asset = newValue
+    }
+    
+    /// 메모 업데이트
+    func updateMemo(_ newValue: String) {
+        self.memo = String(newValue.prefix(100))
+    }
 }
-
 

@@ -43,7 +43,7 @@ struct EditMoneyLogView : View {
                     self.viewModel.onBackTapped?()
                 }
             ).zIndex(1)
-
+            
             ScrollView {
                 VStack(spacing: 48) {
                     // 거래 타입 슬라이더 피커
@@ -52,7 +52,7 @@ struct EditMoneyLogView : View {
                         items: TransactionType.allCases,
                         getTitle: { type in type.description }
                     )
-
+                    
                     // 금액 및 통화타입
                     HStack(spacing: 12) {
                         currencyTypePicker
@@ -87,13 +87,24 @@ struct EditMoneyLogView : View {
                             TextField(
                                 "",
                                 text: self.$viewModel.memo,
-                                prompt: Text("메모를 작성하세요."),
+                                prompt: Text("메모를 작성하세요. (최대 100자)"),
                                 axis: .vertical
                             )
+                            .onChange(of: self.viewModel.memo) { _, after in
+                                self.viewModel.updateMemo(after)
+                            }
                             .moneyTogetherFont(style: .b1)
                             .tint(Color.moneyTogether.brand.primary)
                             .background(Color.clear)
                             .frame(maxWidth: .infinity, minHeight: 40)
+                            
+                            // 메모 글자 수 카운터
+                            // (현재 입력된 글자 수 / 최대 글자 수)
+                            Text("\(self.viewModel.memo.count) / 100 자")
+                                .foregroundStyle(Color.moneyTogether.label.assistive)
+                                .moneyTogetherFont(style: .detail2)
+                                .frame(maxWidth: .infinity, alignment: .trailing)
+                                .frame(height: 20)
                         }
                         .padding(.horizontal, Layout.side)
                         .padding(.vertical, 12)
@@ -118,11 +129,13 @@ struct EditMoneyLogView : View {
                         .shadow(color: .moneyTogether.grayScale.baseGray30, radius: 5, x: 0, y: 5)
                     })
                     
+                    // 완료 버튼
                     CTAButton(
                         activeState: .active,
                         buttonStyle: .solid,
                         labelText: "완료", action: {
                             print(#fileID, #function, #line, "머니로그 편집 완료")
+                            self.viewModel.completeEdit()
                         }
                     ).padding(.top, 40)
                     
@@ -131,6 +144,20 @@ struct EditMoneyLogView : View {
                 .padding(.top, ComponentSize.navigationBarHeight + 24)
                 .padding(.bottom, Layout.bottom)
             }
+            // 오류 발생 시 alert
+            .alert(
+                "오류가 발생했습니다.",
+                isPresented: $viewModel.hasEditingError,
+                actions: {
+                    Button("확인") {
+                        print(#fileID, #function, #line, "error ok")
+                    }
+                },
+                message: {
+                    Text(self.viewModel.errorType.messege)
+                }
+            )
+            
         }
     }
 }

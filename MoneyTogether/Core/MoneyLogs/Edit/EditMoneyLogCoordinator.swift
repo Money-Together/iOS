@@ -130,7 +130,7 @@ extension EditMoneyLogCoordinator {
     private func presentAssetSelection() {
         let viewController = AssetSelectionViewController()
         viewController.onSelect = { selected in
-            self.viewModel.asset = selected
+            self.viewModel.updateAsset(selected)
             viewController.dismiss(animated: true)
         }
         
