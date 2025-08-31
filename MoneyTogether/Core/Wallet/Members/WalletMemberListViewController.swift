@@ -118,6 +118,7 @@ extension WalletMemberListViewController: UITableViewDataSource, UITableViewDele
         self.tableView.delegate = self
         self.tableView.register(WalletMemberCell.self, forCellReuseIdentifier: WalletMemberCell.reuseId)
         
+        tableView.rowHeight = 56 // 36 + spacing(20)
         tableView.contentInset = UIEdgeInsets(top: 24, left: 0, bottom: 60, right: 0)
         tableView.layoutMargins = UIEdgeInsets(top: 0, left: Layout.side, bottom: 0, right: Layout.side)
         

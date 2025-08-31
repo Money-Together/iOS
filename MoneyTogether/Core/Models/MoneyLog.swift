@@ -8,10 +8,23 @@
 import Foundation
 
 /// 머니로그 거래 타입
-enum TransactionType {
+enum TransactionType: String {
     case spending  // 소비, 지출
     case earning   // 수입
+//    case something
+    
+    var id: String { rawValue }
+    
+    var description: String {
+        switch self {
+        case .spending: return "지출"
+        case .earning: return "수입"
+        default: return "테스트"
+        }
+    }
 }
+
+extension TransactionType: SliderSegmentedPickable {}
 
 struct MoneyLog: Identifiable {
     let id = UUID()

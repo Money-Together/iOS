@@ -15,6 +15,8 @@ class WalletHomeViewModel {
     
     var walletSettingBtnTapped: (() -> Void)?
     
+    var onAddMoneylogBtnTapped: (() -> Void)?
+    
     init(walletVM: WalletViewModel = WalletViewModel(), logsVM: MoneyLogsViewModel = MoneyLogsViewModel()) {
         self.walletVM = walletVM
         self.logsVM = logsVM

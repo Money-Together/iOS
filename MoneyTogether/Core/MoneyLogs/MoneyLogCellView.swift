@@ -29,6 +29,7 @@ struct MoneyLogCellView: View {
         switch log.transactionType {
         case .spending: sign = "-"
         case .earning: sign = "+"
+        default: sign = ""
         }
                
         return sign + " " + log.currency.symbol + log.amount
@@ -38,6 +39,7 @@ struct MoneyLogCellView: View {
         switch log.transactionType {
         case .spending: return Color.moneyTogether.system.red
         case .earning: return Color.moneyTogether.system.blue
+        default: return Color.moneyTogether.label.normal
         }
     }
     

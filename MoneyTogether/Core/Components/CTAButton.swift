@@ -15,7 +15,7 @@ extension View {
                    labelText title: String,
                    labelFontStyle: MoneyTogetherTextStyle = .h6,
                    buttonHeight: CGFloat = ComponentSize.ctaBtnHeight,
-                   buttonWidth: CGFloat = UIScreen.main.bounds.width - (Layout.side),
+                   buttonWidth: CGFloat = UIScreen.main.bounds.width - (Layout.side * 2),
                    cornerRadius: CGFloat = Radius.small,
                    action: (() -> Void)?) -> some View {
         Button(

@@ -27,6 +27,10 @@ struct ComponentSize {
     
     /// list cell 뷰에 앞부분에 있는 이미지 사이즈 (width, height 동일)
     static let leadingImgSize: CGFloat      = 32
+    
+//    static let horizontalProfileCellHeight: CGFloat = 40
+//    
+    static let verticalProfileCellSize: CGSize = CGSize(width: 80, height: 120)
 }
 
 /// 프로필 이미지 사이즈

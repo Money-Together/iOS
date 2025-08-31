@@ -18,11 +18,11 @@ class CurrencyAmountInputView: UIView {
     
     
     // MARK: UI Components
-    private var pickedCurrencyLabel: UILabel!
+    private(set) var pickedCurrencyLabel: UILabel!
     
-    private var currencyPickerBtn: UIView!
+    private(set) var currencyPickerBtn: UIView!
     
-    private var amountTextField: UITextField!
+    private(set) var amountTextField: UITextField!
     
     // MARK: Init & Setup
     

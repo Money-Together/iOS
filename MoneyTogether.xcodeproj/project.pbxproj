@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		3E678FA02E4E553B0041DD5C /* UICollectionViewLeftAlignedLayout in Frameworks */ = {isa = PBXBuildFile; productRef = 3E678F9F2E4E553B0041DD5C /* UICollectionViewLeftAlignedLayout */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		3E4929512DAE4DB900C3C2BB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -65,6 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3E678FA02E4E553B0041DD5C /* UICollectionViewLeftAlignedLayout in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -91,6 +96,7 @@
 				3E49293C2DAE4DB600C3C2BB /* MoneyTogether */,
 				3E4929532DAE4DB900C3C2BB /* MoneyTogetherTests */,
 				3E49295D2DAE4DB900C3C2BB /* MoneyTogetherUITests */,
+				3E678F9E2E4E553B0041DD5C /* Frameworks */,
 				3E49293B2DAE4DB600C3C2BB /* Products */,
 			);
 			indentWidth = 4;
@@ -105,6 +111,13 @@
 				3E49295A2DAE4DB900C3C2BB /* MoneyTogetherUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		3E678F9E2E4E553B0041DD5C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -127,6 +140,7 @@
 			);
 			name = MoneyTogether;
 			packageProductDependencies = (
+				3E678F9F2E4E553B0041DD5C /* UICollectionViewLeftAlignedLayout */,
 			);
 			productName = MoneyTogether;
 			productReference = 3E49293A2DAE4DB600C3C2BB /* MoneyTogether.app */;
@@ -211,6 +225,9 @@
 			);
 			mainGroup = 3E4929312DAE4DB500C3C2BB;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				3E678F9D2E4E551D0041DD5C /* XCRemoteSwiftPackageReference "UICollectionViewLeftAlignedLayout" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 3E49293B2DAE4DB600C3C2BB /* Products */;
 			projectDirPath = "";
@@ -582,6 +599,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		3E678F9D2E4E551D0041DD5C /* XCRemoteSwiftPackageReference "UICollectionViewLeftAlignedLayout" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/mokagio/UICollectionViewLeftAlignedLayout.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		3E678F9F2E4E553B0041DD5C /* UICollectionViewLeftAlignedLayout */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3E678F9D2E4E551D0041DD5C /* XCRemoteSwiftPackageReference "UICollectionViewLeftAlignedLayout" */;
+			productName = UICollectionViewLeftAlignedLayout;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 3E4929322DAE4DB500C3C2BB /* Project object */;
 }

@@ -9,23 +9,17 @@ import Foundation
 import UIKit
 import SwiftUI
 
-struct Category {
-    var name: String
-    var iconImg: String
-    var color: String?
-    
-    static func createDummyList() -> [Category] {
-        var list: [Category] = []
-        
-        Array(1...10).forEach { idx in
-            list.append(Category(name: "카테고리 \(idx)", iconImg: "saving", color: "cccccc"))
+final class CategoryCell: UITableViewCell {
+    static let reuseId = "CategoryCell"
+    func configure() {
+        self.contentConfiguration = UIHostingConfiguration {
+            CategoryCellView()
         }
-        
-        return list
+        self.selectionStyle = .none
     }
 }
 
-struct CategoryCell: View {
+struct CategoryCellView: View {
     var name: String = "카테고리 1"
     
     var body: some View {
@@ -41,17 +35,7 @@ struct CategoryCell: View {
     }
 }
 
-final class CategoryCellView: UITableViewCell {
-    static let reuseId = "CategoryCell"
-    func configure() {
-        self.contentConfiguration = UIHostingConfiguration {
-            CategoryCell()
-        }
-        self.selectionStyle = .none
-    }
-}
-
-class CategoryListViewController: UIViewController {
+final class CategoryListViewController: UIViewController {
     
     // MARK: Properties
     
@@ -98,7 +82,7 @@ class CategoryListViewController: UIViewController {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.register(CategoryCellView.self, forCellReuseIdentifier: CategoryCellView.reuseId)
+        tableView.register(CategoryCell.self, forCellReuseIdentifier: CategoryCell.reuseId)
         tableView.contentInset = UIEdgeInsets(top: 20, left: 0, bottom: 56, right: 0)
         tableView.rowHeight = 56
         tableView.separatorColor = .clear
@@ -134,7 +118,7 @@ extension CategoryListViewController: UITableViewDataSource, UITableViewDelegate
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: CategoryCellView.reuseId, for: indexPath) as? CategoryCellView
+        let cell = tableView.dequeueReusableCell(withIdentifier: CategoryCell.reuseId, for: indexPath) as? CategoryCell
         cell?.configure()
         
         return cell ?? UITableViewCell()
