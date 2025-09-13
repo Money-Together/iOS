@@ -677,6 +677,8 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 15.0.3;
+			};
+		};
 		3E678F9D2E4E551D0041DD5C /* XCRemoteSwiftPackageReference "UICollectionViewLeftAlignedLayout" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/mokagio/UICollectionViewLeftAlignedLayout.git";
@@ -722,6 +724,7 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 3E97CFD92E6C016400B12B5D /* XCRemoteSwiftPackageReference "Moya" */;
 			productName = Moya;
+		};
 		3E678F9F2E4E553B0041DD5C /* UICollectionViewLeftAlignedLayout */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 3E678F9D2E4E551D0041DD5C /* XCRemoteSwiftPackageReference "UICollectionViewLeftAlignedLayout" */;
