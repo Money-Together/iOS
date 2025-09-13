@@ -20,16 +20,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
-        self.appCoordinator = AppCoordinator()
-        
         window = UIWindow(frame: UIScreen.main.bounds)                      // 현재 스크린의 사이즈의 윈도우 가져오기
-        //window?.rootViewController = appCoordinator?.navigationController   // 처음 보여줄 뷰컨트롤러 연결하기
-        window?.rootViewController = LoginViewController()
-        window?.makeKeyAndVisible()                                         // 화면 보이게 하기
         window?.windowScene = windowScene
         
-        self.appCoordinator?.start()
-                
+        self.appCoordinator = AppCoordinator(window: window!)
+        self.appCoordinator?.start() 
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

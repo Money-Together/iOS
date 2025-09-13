@@ -12,6 +12,8 @@
 		3E220E492E349B96004519E1 /* FirebaseAnalyticsIdentitySupport in Frameworks */ = {isa = PBXBuildFile; productRef = 3E220E482E349B96004519E1 /* FirebaseAnalyticsIdentitySupport */; };
 		3E220E4F2E349B97004519E1 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 3E220E4E2E349B97004519E1 /* FirebaseAuth */; };
 		3E3767C92E2CF4CB00A1FDBB /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 3E3767C82E2CF4CB00A1FDBB /* GoogleSignIn */; };
+		3E97CFDB2E6C016400B12B5D /* CombineMoya in Frameworks */ = {isa = PBXBuildFile; productRef = 3E97CFDA2E6C016400B12B5D /* CombineMoya */; };
+		3E97CFDD2E6C016400B12B5D /* Moya in Frameworks */ = {isa = PBXBuildFile; productRef = 3E97CFDC2E6C016400B12B5D /* Moya */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -45,6 +47,20 @@
 			);
 			target = 3E4929392DAE4DB600C3C2BB /* MoneyTogether */;
 		};
+		3E97CFF52E6F400700B12B5D /* Exceptions for "MoneyTogether" folder in "MoneyTogetherTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"Resources/DesignSystem/Typography/Font/Roboto-Medium.ttf",
+			);
+			target = 3E49294F2DAE4DB900C3C2BB /* MoneyTogetherTests */;
+		};
+		3E97CFF62E6F400700B12B5D /* Exceptions for "MoneyTogether" folder in "MoneyTogetherUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"Resources/DesignSystem/Typography/Font/Roboto-Medium.ttf",
+			);
+			target = 3E4929592DAE4DB900C3C2BB /* MoneyTogetherUITests */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -52,6 +68,8 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				3E4929622DAE4DB900C3C2BB /* Exceptions for "MoneyTogether" folder in "MoneyTogether" target */,
+				3E97CFF52E6F400700B12B5D /* Exceptions for "MoneyTogether" folder in "MoneyTogetherTests" target */,
+				3E97CFF62E6F400700B12B5D /* Exceptions for "MoneyTogether" folder in "MoneyTogetherUITests" target */,
 			);
 			path = MoneyTogether;
 			sourceTree = "<group>";
@@ -75,8 +93,10 @@
 			files = (
 				3E220E492E349B96004519E1 /* FirebaseAnalyticsIdentitySupport in Frameworks */,
 				3E220E452E349B96004519E1 /* FirebaseAnalytics in Frameworks */,
+				3E97CFDB2E6C016400B12B5D /* CombineMoya in Frameworks */,
 				3E220E472E349B96004519E1 /* FirebaseAnalyticsCore in Frameworks */,
 				3E3767C92E2CF4CB00A1FDBB /* GoogleSignIn in Frameworks */,
+				3E97CFDD2E6C016400B12B5D /* Moya in Frameworks */,
 				3E220E4F2E349B97004519E1 /* FirebaseAuth in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -153,6 +173,8 @@
 				3E220E462E349B96004519E1 /* FirebaseAnalyticsCore */,
 				3E220E482E349B96004519E1 /* FirebaseAnalyticsIdentitySupport */,
 				3E220E4E2E349B97004519E1 /* FirebaseAuth */,
+				3E97CFDA2E6C016400B12B5D /* CombineMoya */,
+				3E97CFDC2E6C016400B12B5D /* Moya */,
 			);
 			productName = MoneyTogether;
 			productReference = 3E49293A2DAE4DB600C3C2BB /* MoneyTogether.app */;
@@ -240,6 +262,7 @@
 			packageReferences = (
 				3E623EBC2E2CEECD009B4077 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 				3E220E432E349A6B004519E1 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				3E97CFD92E6C016400B12B5D /* XCRemoteSwiftPackageReference "Moya" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 3E49293B2DAE4DB600C3C2BB /* Products */;
@@ -636,6 +659,14 @@
 				minimumVersion = 9.0.0;
 			};
 		};
+		3E97CFD92E6C016400B12B5D /* XCRemoteSwiftPackageReference "Moya" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Moya/Moya.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 15.0.3;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -663,6 +694,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 3E623EBC2E2CEECD009B4077 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
 			productName = GoogleSignIn;
+		};
+		3E97CFDA2E6C016400B12B5D /* CombineMoya */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3E97CFD92E6C016400B12B5D /* XCRemoteSwiftPackageReference "Moya" */;
+			productName = CombineMoya;
+		};
+		3E97CFDC2E6C016400B12B5D /* Moya */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3E97CFD92E6C016400B12B5D /* XCRemoteSwiftPackageReference "Moya" */;
+			productName = Moya;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

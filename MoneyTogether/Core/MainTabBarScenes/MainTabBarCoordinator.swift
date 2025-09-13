@@ -60,6 +60,8 @@ enum MainTabBarItemType: String, CaseIterable {
 /// 메인 탭뷰 코디네이터
 class MainTabBarCoordinator: BaseTabBarCoordinator {
     
+    var onLogout: (() -> Void)?
+    
     override func start() {
         let tabs = MainTabBarItemType.allCases
         

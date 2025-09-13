@@ -17,6 +17,7 @@
 	<array>
 		<string>Pretendard-Bold.otf</string>
 		<string>Pretendard-Regular.otf</string>
+        <string>Roboto-Medium.ttf</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
@@ -35,5 +36,10 @@
 			</array>
 		</dict>
 	</dict>
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+    </dict>
 </dict>
 </plist>
