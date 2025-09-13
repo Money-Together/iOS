@@ -14,6 +14,7 @@
 		3E3767C92E2CF4CB00A1FDBB /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 3E3767C82E2CF4CB00A1FDBB /* GoogleSignIn */; };
 		3E97CFDB2E6C016400B12B5D /* CombineMoya in Frameworks */ = {isa = PBXBuildFile; productRef = 3E97CFDA2E6C016400B12B5D /* CombineMoya */; };
 		3E97CFDD2E6C016400B12B5D /* Moya in Frameworks */ = {isa = PBXBuildFile; productRef = 3E97CFDC2E6C016400B12B5D /* Moya */; };
+		3E678FA02E4E553B0041DD5C /* UICollectionViewLeftAlignedLayout in Frameworks */ = {isa = PBXBuildFile; productRef = 3E678F9F2E4E553B0041DD5C /* UICollectionViewLeftAlignedLayout */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -98,6 +99,7 @@
 				3E3767C92E2CF4CB00A1FDBB /* GoogleSignIn in Frameworks */,
 				3E97CFDD2E6C016400B12B5D /* Moya in Frameworks */,
 				3E220E4F2E349B97004519E1 /* FirebaseAuth in Frameworks */,
+				3E678FA02E4E553B0041DD5C /* UICollectionViewLeftAlignedLayout in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -132,6 +134,7 @@
 				3E4929532DAE4DB900C3C2BB /* MoneyTogetherTests */,
 				3E49295D2DAE4DB900C3C2BB /* MoneyTogetherUITests */,
 				3E3767C72E2CF4CB00A1FDBB /* Frameworks */,
+				3E678F9E2E4E553B0041DD5C /* Frameworks */,
 				3E49293B2DAE4DB600C3C2BB /* Products */,
 			);
 			indentWidth = 4;
@@ -146,6 +149,13 @@
 				3E49295A2DAE4DB900C3C2BB /* MoneyTogetherUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		3E678F9E2E4E553B0041DD5C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -175,6 +185,7 @@
 				3E220E4E2E349B97004519E1 /* FirebaseAuth */,
 				3E97CFDA2E6C016400B12B5D /* CombineMoya */,
 				3E97CFDC2E6C016400B12B5D /* Moya */,
+				3E678F9F2E4E553B0041DD5C /* UICollectionViewLeftAlignedLayout */,
 			);
 			productName = MoneyTogether;
 			productReference = 3E49293A2DAE4DB600C3C2BB /* MoneyTogether.app */;
@@ -263,6 +274,7 @@
 				3E623EBC2E2CEECD009B4077 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
 				3E220E432E349A6B004519E1 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				3E97CFD92E6C016400B12B5D /* XCRemoteSwiftPackageReference "Moya" */,
+				3E678F9D2E4E551D0041DD5C /* XCRemoteSwiftPackageReference "UICollectionViewLeftAlignedLayout" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 3E49293B2DAE4DB600C3C2BB /* Products */;
@@ -665,6 +677,12 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 15.0.3;
+		3E678F9D2E4E551D0041DD5C /* XCRemoteSwiftPackageReference "UICollectionViewLeftAlignedLayout" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/mokagio/UICollectionViewLeftAlignedLayout.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.1.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -704,6 +722,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 3E97CFD92E6C016400B12B5D /* XCRemoteSwiftPackageReference "Moya" */;
 			productName = Moya;
+		3E678F9F2E4E553B0041DD5C /* UICollectionViewLeftAlignedLayout */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3E678F9D2E4E551D0041DD5C /* XCRemoteSwiftPackageReference "UICollectionViewLeftAlignedLayout" */;
+			productName = UICollectionViewLeftAlignedLayout;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

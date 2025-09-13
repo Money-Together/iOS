@@ -17,6 +17,12 @@ class CustomIconButton: UIView {
     /// 버튼 사이즈
     private var btnSize: CGFloat
     
+    /// 아이콘 이미지 사이즈
+    private var iconSize: CGFloat
+    
+    /// 아이콘 이미지를 둘러싸고 있는 패딩 사이즈
+    private var padding: CGFloat
+    
     
     // MARK: UI Components
     
@@ -56,7 +62,45 @@ class CustomIconButton: UIView {
          cornerRadius: CGFloat = Radius.small,
          action: (() -> Void)? = nil) {
         
+        self.iconSize = size / 2
+        self.padding = size / 4
         self.btnSize = size
+        self.btnAction = action
+        
+        super.init(frame: .zero)
+        
+        self.setUI(iconImage: iconImage,
+                   iconColor: iconColor,
+                   backgroundColor: backgroundColor,
+                   cornerRadius: cornerRadius)
+        
+        self.setLayout()
+        
+        self.button.addAction(UIAction(handler: { _ in
+            self.handleButtonTap()
+        }), for: .touchUpInside)
+    }
+    
+    /// 커스텀 아이콘 버튼 init
+    /// - Parameters:
+    ///   - iconImage: 아이콘이미지
+    ///   - iconColor: 아이콘 컬러, default = .moneyTogether.label.alternative
+    ///   - backgroundColor: 백그라운드컬러, default = .clear
+    ///   - iconSize: 아이콘 이미지 사이즈(width = height), default = 24
+    ///   - padding: 아이콘 이미지를 둘러싸고 있는 padding 사이즈, default = 12 (iconSize / 2)
+    ///   - cornerRadius: 아이콘 버튼 뷰 corner radius, default = Radius.small
+    ///   - action: 버튼 클릭 이벤트 액션
+    init(iconImage: UIImage?,
+         iconColor: UIColor? = .moneyTogether.label.alternative,
+         backgroundColor: UIColor? = .clear,
+         iconSize: CGFloat = 24,
+         padding: CGFloat = 12,
+         cornerRadius: CGFloat = Radius.small,
+         action: (() -> Void)? = nil) {
+        
+        self.iconSize = iconSize
+        self.padding = padding
+        self.btnSize = iconSize + (padding * 2)
         self.btnAction = action
         
         super.init(frame: .zero)
@@ -94,10 +138,12 @@ class CustomIconButton: UIView {
             self.widthAnchor.constraint(equalToConstant: btnSize),
             self.heightAnchor.constraint(equalToConstant: btnSize),
             
+            iconImageView.widthAnchor.constraint(equalToConstant: iconSize),
+            iconImageView.heightAnchor.constraint(equalToConstant: iconSize),
             iconImageView.centerXAnchor.constraint(equalTo: self.centerXAnchor),
             iconImageView.centerYAnchor.constraint(equalTo: self.centerYAnchor),
-            iconImageView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: btnSize/4),
-            iconImageView.topAnchor.constraint(equalTo: self.topAnchor, constant: btnSize/4),
+            iconImageView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: padding),
+            iconImageView.topAnchor.constraint(equalTo: self.topAnchor, constant: padding),
             
             button.centerXAnchor.constraint(equalTo: self.centerXAnchor),
             button.centerYAnchor.constraint(equalTo: self.centerYAnchor),

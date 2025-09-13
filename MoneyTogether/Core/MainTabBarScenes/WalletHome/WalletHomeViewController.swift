@@ -31,6 +31,9 @@ class WalletHomeViewController: UIViewController {
     /// 머니로그 리스트 뷰
     private var moneylogTableView: UITableView!
     
+    /// 새로운 머니로그 추가/생성하기 버튼
+    private var addMoneylogBtn: CustomIconButton!
+    
     // MARK: Init & Set up
     
     init(viewModel: WalletHomeViewModel) {
@@ -111,10 +114,22 @@ class WalletHomeViewController: UIViewController {
         self.moneylogTableView = UITableView().disableAutoresizingMask()
         self.setTableView()
         
+        self.addMoneylogBtn = CustomIconButton(
+            iconImage: UIImage(named: "edit"),
+            iconColor: UIColor.moneyTogether.label.rNormal,
+            backgroundColor: UIColor.moneyTogether.brand.primary,
+            iconSize: 24,
+            padding: 16,
+            cornerRadius: 20,
+            action: {
+                print(#fileID, #function, #line, "add new moneylog button tapped")
+                self.viewModel.onAddMoneylogBtnTapped?()
+            })
         
         self.view.addSubview(headerView)
         self.view.addSubview(selectedDateFilterView)
         self.view.addSubview(moneylogTableView)
+        self.view.addSubview(addMoneylogBtn)
         
     }
     
@@ -131,7 +146,10 @@ class WalletHomeViewController: UIViewController {
             moneylogTableView.topAnchor.constraint(equalTo: selectedDateFilterView.bottomAnchor),
             moneylogTableView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor),
             moneylogTableView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor),
-            moneylogTableView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor)
+            moneylogTableView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            
+            addMoneylogBtn.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor, constant: -Layout.side),
+            addMoneylogBtn.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: -Layout.side),
         ])
     }
     

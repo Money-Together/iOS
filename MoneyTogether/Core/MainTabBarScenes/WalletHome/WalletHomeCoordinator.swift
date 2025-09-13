@@ -48,6 +48,24 @@ extension WalletHomeCoordinator {
             self.navigationController.pushViewController(viewController, animated: true)
         }
         
+        // 머니로그 생성 버튼 클릭 시
+        // 편집 플로우 코디네이터 추가 & 플로우 네비게이션컨트롤러 present
+        viewModel.onAddMoneylogBtnTapped = { [weak self] in
+            guard let self = self else { return }
+            
+            let editMoneylogCoordinator = EditMoneyLogCoordinator(
+                parentCoordinator: self,
+                walletData: self.viewModel.walletVM.walletData!,
+                walletMembers: self.viewModel.walletVM.members
+            )
+            editMoneylogCoordinator.start()
+            self.children.append(editMoneylogCoordinator)
+            
+            let childNav = editMoneylogCoordinator.navigationController
+            childNav.modalPresentationStyle = .overFullScreen
+            self.navigationController.present(childNav, animated: true)
+        }
+        
         viewModel.walletVM.walletMembersPreviewTapped = { members in
             let viewController = WalletMemberListViewController(members: members, onBackTapped: { [weak self] in
                 guard let self = self else { return }

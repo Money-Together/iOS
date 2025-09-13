@@ -32,7 +32,6 @@ struct WalletMembersPreview: View {
                     .foregroundStyle(Color.moneyTogether.label.alternative)
                     .padding(.horizontal, 4)
             }
-            Spacer()
         }
         .frame(height: 40)
     }

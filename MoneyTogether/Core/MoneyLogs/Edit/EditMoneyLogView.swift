@@ -1,0 +1,366 @@
+//
+//  EditMoneyLogView.swift
+//  MoneyTogether
+//
+//  Created by Heeoh Son on 7/25/25.
+//
+
+import Foundation
+import SwiftUI
+
+struct EditMoneyLogView : View {
+    
+    @ObservedObject var viewModel: EditMoneyLogViewModel
+    
+    private var settlementSectionTitle: String {
+        switch self.viewModel.transactionType {
+        case .earning: return "입금 정보"
+        case .spending: return "정산 정보"
+        default: return "자산 및 정산 정보"
+        }
+    }
+    
+    /// 포맷된 날짜 텍스트
+    var formattedDateString: String {
+        self.viewModel.date.formattedString(format: "yyyy. MM. dd")
+    }
+    
+    // MARK: Init
+
+    init(viewModel: EditMoneyLogViewModel) {
+        self.viewModel = viewModel
+    }
+    
+    // MARK: Body
+    
+    var body: some View {
+        ZStack(alignment: .top) {
+            CustomNavigationBarView(
+                title: "",
+                backBtnMode: .modal,
+                backAction: {
+                    print(#fileID, #function, #line, "뒤로가기")
+                    self.viewModel.onBackTapped?()
+                }
+            ).zIndex(1)
+            
+            ScrollView {
+                VStack(spacing: 48) {
+                    // 거래 타입 슬라이더 피커
+                    SliderSegmentedPicker(
+                        selection: self.$viewModel.transactionType,
+                        items: TransactionType.allCases,
+                        getTitle: { type in type.description }
+                    )
+                    
+                    // 금액 및 통화타입
+                    HStack(spacing: 12) {
+                        currencyTypePicker
+                        amountTextField
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, Layout.side)
+                    .padding(.vertical, 12)
+                    .background(Color.moneyTogether.background)
+                    .cornerRadius(Radius.large)
+                    .shadow(color: .moneyTogether.grayScale.baseGray30, radius: 5, x: 0, y: 5)
+                    
+                    
+                    // 거래내역 필수 정보
+                    // - 날짜, 카테고리, 나만보기 여부
+                    createSectionView(title: "필수 정보", content: {
+                        VStack(spacing: 4) {
+                            dateRow
+                            categoryRow
+                            privateRow
+                        }
+                        .padding(.horizontal, Layout.side)
+                        .padding(.vertical, 12)
+                        .background(Color.moneyTogether.background)
+                        .cornerRadius(Radius.large)
+                        .shadow(color: .moneyTogether.grayScale.baseGray30, radius: 5, x: 0, y: 5)
+                    })
+                    
+                    // 메모
+                    createSectionView(title: "메모", content: {
+                        VStack(spacing: 4) {
+                            TextField(
+                                "",
+                                text: self.$viewModel.memo,
+                                prompt: Text("메모를 작성하세요. (최대 100자)"),
+                                axis: .vertical
+                            )
+                            .onChange(of: self.viewModel.memo) { _, after in
+                                self.viewModel.updateMemo(after)
+                            }
+                            .moneyTogetherFont(style: .b1)
+                            .tint(Color.moneyTogether.brand.primary)
+                            .background(Color.clear)
+                            .frame(maxWidth: .infinity, minHeight: 40)
+                            
+                            // 메모 글자 수 카운터
+                            // (현재 입력된 글자 수 / 최대 글자 수)
+                            Text("\(self.viewModel.memo.count) / 100 자")
+                                .foregroundStyle(Color.moneyTogether.label.assistive)
+                                .moneyTogetherFont(style: .detail2)
+                                .frame(maxWidth: .infinity, alignment: .trailing)
+                                .frame(height: 20)
+                        }
+                        .padding(.horizontal, Layout.side)
+                        .padding(.vertical, 12)
+                        .background(Color.moneyTogether.background)
+                        .cornerRadius(Radius.large)
+                        .shadow(color: .moneyTogether.grayScale.baseGray30, radius: 5, x: 0, y: 5)
+                    })
+                    
+                    // 자산 및 정산 정보
+                    // 거래 타입에 따라 다른 뷰가 보여짐
+                    createSectionView(title: settlementSectionTitle, content: {
+                        VStack(spacing: 4) {
+                            switch self.viewModel.transactionType {
+                            case .spending: spendingSettlementView  // 정산 정보
+                            case .earning: earningSettlementView    // 입금될 자산 정보
+                            }
+                        }
+                        .padding(.horizontal, Layout.side)
+                        .padding(.vertical, 12)
+                        .background(Color.moneyTogether.background)
+                        .cornerRadius(Radius.large)
+                        .shadow(color: .moneyTogether.grayScale.baseGray30, radius: 5, x: 0, y: 5)
+                    })
+                    
+                    // 완료 버튼
+                    CTAButton(
+                        activeState: .active,
+                        buttonStyle: .solid,
+                        labelText: "완료", action: {
+                            print(#fileID, #function, #line, "머니로그 편집 완료")
+                            self.viewModel.completeEdit()
+                        }
+                    ).padding(.top, 40)
+                    
+                }
+                .padding(.horizontal, Layout.side)
+                .padding(.top, ComponentSize.navigationBarHeight + 24)
+                .padding(.bottom, Layout.bottom)
+            }
+            // 오류 발생 시 alert
+            .alert(
+                "오류가 발생했습니다.",
+                isPresented: $viewModel.hasEditingError,
+                actions: {
+                    Button("확인") {
+                        print(#fileID, #function, #line, "error ok")
+                    }
+                },
+                message: {
+                    Text(self.viewModel.errorType.messege)
+                }
+            )
+            
+        }
+    }
+}
+
+// MARK: Amount Info
+extension EditMoneyLogView {
+    /// 통화 타입 선택 모달 띄우기 버튼 + 선택된 통화 타입 라벨
+    private var currencyTypePicker: some View {
+        HStack {
+            Text(self.viewModel.currencyType.displayName)
+                .moneyTogetherFont(style: .b1)
+                .foregroundStyle(Color.moneyTogether.label.alternative)
+                .lineLimit(1)
+            Image(systemName: "chevron.down")
+                .iconStyle(size: 14, foregroundColor: .moneyTogether.label.assistive ,padding: 0)
+        }
+        .padding(.vertical, 12)
+        .onTapGesture {
+            self.viewModel.onCurrencyTypeSelection?()
+        }
+    }
+    
+    /// 금액 입력 필드
+    private var amountTextField: some View {
+        TextField(
+            "금액",
+            text: self.$viewModel.amount,
+            prompt: Text("금액을 입력하세요.")
+        )
+        .multilineTextAlignment(.trailing)
+        .keyboardType(.decimalPad)
+        .textInputAutocapitalization(.never)
+        .autocorrectionDisabled()
+        .moneyTogetherFont(style: .b1)
+        .tint(Color.moneyTogether.brand.primary)
+        .background(Color.clear)
+        .frame(maxWidth: .infinity, minHeight: 40)
+        .onChange(of: self.viewModel.amount) { before, after in
+            self.viewModel.updateAmountText(with: after)
+        }
+    }
+}
+
+// MARK: Basic Info Row
+extension EditMoneyLogView {
+    /// 날짜 정보
+    /// 선택된 날짜를 보여줌
+    /// 탭할 경우, 날짜 선택 모달을 띄워줌
+    private var dateRow: some View {
+        LabeledContent {
+            createRowTrailingView(
+                contentText: formattedDateString,
+                placeholder: "필수 사항"
+            )
+        } label: {
+            createRowTitleLabel(title: "날짜")
+        }.onTapGesture {
+            // 날짜 선택 모달 present
+            self.viewModel.onSelectDate?()
+        }
+    }
+    
+    /// 카테고리 정보
+    /// 선택된 카테고리를 보여줌
+    /// 탭할 경우, 카테고리 선택 모달을 띄워줌
+    private var categoryRow: some View {
+        LabeledContent {
+            createRowTrailingView(
+                contentText: self.viewModel.category?.name,
+                placeholder: "필수 사항"
+            )
+        } label: {
+            createRowTitleLabel(title: "카테고리")
+        }.onTapGesture {
+            // 카테고리 선택 모달 present
+            self.viewModel.onSelectCategory?()
+        }
+    }
+    
+    /// 나만 보기 정보
+    /// 나만보기 여부를 스위치를 통해 선택 가능
+    private var privateRow: some View {
+        VStack {
+            LabeledContent {
+                Toggle(
+                    isOn: Binding(get: {
+                        self.viewModel.isPrivate
+                    }, set: { newValue in
+                        withAnimation(.spring) {
+                            self.viewModel.updatePrivateState(newValue)
+                        }
+                    }),
+                    label: {}
+                )
+                .tint(Color.moneyTogether.grayScale.baseGray100)
+                .labelsHidden()
+            } label: {
+                createRowTitleLabel(title: "나만 보기")
+            }
+            
+            Text("* 다른 멤버는 이 머니로그를 볼 수 없어요. \n* 나만 보기로 설정 시, 저금통을 사용할 수 없어요.")
+                .frame(maxWidth: .infinity, alignment: .topLeading)
+                .moneyTogetherFont(style: .detail2)
+                .foregroundStyle(Color.moneyTogether.label.assistive)
+                .lineSpacing(2)
+                .offset(y: -4)
+        }
+    }
+}
+
+// MARK: Settlement View
+extension EditMoneyLogView {
+    /// 자산 정보
+    /// 선택된 자산을 보여줌
+    /// 탭할 경우, 자산 선택 모달을 띄워줌
+    var assetRow: some View {
+        LabeledContent {
+            createRowTrailingView(contentText: self.viewModel.asset?.title, placeholder: "필수 사항")
+        } label: {
+            createRowTitleLabel(title: "자산")
+            
+        }.onTapGesture {
+            if !self.viewModel.useCashbox {
+                // 자산 선택 모달 present
+                self.viewModel.onSelectAsset?()
+            }
+        }
+    }
+}
+
+
+
+// MARK: View Creators
+extension EditMoneyLogView {
+    /// [섹션 타이틀 + 컨텐츠 뷰] 레이아웃으로 섹션 생성하는 함수
+    /// - Parameters:
+    ///   - title: 타이틀
+    ///   - content: 컨텐츠뷰
+    /// - Returns: [ 타이틀 + 컨텐츠 뷰 ] 레이아웃으로 구성된 section 뷰
+    private func createSectionView(title: String, content: () -> some View) -> some View {
+        VStack(alignment: .leading) {
+            createSectionTitleLabel(title: title)
+            content()
+        }
+        .frame(maxWidth: .infinity)
+    }
+    
+    /// 섹션 타이틀을 생성하는 함수
+    /// - Parameter title: 타이틀
+    /// - Returns: 타이틀 헤더 뷰
+    private func createSectionTitleLabel(title: String) -> some View {
+        Text(title)
+            .moneyTogetherFont(style: .b2)
+            .foregroundStyle(Color.moneyTogether.label.normal)
+            .lineLimit(1)
+    }
+    
+    /// LabeldContent의 타이틀을 생성하는 함수
+    /// - Parameter title: 타이틀
+    /// - Returns: 타이틀 라벨
+    func createRowTitleLabel(title: String) -> some View {
+        Text(title)
+            .foregroundStyle(Color.moneyTogether.label.normal)
+            .moneyTogetherFont(style: .b2)
+            .frame(height: 40)
+            .lineLimit(1)
+    }
+    
+    /// Row trailing view 생성 함수
+    /// [some content] [ > 아이콘 이미지] 형태로 구성됨
+    /// - some content: 선택된 값을 보여주기 위한 텍스트 라벨, 선택된 값이 없을 경우 기본 텍스트(placeholder)를 보여줌
+    /// - > 아이콘 이미지: 페이지 이동 또는 모달 띄우기가 가능함을 암시하기 위한 이미지
+    /// - Parameter contentText: [ some content ]에 들어갈 텍스트
+    /// - Parameter placeholder: content가 없을 경우(nil), 기본적으로 들어가는 텍스트
+    /// - Returns: 생성된 trailing view
+    private func createRowTrailingView(contentText: String?, placeholder: String = "") -> some View {
+        return HStack(spacing: 8) {
+            if let content = contentText {
+                // 선택된 값
+                Text(content)
+                    .foregroundStyle(Color.moneyTogether.label.alternative)
+                    .moneyTogetherFont(style: .b1)
+                    .lineLimit(1)
+            } else {
+                // placeholder
+                Text(placeholder)
+                    .foregroundStyle(Color.moneyTogether.label.assistive)
+                    .moneyTogetherFont(style: .b2)
+                    .lineLimit(1)
+            }
+            
+            // > 아이콘 이미지
+            Image("chevron_right")
+                .iconStyle(size: 12, foregroundColor: .moneyTogether.label.assistive, padding: 0)
+        }
+    }
+}
+
+#Preview {
+    let vm = WalletViewModel()
+    vm.fetchWalletData()
+    vm.fetchMembers()
+    
+    return EditMoneyLogView(viewModel: EditMoneyLogViewModel(walletData: vm.walletData!, walletMembers: vm.members))
+}
+

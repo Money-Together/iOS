@@ -94,16 +94,7 @@ class CurrencyTypePickerViewController: UIViewController {
     
     // MARK: Sub Views
     
-//    private var sectionHeader = UILabel.make(
-//        text: "통화 선택",
-//        textColor: .moneyTogether.label.assistive,
-//        font: .moneyTogetherFont(style: .detail1),
-//        numberOfLines: 1
-//    )
-    
-    //private var sectionHeader: CustomNavigationBar!
-    
-    private var sectionHeader: ModalHeaderView!
+    private var navigationBar: CustomNavigationBar!
     
     lazy private var tableView: UITableView = UITableView(frame: .zero, style: .plain)
     
@@ -128,15 +119,9 @@ class CurrencyTypePickerViewController: UIViewController {
     private func setUI() {
         self.view.backgroundColor = .moneyTogether.background
         
-//        self.sectionHeader = CustomNavigationBar(
-//            title: "통화 선택",
-//            backBtnMode: .modal, backAction: {
-//                self.dismiss(animated: true)
-//            })
-        
-        self.sectionHeader = ModalHeaderView(title: "통화 선택" , onCancel: {
-            self.dismiss(animated: true)
-        })
+        self.navigationBar = CustomNavigationBar(
+            title: "통화를 선택해주세요"
+        )
         
         tableView.dataSource = self
         tableView.delegate = self
@@ -145,7 +130,6 @@ class CurrencyTypePickerViewController: UIViewController {
         tableView.contentInset = UIEdgeInsets(top: 20, left: 0, bottom: 56, right: 0)
         tableView.rowHeight = 56
         tableView.separatorColor = .clear
-//            .moneyTogether.line.normal
         tableView.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
         
         
@@ -154,18 +138,17 @@ class CurrencyTypePickerViewController: UIViewController {
     }
     
     private func setLayout() {
-        self.view.addSubview(sectionHeader)
+        self.view.addSubview(navigationBar)
         self.view.addSubview(tableView)
         
         NSLayoutConstraint.activate([
-            sectionHeader.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            sectionHeader.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            sectionHeader.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            //constant: 24),
+            navigationBar.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            navigationBar.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            navigationBar.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             
             tableView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            tableView.topAnchor.constraint(equalTo: sectionHeader.bottomAnchor),
+            tableView.topAnchor.constraint(equalTo: navigationBar.bottomAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
