@@ -18,6 +18,8 @@ class WalletViewModel: ObservableObject {
     
     @Published var members: [WalletMember] = []
     
+    @Published var categories: [Category] = []
+    
     
     // MARK: For Wallet Profile Editing
     
@@ -67,5 +69,9 @@ extension WalletViewModel {
         
         // 데이터 업데이트
         self.members = dummyData
+    }
+    
+    func fetchCategories() {
+        self.categories = Category.createDummyList()
     }
 }
