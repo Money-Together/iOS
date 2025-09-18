@@ -38,6 +38,7 @@ class UserProfileView: UIView {
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.widthAnchor.constraint(equalToConstant: ProfileImgSize.large).isActive = true
         imageView.heightAnchor.constraint(equalToConstant: ProfileImgSize.large).isActive = true
+        imageView.layer.cornerRadius = ProfileImgSize.large / 2
         
         return imageView
     }()
@@ -94,22 +95,20 @@ class UserProfileView: UIView {
         labelVstack.distribution = .equalCentering
         labelVstack.alignment = .fill
         labelVstack.spacing = 8
+//        labelVstack.backgroundColor = .red
         
         self.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(imageView)
         self.addSubview(labelVstack)
         
         NSLayoutConstraint.activate([
-            self.widthAnchor.constraint(equalToConstant: UIScreen.main.bounds.width - (Layout.side * 2)),
-            self.heightAnchor.constraint(greaterThanOrEqualTo: imageView.heightAnchor, multiplier: 1),
-            
-            imageView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-            imageView.centerYAnchor.constraint(equalTo: self.centerYAnchor),
+            imageView.leadingAnchor.constraint(equalTo: self.layoutMarginsGuide.leadingAnchor),
+            imageView.topAnchor.constraint(equalTo: self.layoutMarginsGuide.topAnchor),
+            imageView.centerYAnchor.constraint(equalTo: self.layoutMarginsGuide.centerYAnchor),
             
             labelVstack.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 24),
-            labelVstack.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            labelVstack.centerYAnchor.constraint(equalTo: self.centerYAnchor),
-            labelVstack.topAnchor.constraint(greaterThanOrEqualTo: self.topAnchor)
+            labelVstack.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor),
+            labelVstack.centerYAnchor.constraint(equalTo: self.layoutMarginsGuide.centerYAnchor),
         ])
     }
 }

@@ -32,6 +32,10 @@ final class AuthManager {
     
     private(set) var currentToken: TokenPair?
     
+    /// 로그아웃 시 호출
+    /// AppCoordinator에서 로그인 플로우로 변경
+    var onLogout: (() -> Void)?
+    
     private init() {}
 
     /// 앱 시작 시 분기용
@@ -50,9 +54,11 @@ final class AuthManager {
         currentToken = token
     }
 
+    /// 로그아웃 시, 저장된 토큰 삭제 및 플로우 변경을 위한 클로져 호출
     func logout() {
         tokenRepo.clear()
         currentToken = nil
+        self.onLogout?()
     }
 }
 

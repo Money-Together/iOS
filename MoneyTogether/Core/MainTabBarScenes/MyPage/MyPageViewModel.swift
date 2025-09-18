@@ -42,6 +42,8 @@ final class MyPageViewModel {
     
     // MARK: Closures For Event Handling
     
+    var settingBtnTapped: (() -> Void)?
+    
     var profileEditBtnTapped: (() -> Void)?
     
     var userAssetAddBtnTapped: (() -> Void)?

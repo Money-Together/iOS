@@ -28,7 +28,7 @@ class UserAssetListView: UIView {
     var stackView = UIStackView.makeVStack(
         distribution: .fillEqually,
         alignment: .fill,
-        spacing: 20,
+        spacing: 24,
         subViews: [])
     
     // MARK: Init & Setup

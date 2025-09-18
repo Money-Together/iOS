@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 
+
 /// 마이페이지 뷰
 class MyPageViewController: UIViewController {
     
@@ -16,13 +17,15 @@ class MyPageViewController: UIViewController {
     
     // MARK: Sub Views
     
+    private var navigationBar : CustomNavigationBar!
+    
     private var scrollView = UIScrollView().disableAutoresizingMask()
     
     private var scrollContentsView = UIView().disableAutoresizingMask()
     
     private var userProfileView = UserProfileView()
     
-    private var userAssetAddBtn = CustomIconButton(iconImage: UIImage(systemName: "plus"))
+    private var userAssetAddBtn: CustomIconButton!
     
     private var userAssetTotalAmountView = UserAssetTotalAmountView()
     
@@ -62,83 +65,83 @@ class MyPageViewController: UIViewController {
     private func setUI() {
         view.backgroundColor = UIColor.moneyTogether.background
         
+        let settingButton = CustomIconButton(
+            iconImage: UIImage(named: "setting"),
+            action: {
+                print(#fileID, #function, #line, "setting")
+                self.viewModel.settingBtnTapped?()
+            }
+        )
+        
+        self.navigationBar = CustomNavigationBar(
+            title: "",
+            backgroundColor: .moneyTogether.background,
+            rightButtons: [settingButton]
+        )
+        
         // 유저 프로필
         userProfileView.updateUI(newData: self.viewModel.profile)
         userProfileView.addGestureRecognizer(
             UITapGestureRecognizer(target: self, action: #selector(handleProfileTap))
         )
-        
+        let _ = userProfileView.applyCardStyle()
+
         // 유저 자산 추가 버튼
-        userAssetAddBtn.setAction({
-            self.viewModel.handleUserAssetAddBtnTap()
-        })
+        userAssetAddBtn = CustomIconButton(
+            iconImage: UIImage(named: "add"),
+            iconSize: 16,
+            padding: 16,
+            action: {
+                self.viewModel.handleUserAssetAddBtnTap()
+            }
+        )
         
         // 유저 자산 통화별 총 금액
         userAssetTotalAmountView.updateUI(newData: self.viewModel.userAssetTotalAmounts)
-        userAssetTotalAmountView.backgroundColor = .moneyTogether.grayScale.baseGray20
-        userAssetTotalAmountView.layer.cornerRadius = Radius.large
+        let _ = userAssetTotalAmountView.applyCardStyle(horizontalPadding: 0, verticalPadding: 0)
+        
         
         // 유저 자산 리스트
         userAssetListView.delegate = self
-        userAssetListView.backgroundColor = .moneyTogether.grayScale.baseGray20
-        userAssetListView.layer.cornerRadius = Radius.large
+        let _ = userAssetListView.applyCardStyle()
     }
     
     /// components로 레이아웃 구성
     private func setLayout() {
-        
-        let pageTitle = UILabel.make(
-            text: "My Profile",
-            textColor: .moneyTogether.label.normal,
-            font: .moneyTogetherFont(style: .h2),
-            numberOfLines: 1
+    
+        let assetSummaryView = SectionCardUIView(
+            title: "내 자산",
+            content: { self.userAssetTotalAmountView }
         )
+        assetSummaryView.addSubview(userAssetAddBtn)
+        NSLayoutConstraint.activate([
+            userAssetAddBtn.topAnchor.constraint(equalTo: assetSummaryView.topAnchor, constant: -12),
+            userAssetAddBtn.trailingAnchor.constraint(equalTo: assetSummaryView.trailingAnchor, constant: 4)
+        ])
         
-        let assetSummaryView: UIView = {
-            let assetSectionTitle = UILabel.make(
-                text: "내 자산",
-                textColor: .moneyTogether.label.normal,
-                font: .moneyTogetherFont(style: .h4),
-                numberOfLines: 1
-            )
-            
-            let view = UIView().disableAutoresizingMask()
-            
-            view.addSubview(assetSectionTitle)
-            view.addSubview(userAssetAddBtn)
-            view.addSubview(userAssetTotalAmountView)
-            
-            NSLayoutConstraint.activate([
-                assetSectionTitle.topAnchor.constraint(equalTo: view.topAnchor),
-                assetSectionTitle.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                assetSectionTitle.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-                
-                userAssetAddBtn.centerYAnchor.constraint(equalTo: assetSectionTitle.centerYAnchor),
-                userAssetAddBtn.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-                
-                userAssetTotalAmountView.topAnchor.constraint(equalTo: assetSectionTitle.bottomAnchor, constant: 12),
-                userAssetTotalAmountView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                userAssetTotalAmountView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-                userAssetTotalAmountView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-            ])
-            
-            return view
-        }()
-        
-        let stackView = UIStackView.makeVStack(
+        let assetStackView = UIStackView.makeVStack(
             distribution: .fill,
             alignment: .fill,
-            spacing: 48,
+            spacing: 24,
             subViews: [
-                pageTitle, userProfileView, assetSummaryView, userAssetListView
+                assetSummaryView,
+                userAssetListView
             ]
         )
         
+        scrollContentsView.layoutMargins = UIEdgeInsets(top: ComponentSize.navigationBarHeight + 12, left: Layout.side, bottom: Layout.bottom, right: Layout.side)
+        
         self.view.addSubview(scrollView)
+        self.view.addSubview(navigationBar)
         scrollView.addSubview(scrollContentsView)
-        scrollContentsView.addSubview(stackView)
+        scrollContentsView.addSubview(userProfileView)
+        scrollContentsView.addSubview(assetStackView)
         
         NSLayoutConstraint.activate([
+            navigationBar.topAnchor.constraint(equalTo: self.view.layoutMarginsGuide.topAnchor),
+            navigationBar.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
+            navigationBar.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            
             scrollView.topAnchor.constraint(equalTo: self.view.layoutMarginsGuide.topAnchor),
             scrollView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
             scrollView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
@@ -150,10 +153,14 @@ class MyPageViewController: UIViewController {
             scrollContentsView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
             scrollContentsView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor),
             
-            stackView.topAnchor.constraint(equalTo: scrollContentsView.topAnchor, constant: 48),
-            stackView.bottomAnchor.constraint(equalTo: scrollContentsView.bottomAnchor, constant: -48),
-            stackView.leadingAnchor.constraint(equalTo: scrollContentsView.leadingAnchor, constant: Layout.side),
-            stackView.centerXAnchor.constraint(equalTo: scrollContentsView.centerXAnchor)
+            userProfileView.topAnchor.constraint(equalTo: scrollContentsView.layoutMarginsGuide.topAnchor),
+            userProfileView.leadingAnchor.constraint(equalTo: scrollContentsView.layoutMarginsGuide.leadingAnchor),
+            userProfileView.centerXAnchor.constraint(equalTo: scrollContentsView.centerXAnchor),
+            
+            assetStackView.topAnchor.constraint(equalTo: userProfileView.bottomAnchor, constant: 48),
+            assetStackView.bottomAnchor.constraint(equalTo: scrollContentsView.layoutMarginsGuide.bottomAnchor),
+            assetStackView.leadingAnchor.constraint(equalTo: scrollContentsView.layoutMarginsGuide.leadingAnchor),
+            assetStackView.centerXAnchor.constraint(equalTo: scrollContentsView.centerXAnchor)
         ])
         
     }

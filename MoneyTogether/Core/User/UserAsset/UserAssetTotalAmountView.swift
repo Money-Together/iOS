@@ -44,10 +44,10 @@ class UserAssetTotalAmountView: UIView {
         self.addSubview(stackView)
         
         NSLayoutConstraint.activate([
-            stackView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 20),
-            stackView.topAnchor.constraint(equalTo: self.topAnchor, constant: 24),
-            stackView.centerXAnchor.constraint(equalTo: self.centerXAnchor),
-            stackView.centerYAnchor.constraint(equalTo: self.centerYAnchor)
+            stackView.leadingAnchor.constraint(equalTo: self.layoutMarginsGuide.leadingAnchor),
+            stackView.topAnchor.constraint(equalTo: self.layoutMarginsGuide.topAnchor),
+            stackView.centerXAnchor.constraint(equalTo: self.layoutMarginsGuide.centerXAnchor),
+            stackView.centerYAnchor.constraint(equalTo: self.layoutMarginsGuide.centerYAnchor)
         ])
     }
 }
