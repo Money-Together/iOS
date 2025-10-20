@@ -16,6 +16,7 @@ enum RootRoute {
 
 /// 앱 루트 네비게이션을 관리하는 코디네이터
 class AppCoordinator: BaseNavCoordinator {
+    
     let window: UIWindow
     
     var authCoordinator: AuthCoordinator?
@@ -62,7 +63,8 @@ class AppCoordinator: BaseNavCoordinator {
         let tabBarCoordinator = MainTabBarCoordinator(parentCoordinator: self)
         
         // 로그아웃 시, 로그인 플로우로 변경
-        tabBarCoordinator.onLogout = { [weak self] in
+        // tabBarCoordinator.onLogout = { [weak self] in
+        AuthManager.shared.onLogout = { [weak self] in
             guard let self = self else { return }
             DispatchQueue.main.async {
                 self.start()

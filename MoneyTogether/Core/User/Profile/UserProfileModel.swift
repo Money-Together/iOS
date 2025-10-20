@@ -8,15 +8,15 @@
 import Foundation
 
 /// 유저 프로필 모델
-struct UserProfile {
+struct UserProfile: Decodable {
     var nickname:   String
     var email:      String
     var imageUrl:   String?
     
     /// 유저 프로필 더미 데이터 생성 함수
     static func createDummyData() -> Self {
-        return UserProfile(nickname: "test용최대10자",
-                           email: "testEmail@gmail.com",
+        return UserProfile(nickname: "nickname",
+                           email: "dummyEmail@gmail.com",
                            imageUrl: "https://i.pravatar.cc")
     }
 }

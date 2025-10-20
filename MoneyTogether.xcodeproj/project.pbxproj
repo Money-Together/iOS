@@ -12,9 +12,9 @@
 		3E220E492E349B96004519E1 /* FirebaseAnalyticsIdentitySupport in Frameworks */ = {isa = PBXBuildFile; productRef = 3E220E482E349B96004519E1 /* FirebaseAnalyticsIdentitySupport */; };
 		3E220E4F2E349B97004519E1 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 3E220E4E2E349B97004519E1 /* FirebaseAuth */; };
 		3E3767C92E2CF4CB00A1FDBB /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 3E3767C82E2CF4CB00A1FDBB /* GoogleSignIn */; };
+		3E678FA02E4E553B0041DD5C /* UICollectionViewLeftAlignedLayout in Frameworks */ = {isa = PBXBuildFile; productRef = 3E678F9F2E4E553B0041DD5C /* UICollectionViewLeftAlignedLayout */; };
 		3E97CFDB2E6C016400B12B5D /* CombineMoya in Frameworks */ = {isa = PBXBuildFile; productRef = 3E97CFDA2E6C016400B12B5D /* CombineMoya */; };
 		3E97CFDD2E6C016400B12B5D /* Moya in Frameworks */ = {isa = PBXBuildFile; productRef = 3E97CFDC2E6C016400B12B5D /* Moya */; };
-		3E678FA02E4E553B0041DD5C /* UICollectionViewLeftAlignedLayout in Frameworks */ = {isa = PBXBuildFile; productRef = 3E678F9F2E4E553B0041DD5C /* UICollectionViewLeftAlignedLayout */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,20 +48,6 @@
 			);
 			target = 3E4929392DAE4DB600C3C2BB /* MoneyTogether */;
 		};
-		3E97CFF52E6F400700B12B5D /* Exceptions for "MoneyTogether" folder in "MoneyTogetherTests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				"Resources/DesignSystem/Typography/Font/Roboto-Medium.ttf",
-			);
-			target = 3E49294F2DAE4DB900C3C2BB /* MoneyTogetherTests */;
-		};
-		3E97CFF62E6F400700B12B5D /* Exceptions for "MoneyTogether" folder in "MoneyTogetherUITests" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				"Resources/DesignSystem/Typography/Font/Roboto-Medium.ttf",
-			);
-			target = 3E4929592DAE4DB900C3C2BB /* MoneyTogetherUITests */;
-		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -69,8 +55,6 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				3E4929622DAE4DB900C3C2BB /* Exceptions for "MoneyTogether" folder in "MoneyTogether" target */,
-				3E97CFF52E6F400700B12B5D /* Exceptions for "MoneyTogether" folder in "MoneyTogetherTests" target */,
-				3E97CFF62E6F400700B12B5D /* Exceptions for "MoneyTogether" folder in "MoneyTogetherUITests" target */,
 			);
 			path = MoneyTogether;
 			sourceTree = "<group>";
@@ -671,20 +655,20 @@
 				minimumVersion = 9.0.0;
 			};
 		};
-		3E97CFD92E6C016400B12B5D /* XCRemoteSwiftPackageReference "Moya" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/Moya/Moya.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 15.0.3;
-			};
-		};
 		3E678F9D2E4E551D0041DD5C /* XCRemoteSwiftPackageReference "UICollectionViewLeftAlignedLayout" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/mokagio/UICollectionViewLeftAlignedLayout.git";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 1.1.0;
+			};
+		};
+		3E97CFD92E6C016400B12B5D /* XCRemoteSwiftPackageReference "Moya" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Moya/Moya.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 15.0.3;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -715,6 +699,11 @@
 			package = 3E623EBC2E2CEECD009B4077 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
 			productName = GoogleSignIn;
 		};
+		3E678F9F2E4E553B0041DD5C /* UICollectionViewLeftAlignedLayout */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3E678F9D2E4E551D0041DD5C /* XCRemoteSwiftPackageReference "UICollectionViewLeftAlignedLayout" */;
+			productName = UICollectionViewLeftAlignedLayout;
+		};
 		3E97CFDA2E6C016400B12B5D /* CombineMoya */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 3E97CFD92E6C016400B12B5D /* XCRemoteSwiftPackageReference "Moya" */;
@@ -724,11 +713,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 3E97CFD92E6C016400B12B5D /* XCRemoteSwiftPackageReference "Moya" */;
 			productName = Moya;
-		};
-		3E678F9F2E4E553B0041DD5C /* UICollectionViewLeftAlignedLayout */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 3E678F9D2E4E551D0041DD5C /* XCRemoteSwiftPackageReference "UICollectionViewLeftAlignedLayout" */;
-			productName = UICollectionViewLeftAlignedLayout;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

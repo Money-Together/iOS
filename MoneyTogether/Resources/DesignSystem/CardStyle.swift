@@ -6,6 +6,42 @@
 //
 
 import Foundation
+import UIKit
+
+extension UIView {
+    /// 카드 스타일 공통 적용
+    func applyCardStyle(
+        horizontalPadding: CGFloat = 20,
+        verticalPadding: CGFloat = 16,
+        cornerRadius: CGFloat = Radius.large,
+        backgroundColor: UIColor? = UIColor.moneyTogether.background
+    ) -> UIView {
+        self.backgroundColor = backgroundColor
+        self.layer.cornerRadius = cornerRadius
+        self.layer.masksToBounds = false
+        
+        // shadow
+        self.addShadow(
+            color: .moneyTogether.grayScale.baseGray30,
+            offset: CGSize(width: 0, height: 5),
+            opacity: 1,
+            radius: 5
+        )
+        
+        // 내부 패딩
+        self.layoutMargins = UIEdgeInsets(
+            top: verticalPadding,
+            left: horizontalPadding,
+            bottom: verticalPadding,
+            right: horizontalPadding
+        )
+        
+        self.translatesAutoresizingMaskIntoConstraints = false
+        
+        return self
+    }
+}
+
 import SwiftUI
 
 /// 카드 형태의 공통 UI 스타일을 적용하는 ViewModifier

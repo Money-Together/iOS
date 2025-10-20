@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import SwiftUI
 
 /// 마이페이지 코드네이터
 class MyPageCoordinator: BaseNavCoordinator {
@@ -32,6 +33,16 @@ extension MyPageCoordinator {
     func setVMClosures() {
         guard let root = self.rootCoordinator as? AppCoordinator else {
             return
+        }
+        
+        // 설정 화면 이동
+        viewModel.settingBtnTapped = { [weak self] in
+            guard let self = self else { return }
+            let view = SettingView(onBack: {
+                self.navigationController.popViewController(animated: true)
+            })
+            let hostingVC = UIHostingController(rootView: view)
+            self.show(hostingVC, animated: true)
         }
         
         // 유저 프로필 편집 버튼 클릭
