@@ -30,6 +30,8 @@ final class AuthManager {
     
     private let tokenRepo = TokenRepository()
     
+    private(set) var userProfile: UserProfile?
+    
     private(set) var currentToken: TokenPair?
     
     /// 로그아웃 시 호출
@@ -40,12 +42,19 @@ final class AuthManager {
 
     /// 앱 시작 시 분기용
     func getInitialAuthState() -> AppLaunchState {
-        if let token = tokenRepo.load() {
-            currentToken = token
-            return .authenticated
-        } else {
+        guard let token = tokenRepo.load() else {
             return .unauthenticated
         }
+        
+        // 토큰 업데이트
+        currentToken = token
+        
+        // 유저 프로필 데이터 초기화
+        initUserProfile()
+        
+        // 앱 시작 상태 리턴
+        return .authenticated
+        
     }
 
     /// 로그인 성공 후 저장
@@ -59,6 +68,17 @@ final class AuthManager {
         tokenRepo.clear()
         currentToken = nil
         self.onLogout?()
+    }
+    
+    /// 유저 프로필 데이터 초기화
+    func initUserProfile() {
+        Task {
+            do {
+                userProfile = try await UserService.shared.getUserProfile()
+            } catch {
+                print(#fileID, #function, #line, "❌Error: \(error)")
+            }
+        }
     }
 }
 

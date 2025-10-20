@@ -7,13 +7,14 @@
 
 import Foundation
 import UIKit
-
+import Combine
 
 /// 마이페이지 뷰
 class MyPageViewController: UIViewController {
     
     var viewModel: MyPageViewModel
     
+    private var cancellables = Set<AnyCancellable>()
     
     // MARK: Sub Views
     
@@ -43,12 +44,6 @@ class MyPageViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-//        viewModel.fetchUserProfile()
-//        viewModel.fetchUserAssetsTotalAmounts()
-//        viewModel.fetchUserAssetList()
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -56,9 +51,11 @@ class MyPageViewController: UIViewController {
         setLayout()
         
         bindViewModel()
+        
         viewModel.fetchUserProfile()
         viewModel.fetchUserAssetsTotalAmounts()
         viewModel.fetchUserAssetList()
+        
     }
     
     /// Sub Views, UI Components 세팅
@@ -167,10 +164,10 @@ class MyPageViewController: UIViewController {
     
     /// 바인딩 처리
     private func bindViewModel() {
-        viewModel.onProfileUpdated = { [weak self] in
-            guard let self = self else { return }
-            self.userProfileView.updateUI(newData: self.viewModel.profile)
-        }
+        viewModel.$profile
+            .sink { newData in
+                self.userProfileView.updateUI(newData: newData)
+            }.store(in: &cancellables)
         
         viewModel.onUserAssetTotalAmountsUpdated = { [weak self] in
             guard let self = self else { return }
